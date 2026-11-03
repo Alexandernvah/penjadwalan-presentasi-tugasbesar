@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agenda Jadwal Pribadi Dosen - Tubes Scheduler">
+  <title>Agenda Jadwal Pribadi - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+</head>
+<body>
+  <!-- Lecturer Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="penjadwalan.html" class="navbar-brand">
+        <span>Tubes Scheduler</span>
+        <span class="navbar-brand-badge">Dosen</span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="navbar-nav">
+          <li><a href="penjadwalan.html" class="nav-link">Matriks Penjadwalan</a></li>
+          <li><a href="kelola-kelompok.html" class="nav-link">Kelola Kelompok</a></li>
+          <li><a href="jadwal-pribadi.html" class="nav-link active">Agenda Saya</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-profile-menu">
+        <div class="user-info">
+          <span id="current-user-name" class="user-name">Dr. Dosen Pengampu</span>
+          <span id="current-user-role" class="user-role-label">Dosen</span>
+        </div>
+        <button type="button" id="btn-dosen-logout" class="btn btn-secondary btn-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container flex-1 mt-4 mb-4">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Agenda & Jadwal Kegiatan Akademik</h1>
+        <p class="page-subtitle">Pantau seluruh agenda mengajar, pengawasan ujian, dan presentasi tugas besar terpusat.</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" id="btn-export-agenda" class="btn btn-secondary btn-sm">Ekspor Kalender</button>
+      </div>
+    </div>
+
+    <!-- Alert / Toast Container -->
+    <div id="agenda-alert" class="alert alert-info hidden" role="alert">
+      <span class="alert-icon" aria-hidden="true">ℹ️</span>
+      <div class="flex-1" id="agenda-alert-message"></div>
+      <button type="button" class="alert-close" id="btn-close-agenda-alert" aria-label="Tutup">&times;</button>
+    </div>
+
+    <!-- Filter Tabs Component -->
+    <section class="card">
+      <nav class="tabs-nav" aria-label="Filter Agenda Tabs">
+        <button type="button" id="filter-tab-all" class="tab-btn active" data-filter="ALL">
+          All (Semua Agenda)
+        </button>
+        <button type="button" id="filter-tab-ujian" class="tab-btn" data-filter="UJIAN">
+          Ujian (UTS / UAS)
+        </button>
+        <button type="button" id="filter-tab-presentasi" class="tab-btn" data-filter="PRESENTASI">
+      <!-- Agenda Cards Container Template -->
+      <div id="agenda-cards-container" class="agenda-grid">
+        <!-- Sample Card 1: Tubes Presentation -->
+        <article class="agenda-card type-presentasi" data-category="PRESENTASI">
+          <div>
+            <div class="agenda-header">
+              <span class="badge badge-info">Presentasi Tubes</span>
+              <span class="text-muted text-xs">IF-43-01</span>
+            </div>
+            <h3 class="agenda-title">Sistem Rekomendasi E-Commerce (Kelompok 01)</h3>
+            <div class="agenda-time">
+              <span aria-hidden="true">🕒</span>
+              <span>Senin, 10 Nov 2026 &bull; 09:00 - 10:00 WIB</span>
+            </div>
+            <div class="agenda-location">
+              <span aria-hidden="true">📍</span>
+              <span>Ruang Lab Komputer 2 (Gedung B)</span>
+            </div>
+            <div class="agenda-group-info">
+              <strong>Anggota:</strong> Budi (101), Siti (102), Andi (103)
+            </div>
+          </div>
+          <div class="d-flex align-center justify-between mt-2">
+            <span class="badge badge-success">Terjadwal</span>
+            <button type="button" class="btn btn-secondary btn-sm" data-action="view-detail">Detail</button>
+          </div>
+        </article>
+
+        <!-- Sample Card 2: Exam / Ujian -->
+        <article class="agenda-card type-ujian" data-category="UJIAN">
+          <div>
+            <div class="agenda-header">
+              <span class="badge badge-warning">Pengawasan Ujian</span>
+              <span class="text-muted text-xs">IF-42-03</span>
+            </div>
+            <h3 class="agenda-title">Ujian Akhir Semester: Rekayasa Perangkat Lunak</h3>
+            <div class="agenda-time">
+              <span aria-hidden="true">🕒</span>
+              <span>Rabu, 12 Nov 2026 &bull; 08:00 - 10:00 WIB</span>
+            </div>
+            <div class="agenda-location">
+              <span aria-hidden="true">📍</span>
+              <span>Ruang Kelas Teori A301</span>
+            </div>
+            <div class="agenda-group-info">
+              <strong>Peserta:</strong> 42 Mahasiswa Reguler
+            </div>
+          </div>
+          <div class="d-flex align-center justify-between mt-2">
+            <span class="badge badge-warning">Ujian Wajib</span>
+            <button type="button" class="btn btn-secondary btn-sm" data-action="view-detail">Detail</button>
+          </div>
+        </article>
+
+        <!-- Sample Card 3: Lecture / Kuliah Rutin -->
+        <article class="agenda-card type-kuliah" data-category="KULIAH">
+          <div>
+            <div class="agenda-header">
+              <span class="badge badge-neutral">Kuliah Reguler</span>
+              <span class="text-muted text-xs">IF-44-02</span>
+            </div>
+            <h3 class="agenda-title">Pemrograman Berorientasi Objek</h3>
+            <div class="agenda-time">
+              <span aria-hidden="true">🕒</span>
+              <span>Kamis, 13 Nov 2026 &bull; 13:00 - 15:30 WIB</span>
+            </div>
+            <div class="agenda-location">
+              <span aria-hidden="true">📍</span>
+              <span>Ruang Teori B204</span>
+            </div>
+            <div class="agenda-group-info">
+              <strong>Materi:</strong> Polimorfisme & Abstraksi Interface
+            </div>
+          </div>
+          <div class="d-flex align-center justify-between mt-2">
+            <span class="badge badge-neutral">Mingguan</span>
+            <button type="button" class="btn btn-secondary btn-sm" data-action="view-detail">Detail</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Empty State Indicator -->
+      <div id="agenda-empty-state" class="text-center text-muted hidden empty-state-box">
+        <span class="empty-state-icon" aria-hidden="true">📅</span>
+        <p>Tidak ada agenda kegiatan untuk kategori yang dipilih.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>
+
+          Presentasi (Tubes)
+        </button>
+      </nav>

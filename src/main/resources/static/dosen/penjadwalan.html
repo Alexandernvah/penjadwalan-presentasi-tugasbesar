@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Matriks Penjadwalan Presentasi Tubes - Tubes Scheduler">
+  <title>Matriks Penjadwalan - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+</head>
+<body>
+  <!-- Lecturer Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="penjadwalan.html" class="navbar-brand">
+        <span>Tubes Scheduler</span>
+        <span class="navbar-brand-badge">Dosen</span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="navbar-nav">
+          <li><a href="penjadwalan.html" class="nav-link active">Matriks Penjadwalan</a></li>
+          <li><a href="kelola-kelompok.html" class="nav-link">Kelola Kelompok</a></li>
+          <li><a href="jadwal-pribadi.html" class="nav-link">Agenda Saya</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-profile-menu">
+        <div class="user-info">
+          <span id="current-user-name" class="user-name">Dr. Dosen Pengampu</span>
+          <span id="current-user-role" class="user-role-label">Dosen</span>
+        </div>
+        <button type="button" id="btn-dosen-logout" class="btn btn-secondary btn-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container flex-1 mt-4 mb-4">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Visual Calendar & Matrix Penjadwalan</h1>
+        <p class="page-subtitle">Pilih slot waktu presentasi (07:00 - 18:00) dengan deteksi tabrakan jadwal otomatis.</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" id="btn-refresh-matrix" class="btn btn-secondary btn-sm">Segarkan Matriks</button>
+      </div>
+    </div>
+
+    <!-- Scheduling Parameter Controls -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Parameter Penjadwalan</h2>
+      </div>
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="select-matrix-kelas" class="form-label required">Mata Kuliah / Kelas</label>
+          <select id="select-matrix-kelas" class="form-control">
+            <option value="">-- Pilih Kelas Kuliah --</option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label for="select-matrix-kelompok" class="form-label required">Kelompok yang Dijadwalkan</label>
+          <select id="select-matrix-kelompok" class="form-control" disabled>
+            <option value="">-- Pilih Kelompok --</option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label for="select-matrix-ruangan" class="form-label required">Ruangan</label>
+          <select id="select-matrix-ruangan" class="form-control">
+            <option value="">-- Pilih Ruangan Presentasi --</option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label for="input-matrix-date" class="form-label required">Tanggal Presentasi</label>
+          <input type="date" id="input-matrix-date" class="form-control">
+        </div>
+      </div>
+    </section>
+
+    <!-- Conflict Alert Banner (Dynamic) -->
+    <div id="conflict-alert-box" class="conflict-alert-banner hidden">
+      <div class="conflict-alert-header">
+        <div class="conflict-alert-title">
+          <span>⚠️</span>
+          <span>Peringatan Bentrok Jadwal Terdeteksi!</span>
+        </div>
+        <button type="button" id="btn-dismiss-conflict" class="alert-close">&times;</button>
+      </div>
+      <p id="conflict-summary" class="mb-2">Slot waktu yang dipilih memiliki bentrokan jadwal:</p>
+      <ul id="conflict-detail-list" class="conflict-list">
+    <!-- Visual Calendar Timetable Grid -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Matriks Slot Waktu Harian (07:00 - 18:00)</h2>
+          <p class="card-subtitle">Klik slot tersedia (Hijau) atau pilih jadwal bertanda bentrok.</p>
+        </div>
+        <div class="d-flex align-center gap-2">
+          <span class="badge badge-success">Hijau: Tersedia</span>
+          <span class="badge badge-danger">Merah: Bentrok</span>
+          <span class="badge badge-info">Biru: Terisi</span>
+        </div>
+      </div>
+
+      <div class="timetable-wrapper">
+        <table class="timetable-grid" id="matrix-timetable">
+          <thead>
+            <tr>
+              <th scope="col">Waktu</th>
+              <th scope="col">Senin</th>
+              <th scope="col">Selasa</th>
+              <th scope="col">Rabu</th>
+              <th scope="col">Kamis</th>
+              <th scope="col">Jumat</th>
+              <th scope="col">Sabtu</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-matrix-slots">
+            <!-- 07:00 - 09:00 -->
+            <tr>
+              <td class="timetable-time-slot">07:00 - 08:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">08:00 - 09:00</td>
+              <td><div class="slot-cell-content slot-conflicted" data-day="SENIN" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Bentrok (Kuliah)</span><span class="slot-cell-sub">3 Mhs</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <!-- 09:00 - 11:00 -->
+            <tr>
+              <td class="timetable-time-slot">09:00 - 10:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-conflicted" data-day="RABU" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Bentrok (Dosen)</span><span class="slot-cell-sub">Rapat</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">10:00 - 11:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            <!-- 11:00 - 13:00 -->
+            <tr>
+              <td class="timetable-time-slot">11:00 - 12:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-conflicted" data-day="JUMAT" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Bentrok (Ujian)</span><span class="slot-cell-sub">UTS</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">12:00 - 13:00</td>
+              <td colspan="6" class="text-center text-muted break-slot">Istirahat Siang</td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">13:00 - 14:00</td>
+              <td><div class="slot-cell-content slot-booked" data-day="SENIN" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Kelompok 02</span><span class="slot-cell-sub">Lab 1</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <!-- 14:00 - 18:00 -->
+            <tr>
+              <td class="timetable-time-slot">14:00 - 15:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">15:00 - 16:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">16:00 - 17:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+            <tr>
+              <td class="timetable-time-slot">17:00 - 18:00</td>
+              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation Modal with Explicit 'Override Bentrok' Button -->
+  <div id="modal-override-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-override-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-override-title" class="modal-title">Konfirmasi Jadwal & Override Bentrok</h3>
+        <button type="button" id="btn-close-override-modal" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+      </div>
+      <form id="form-override-confirm">
+        <div class="modal-body">
+          <div class="conflict-detail-box">
+            <h5>Konflik Jadwal Ditemukan</h5>
+            <p id="modal-conflict-desc" class="mb-2">Slot waktu ini bertabrakan dengan jadwal terdaftar.</p>
+            <ul id="modal-conflict-reasons" class="conflict-list">
+              <li>Kuliah Pemrograman Berorientasi Objek (13:00 - 15:00)</li>
+            </ul>
+          </div>
+
+          <div class="form-group">
+            <label for="override-reason-note" class="form-label required">Alasan Override / Kebijakan Dosen</label>
+            <textarea 
+              id="override-reason-note" 
+              name="catatanOverride" 
+              class="form-control" 
+              rows="3" 
+              placeholder="Contoh: Telah disetujui bersama mahasiswa melalui dispensasi..." 
+              required
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-override" class="btn btn-secondary">Batal</button>
+          <button type="submit" id="btn-override-bentrok" class="btn btn-danger">
+            Override Bentrok & Simpan Jadwal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>
+
+    </section>
+
+        <!-- Conflict items -->
+      </ul>
+      <div class="mt-4">
+        <button type="button" id="btn-trigger-override" class="btn btn-danger btn-sm">
+          Buka Konfirmasi Override Bentrok
+        </button>
+      </div>
+    </div>

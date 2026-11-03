@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kelola Kelompok Tugas Besar - Tubes Scheduler">
+  <title>Kelola Kelompok - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+</head>
+<body>
+  <!-- Lecturer Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="penjadwalan.html" class="navbar-brand">
+        <span>Tubes Scheduler</span>
+        <span class="navbar-brand-badge">Dosen</span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="navbar-nav">
+          <li><a href="penjadwalan.html" class="nav-link">Matriks Penjadwalan</a></li>
+          <li><a href="kelola-kelompok.html" class="nav-link active">Kelola Kelompok</a></li>
+          <li><a href="jadwal-pribadi.html" class="nav-link">Agenda Saya</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-profile-menu">
+        <div class="user-info">
+          <span id="current-user-name" class="user-name">Dr. Dosen Pengampu</span>
+          <span id="current-user-role" class="user-role-label">Dosen</span>
+        </div>
+        <button type="button" id="btn-dosen-logout" class="btn btn-secondary btn-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container flex-1 mt-4 mb-4">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Konfigurasi & Pembagian Kelompok</h1>
+        <p class="page-subtitle">Atur skema pembentukan kelompok dan penugasan anggota.</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" id="btn-open-create-group-modal" class="btn btn-primary btn-sm">
+          <span>+</span> Buat Kelompok Baru
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Alert Placeholder -->
+    <div id="kelompok-alert" class="alert alert-info hidden" role="alert">
+      <span class="alert-icon" aria-hidden="true">ℹ️</span>
+      <div class="flex-1" id="kelompok-alert-message"></div>
+      <button type="button" class="alert-close" id="btn-close-kelompok-alert" aria-label="Tutup">&times;</button>
+    </div>
+
+    <!-- Course & Class Selection Card -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Pilih Kelas Perkuliahan</h2>
+      </div>
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label for="select-kelas-kuliah" class="form-label required">Mata Kuliah / Kelas</label>
+          <select id="select-kelas-kuliah" class="form-control">
+            <option value="">-- Pilih Kelas Kuliah Diampu --</option>
+          </select>
+        </div>
+        <div class="form-group flex-1">
+          <label for="select-mode-pembentukan" class="form-label required">Metode Pembentukan Kelompok</label>
+          <select id="select-mode-pembentukan" class="form-control">
+    <!-- Group Management & Member Assignment -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Daftar Kelompok & Alokasi Mahasiswa</h2>
+          <p class="card-subtitle">Daftar kelompok terdaftar dan status kelengkapan anggota mahasiswa.</p>
+        </div>
+        <div class="d-flex align-center gap-2">
+          <input 
+            type="text" 
+            id="filter-kelompok-input" 
+            class="form-control" 
+            placeholder="Cari kelompok / nama anggota..."
+          >
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table" id="table-kelompok">
+          <thead>
+            <tr>
+              <th scope="col">No</th>
+              <th scope="col">Nama / Kode Kelompok</th>
+              <th scope="col">Judul Tugas Besar</th>
+              <th scope="col">Jumlah Anggota</th>
+              <th scope="col">Daftar Anggota</th>
+              <th scope="col">Status Penjadwalan</th>
+              <th scope="col" class="text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-kelompok">
+            <tr>
+              <td colspan="7" class="text-center text-muted">Silakan pilih kelas kuliah terlebih dahulu.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Create Group Modal Dialog -->
+  <div id="modal-create-group" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-group-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-group-title" class="modal-title">Buat Kelompok Baru</h3>
+        <button type="button" id="btn-close-group-modal" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+      </div>
+      <form id="form-create-group">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="input-group-name" class="form-label required">Nama / Nomor Kelompok</label>
+            <input type="text" id="input-group-name" name="namaKelompok" class="form-control" placeholder="Contoh: Kelompok 01" required>
+          </div>
+          <div class="form-group">
+            <label for="input-group-title" class="form-label required">Judul Proyek / Tugas Besar</label>
+            <input type="text" id="input-group-title" name="judulProyek" class="form-control" placeholder="Contoh: Rancang Bangun IoT Agrikultur" required>
+          </div>
+          <div class="form-group">
+            <label for="select-assign-members" class="form-label">Tambahkan Anggota Mahasiswa (NPM)</label>
+            <select id="select-assign-members" name="anggotaNpmList" class="form-control select-multiline" multiple>
+              <!-- Dynamic options -->
+            </select>
+            <p class="form-helper">Tahan tombol Ctrl (Windows) untuk memilih lebih dari 1 mahasiswa.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-group-modal" class="btn btn-secondary">Batal</button>
+          <button type="submit" id="btn-save-group" class="btn btn-primary">Simpan Kelompok</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>
+
+            <option value="MAHASISWA_MANDIRI">Mahasiswa Mandiri (Self-Selection)</option>
+            <option value="DOSEN_TETAPKAN">Dosen Menetapkan Anggota</option>
+          </select>
+        </div>
+      </div>
+    </section>

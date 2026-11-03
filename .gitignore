@@ -1,0 +1,9 @@
+# Dokumen PRD
+product_requirements_document_final_project_presentation_scheduling_system.md
+PRD*.md
+
+# Folder build & konfigurasi editor
+target/
+.idea/
+*.iml
+.vscode/

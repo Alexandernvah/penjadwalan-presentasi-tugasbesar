@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Mahasiswa & Jadwal Presentasi - Tubes Scheduler">
+  <title>Dashboard Mahasiswa - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/mahasiswa.css">
+</head>
+<body>
+  <!-- Student Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="dashboard.html" class="navbar-brand">
+        <span>Tubes Scheduler</span>
+        <span class="navbar-brand-badge">Mahasiswa</span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="navbar-nav">
+          <li><a href="dashboard.html" class="nav-link active">Dashboard & Status</a></li>
+          <li><a href="input-jadwal.html" class="nav-link">Input Jadwal Kuliah</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-profile-menu">
+        <div class="user-info">
+          <span id="current-user-name" class="user-name">Mahasiswa</span>
+          <span id="current-user-role" class="user-role-label">NPM: 1301210001</span>
+        </div>
+        <button type="button" id="btn-mahasiswa-logout" class="btn btn-secondary btn-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container flex-1 mt-4 mb-4">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard Mahasiswa</h1>
+        <p class="page-subtitle">Informasi jadwal presentasi final tugas besar dan status kelompok Anda.</p>
+      </div>
+    </div>
+
+    <!-- Alert / Toast Container -->
+    <div id="student-alert-container" class="alert alert-info hidden" role="alert">
+      <span class="alert-icon" aria-hidden="true">ℹ️</span>
+      <div class="flex-1" id="student-alert-message"></div>
+      <button type="button" class="alert-close" id="btn-close-student-alert" aria-label="Tutup">&times;</button>
+    </div>
+
+    <!-- Presentation Highlight Card -->
+    <section id="presentation-schedule-card" class="presentation-hero-card">
+      <div class="hero-status-pill">
+        <span aria-hidden="true">🎯</span>
+        <span id="hero-status-text">Jadwal Presentasi Ditetapkan</span>
+      </div>
+      <h2 id="hero-course-name" class="hero-course-title">Rekayasa Perangkat Lunak (IF-43-01)</h2>
+      <p id="hero-project-title" class="mb-4">Judul: Sistem Penjadwalan Presentasi Tugas Besar Terotomasi</p>
+
+      <div class="hero-meta-grid">
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Tanggal Pelaksanaan</span>
+          <span id="hero-presentation-date" class="hero-meta-value">Senin, 10 Nov 2026</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Waktu Presentasi</span>
+          <span id="hero-presentation-time" class="hero-meta-value">09:00 - 10:00 WIB</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Ruangan / Tempat</span>
+          <span id="hero-presentation-room" class="hero-meta-value">Lab Komputer (B.201)</span>
+    <div class="form-row">
+      <!-- Group Status Card -->
+      <section class="card flex-1">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Status Kelompok</h2>
+            <p class="card-subtitle">Identitas dan kelompok tugas besar yang terdaftar.</p>
+          </div>
+          <span id="badge-kelompok-status" class="badge badge-success">Terverifikasi</span>
+        </div>
+        <div class="form-group">
+          <span class="text-muted text-sm-sub">Nama Kelompok:</span>
+          <p id="group-name-display" class="font-bold text-lg-title">Kelompok 01</p>
+        </div>
+        <div class="form-group">
+          <span class="text-muted text-sm-sub">Deskripsi / Tema Proyek:</span>
+          <p id="group-desc-display">Perancangan sistem otomasi berbasis web dan algoritma deteksi tabrakan.</p>
+        </div>
+      </section>
+
+      <!-- Registered Group Members Card -->
+      <section class="card flex-1">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Anggota Kelompok Terdaftar</h2>
+            <p class="card-subtitle">Rekan satu kelompok Anda pada mata kuliah ini.</p>
+          </div>
+        </div>
+
+        <div id="group-members-container" class="member-list">
+          <div class="member-item">
+            <div class="member-info">
+              <div class="member-avatar">B</div>
+              <div>
+                <div class="member-name">Budi Santoso</div>
+                <div class="member-npm">NPM: 1301210001 (Anda)</div>
+              </div>
+            </div>
+            <span class="badge badge-info">Ketua</span>
+          </div>
+
+          <div class="member-item">
+            <div class="member-info">
+              <div class="member-avatar">S</div>
+              <div>
+                <div class="member-name">Siti Aminah</div>
+                <div class="member-npm">NPM: 1301210002</div>
+              </div>
+            </div>
+            <span class="badge badge-neutral">Anggota</span>
+          </div>
+
+          <div class="member-item">
+            <div class="member-info">
+              <div class="member-avatar">A</div>
+              <div>
+                <div class="member-name">Andi Wijaya</div>
+                <div class="member-npm">NPM: 1301210003</div>
+              </div>
+            </div>
+            <span class="badge badge-neutral">Anggota</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>
+
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">Dosen Penguji</span>
+          <span id="hero-presentation-lecturer" class="hero-meta-value">Dr. Dosen Pengampu</span>
+        </div>
+      </div>
+    </section>

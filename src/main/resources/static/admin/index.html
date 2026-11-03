@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dedicated Admin Login Portal - Penjadwalan Tugas Besar UNPAR">
+  <title>Admin Login - Penjadwalan Tugas Besar UNPAR</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <!-- Top-Left Institutional Branding -->
+    <div class="brand-header-top">
+      <div class="brand-logos">
+        <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="brand-img">
+        <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="brand-img">
+      </div>
+    </div>
+
+    <!-- Two-Tone Auth Card -->
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1 class="auth-card-title">Penjadwalan Tugas Besar</h1>
+        <p class="auth-card-subtitle">Universitas Katolik Parahyangan</p>
+        <div class="auth-role-badge">Portal Admin Informatika</div>
+      </div>
+
+      <div class="auth-card-body">
+        <!-- Alert Placeholder for Auth Errors -->
+        <div id="login-alert-container" class="hidden"></div>
+
+        <form id="admin-login-form" novalidate>
+          <div class="form-group">
+            <label for="admin-email" class="form-label">Email</label>
+            <div class="input-group">
+              <span class="input-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                </svg>
+              </span>
+              <input 
+                type="email" 
+                id="admin-email" 
+                name="email" 
+                class="form-control" 
+                placeholder="Masukkan Email" 
+                required 
+                autocomplete="email"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="admin-password" class="form-label">Password</label>
+            <div class="input-group">
+              <span class="input-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+              </span>
+              <input 
+                type="password" 
+                id="admin-password" 
+                name="password" 
+                class="form-control" 
+                placeholder="Masukkan Password" 
+                required 
+                autocomplete="current-password"
+              >
+            </div>
+          </div>
+
+          <button type="submit" id="btn-admin-login" class="btn-auth-submit">
+            Masuk
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>Bukan Administrator? Masuk melalui:</p>
+          <p class="mt-1">
+            <a href="../dosen/index.html">Portal Dosen</a> &bull; 
+            <a href="../mahasiswa/index.html">Portal Mahasiswa</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>

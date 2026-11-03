@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Master Data & Manajemen Akun Admin - Tubes Scheduler">
+  <title>Dashboard Admin - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <!-- Admin Navigation Bar -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="dashboard.html" class="navbar-brand">
+        <span>Tubes Scheduler</span>
+        <span class="navbar-brand-badge">Admin</span>
+      </a>
+
+      <nav aria-label="Main Navigation">
+        <ul class="navbar-nav">
+          <li><a href="dashboard.html" class="nav-link active">Dashboard & Master Data</a></li>
+        </ul>
+      </nav>
+
+      <div class="user-profile-menu">
+        <div class="user-info">
+          <span id="current-user-name" class="user-name">Administrator</span>
+          <span id="current-user-role" class="user-role-label">Super Admin</span>
+        </div>
+        <button type="button" id="btn-admin-logout" class="btn btn-secondary btn-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container flex-1 mt-4 mb-4">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Master Data & Manajemen Akun</h1>
+        <p class="page-subtitle">Kelola impor jadwal akademik terpusat dan pantau akun pengguna aktif.</p>
+      </div>
+      <div class="page-actions">
+        <a href="#section-upload" class="btn btn-primary btn-sm">
+          <span>+</span> Impor Data Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- System Notification Alert Placeholder -->
+    <div id="admin-notification-alert" class="alert alert-info hidden" role="alert">
+      <span class="alert-icon" aria-hidden="true">ℹ️</span>
+      <div class="flex-1" id="admin-notification-message">
+        Sistem siap mengimpor data jadwal perkuliahan semester ganjil/genap.
+      </div>
+      <button type="button" class="alert-close" id="btn-close-notification" aria-label="Tutup notifikasi">&times;</button>
+    </div>
+
+    <!-- Metrics Overview -->
+    <section class="admin-stats-grid" aria-label="Statistik Sistem">
+      <article class="stat-card">
+        <div class="stat-icon-wrapper stat-icon-blue">👨‍🏫</div>
+        <div>
+          <div id="stat-total-dosen" class="stat-value">0</div>
+          <div class="stat-label">Total Dosen</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon-wrapper stat-icon-emerald">🎓</div>
+        <div>
+          <div id="stat-total-mahasiswa" class="stat-value">0</div>
+          <div class="stat-label">Total Mahasiswa</div>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-icon-wrapper stat-icon-amber">📚</div>
+        <div>
+          <div id="stat-total-kelas" class="stat-value">0</div>
+          <div class="stat-label">Kelas Kuliah</div>
+        </div>
+      </article>
+    <!-- Master Data Upload Section -->
+    <section id="section-upload" class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Unggah Berkas Master Data (.xlsx)</h2>
+          <p class="card-subtitle">
+            Format multi-sheet: Dosen, Mahasiswa, Kelas Kuliah, Jadwal Ujian, Ruangan.
+          </p>
+        </div>
+        <a href="#" id="link-download-template" class="btn btn-secondary btn-sm">Unduh Template Excel</a>
+      </div>
+
+      <form id="excel-upload-form" enctype="multipart/form-data">
+        <div class="dropzone-container" id="excel-dropzone">
+          <input 
+            type="file" 
+            id="excel-file-input" 
+            name="file" 
+            class="dropzone-file-input" 
+            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            required
+          >
+          <div class="dropzone-icon" aria-hidden="true">📥</div>
+          <p class="dropzone-title">Seret & letakkan berkas Excel master (.xlsx) ke sini</p>
+          <p class="dropzone-hint">atau klik area ini untuk memilih berkas dari komputer (Maks. 25MB)</p>
+        </div>
+
+        <!-- Selected File Preview -->
+        <div id="file-preview-card" class="selected-file-preview hidden">
+          <div class="file-info">
+            <span aria-hidden="true">📄</span>
+            <div>
+              <div id="file-preview-name" class="file-name">-</div>
+              <div id="file-preview-size" class="file-size">-</div>
+            </div>
+          </div>
+          <button type="button" id="btn-remove-file" class="btn btn-secondary btn-sm">Hapus Berkas</button>
+        </div>
+
+        <div class="card-footer">
+          <button type="submit" id="btn-submit-upload" class="btn btn-primary" disabled>
+            Proses & Simpan Master Data
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- User Account Status Management Table -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Daftar Akun Pengguna</h2>
+          <p class="card-subtitle">Status aktivasi dan hak akses kredensial pengguna terdaftar.</p>
+        </div>
+      </div>
+
+      <!-- Table Toolbar -->
+      <div class="table-toolbar">
+        <div class="search-input-group">
+          <span class="search-icon-placeholder" aria-hidden="true">🔍</span>
+          <input 
+            type="text" 
+            id="user-search-input" 
+            class="form-control" 
+            placeholder="Cari nama, NIDN/NPM, email..."
+          >
+        </div>
+
+        <div class="d-flex align-center gap-2">
+          <label for="filter-role-select" class="form-label mb-2">Peran:</label>
+          <select id="filter-role-select" class="form-control">
+            <option value="ALL">Semua Peran</option>
+            <option value="ROLE_DOSEN">Dosen</option>
+            <option value="ROLE_MAHASISWA">Mahasiswa</option>
+            <option value="ROLE_ADMIN">Admin</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- User Accounts Table -->
+      <div class="table-responsive">
+        <table class="table" id="table-user-accounts">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Identitas (NIDN/NPM)</th>
+              <th scope="col">Nama Lengkap</th>
+              <th scope="col">Email</th>
+              <th scope="col">Peran</th>
+              <th scope="col">Status Akun</th>
+              <th scope="col" class="text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-user-accounts">
+            <tr>
+              <td colspan="7" class="text-center text-muted">Memuat data pengguna...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+</body>
+</html>
+
+
+      <article class="stat-card">
+        <div class="stat-icon-wrapper stat-icon-purple">🏢</div>
+        <div>
+          <div id="stat-total-ruangan" class="stat-value">0</div>
+          <div class="stat-label">Ruangan Terdaftar</div>
+        </div>
+      </article>
+    </section>
