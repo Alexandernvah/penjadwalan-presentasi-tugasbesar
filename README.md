@@ -14,7 +14,7 @@
 
 **Sistem Penjadwalan Tugas Besar Presentasi** adalah platform web enterprise yang dirancang khusus untuk memfasilitasi, mengotomatisasi, dan mengoptimalkan proses penjadwalan evaluasi presentasi tugas besar pada program studi **Teknik Informatika UNPAR**. 
 
-Sistem ini menyelesaikan tantangan kompleks seperti penentuan jadwal bebas bersama lintas anggota kelompok, matriks bentrok waktu kuliah/dosen, serta alokasi ruangan dan dosen penguji/pembimbing secara transparan dan akurat.
+Sistem ini menyelesaikan tantangan kompleks seperti penentuan jadwal bebas bersama lintas anggota kelompok, matriks bentrok waktu kuliah/dosen, serta alokasi ruangan dan dosen secara transparan dan akurat.
 
 ---
 
@@ -27,7 +27,7 @@ Sistem ini menyelesaikan tantangan kompleks seperti penentuan jadwal bebas bersa
 - **Audit Logging & Activity Tracking**: Monitoring riwayat perubahan jadwal dan aktivitas sistem secara terpusat.
 
 ### 2. 👨‍🏫 Portal Dosen Pengampu & Penguji
-- **Conflict Matrix & Availability Grid**: Visualisasi ketersediaan waktu mengajar, jadwal bimbingan, dan jam berhalangan secara interaktif.
+- **Conflict Matrix & Availability Grid**: Visualisasi ketersediaan waktu mengajar dan jam berhalangan secara interaktif.
 - **Automated Schedule Generator**: Algoritma alokasi jadwal presentasi kelompok bebas bentrok.
 - **Manual Slot Override**: Fleksibilitas untuk memindahkan atau menukar slot waktu (*reschedule*) jika terdapat kendala operasional mendadak.
 - **Kelola Kelompok & Topik**: Monitoring anggota kelompok, topik tugas besar, dan status kesiapan presentasi.
@@ -93,20 +93,7 @@ rpl/
 - **Apache Maven**: Versi 3.9+ (`mvn -version`).
 - **PostgreSQL Database Server**: Versi 15+ (`psql --version`).
 
-### 2. Konfigurasi Basis Data PostgreSQL
-Buat database baru melalui terminal PostgreSQL atau pgAdmin:
-```sql
-CREATE DATABASE tubes_scheduler;
-```
-
-Konfigurasi koneksi database telah disiapkan pada `src/main/resources/application.yml`. Anda dapat menggunakan environment variable atau menyesuaikan file konfigurasi:
-- `DB_HOST`: Host basis data (default: `localhost`)
-- `DB_PORT`: Port PostgreSQL (default: `5432`)
-- `DB_NAME`: Nama basis data (default: `tubes_scheduler`)
-- `DB_USER`: Username basis data (default: `postgres`)
-- `DB_PASSWORD`: Password basis data (default: `postgres`)
-
-### 3. Menjalankan Aplikasi via Maven
+### 2. Menjalankan Aplikasi via Maven
 ```bash
 # Bersihkan dan compile proyek
 mvn clean install -DskipTests
@@ -119,8 +106,3 @@ Aplikasi dapat diakses melalui browser pada port default `8080`:
 ```text
 http://localhost:8080/
 ```
-
-### 4. Rute Halaman Antarmuka (Static Frontend)
-- **Portal Mahasiswa**: `http://localhost:8080/mahasiswa/index.html`
-- **Portal Dosen**: `http://localhost:8080/dosen/index.html`
-- **Portal Administrator**: `http://localhost:8080/admin/index.html`
