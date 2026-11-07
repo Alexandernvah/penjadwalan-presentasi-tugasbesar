@@ -16,7 +16,7 @@ spring:
   # PostgreSQL Datasource Configuration
   # ----------------------------------------------------------------------------
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:tubes_scheduler}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:db_penjadwalan}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -33,8 +33,8 @@ spring:
   # ----------------------------------------------------------------------------
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: validate
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -64,6 +64,6 @@ app:
 logging:
   level:
     root: INFO
-    id.ac.unpar.informatika: DEBUG
+    com.unpar.scheduler: DEBUG
     org.springframework.security: INFO
-    org.hibernate.SQL: WARN
+    org.hibernate.SQL: DEBUG
