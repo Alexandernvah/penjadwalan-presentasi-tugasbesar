@@ -1,0 +1,15 @@
+package com.unpar.scheduler.repository;
+
+import com.unpar.scheduler.model.entity.Kelas;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public interface KelasRepository extends JpaRepository<Kelas, Integer> {
+
+    @Query("SELECT DISTINCT k FROM Kelas k JOIN k.mataKuliahBuka mkb JOIN Kuliah kul ON kul.kelas.idKelas = k.idKelas WHERE kul.dosenPengajar.nomorIndukDosen = :nidn AND mkb.semesterAkademik = :semester")
+    List<Kelas> findClassesByLecturerAndSemester(@Param("nidn") String nidn, @Param("semester") String semester);
+}
