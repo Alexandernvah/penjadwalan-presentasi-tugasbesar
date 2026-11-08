@@ -267,7 +267,7 @@
 
 /* Sidebar Navigation */
 .dosen-sidebar {
-  width: 260px;
+  width: 270px;
   background-color: #0b2545;
   color: #ffffff;
   display: flex;
@@ -285,40 +285,27 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.dosen-brand-logos {
+.dosen-brand-badge {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.85rem;
+  gap: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
 }
 
 .dosen-brand-logo-img {
-  height: 38px;
+  height: 40px;
   width: auto;
   object-fit: contain;
-  background-color: #ffffff;
-  border-radius: var(--radius-sm);
-  padding: 3px 6px;
-}
-
-.dosen-brand-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #ffffff;
-  line-height: 1.2;
-}
-
-.dosen-brand-sub {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  margin-top: 0.15rem;
 }
 
 /* Navigation List */
 .dosen-nav-list {
   list-style: none;
-  padding: 1rem 0.75rem;
+  padding: 1.25rem 0.85rem;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -334,25 +321,28 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: var(--radius-md);
-  color: #cbd5e1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #94a3b8;
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease-in-out;
 }
 
 .dosen-nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.1);
   color: #ffffff;
 }
 
+.dosen-nav-link:hover .dosen-nav-icon svg {
+  stroke: #ffffff;
+}
+
 .dosen-nav-link.active {
-  background-color: #1e3a8a;
+  background-color: #1d4ed8;
   color: #ffffff;
   font-weight: 600;
-  box-shadow: inset 3px 0 0 #38bdf8;
 }
 
 .dosen-nav-icon {
@@ -365,9 +355,8 @@
 }
 
 .dosen-nav-icon svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
+  width: 19px;
+  height: 19px;
 }
 
 .dosen-sidebar-footer {
@@ -384,26 +373,25 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background-color: #f8fafc;
 }
 
 /* Top Bar */
 .dosen-topbar {
   height: 4rem;
-  background-color: var(--bg-surface);
-  border-bottom: 1px solid var(--border-color);
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
   padding: 0 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   position: sticky;
   top: 0;
   z-index: 30;
 }
 
-.dosen-topbar-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-muted);
+.dosen-topbar-spacer {
+  flex: 1;
 }
 
 .dosen-profile-menu {
@@ -414,26 +402,33 @@
 .dosen-profile-btn {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  background-color: var(--bg-muted);
-  border: 1px solid var(--border-color);
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius-full);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-main);
+  gap: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .dosen-profile-btn:hover {
-  background-color: var(--border-color);
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
 }
 
-.dosen-profile-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
+.dosen-profile-icon {
+  width: 16px;
+  height: 16px;
+  color: #64748b;
+}
+
+.dosen-dropdown-arrow {
+  width: 12px;
+  height: 12px;
+  color: #94a3b8;
 }
 
 .dosen-dropdown-menu {
@@ -441,10 +436,10 @@
   right: 0;
   top: calc(100% + 0.5rem);
   width: 220px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   display: none;
   flex-direction: column;
   padding: 0.5rem 0;
@@ -457,17 +452,17 @@
 
 .dosen-dropdown-header {
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #e2e8f0;
   font-size: 0.8rem;
 }
 
 .dosen-dropdown-name {
   font-weight: 700;
-  color: var(--text-main);
+  color: #0f172a;
 }
 
 .dosen-dropdown-email {
-  color: var(--text-muted);
+  color: #64748b;
   font-size: 0.75rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -476,12 +471,12 @@
 
 .dosen-dropdown-item {
   padding: 0.6rem 1rem;
-  color: var(--text-main);
+  color: #0f172a;
   font-size: 0.85rem;
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   cursor: pointer;
   background: none;
   border: none;
@@ -490,236 +485,207 @@
 }
 
 .dosen-dropdown-item:hover {
-  background-color: var(--bg-muted);
+  background-color: #f8fafc;
 }
 
 .dosen-dropdown-item.text-danger {
-  color: var(--danger);
+  color: #dc2626;
 }
 
+.dosen-menu-svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
 
 /* Page Content Body */
 .dosen-content {
-  padding: 2rem;
+  padding: 2rem 2.5rem;
   flex: 1;
 }
 
-/* Welcome Banner */
-.dosen-welcome-banner {
-  background: linear-gradient(135deg, #0b2545 0%, #133c6d 100%);
-  color: #ffffff;
-  border-radius: var(--radius-lg);
-  padding: 2rem 2.25rem;
+/* Welcome Section */
+.dosen-welcome-section {
   margin-bottom: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--shadow-md);
 }
 
 .dosen-welcome-title {
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: 0.35rem;
-  color: #ffffff;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
 }
 
 .dosen-welcome-subtitle {
-  font-size: 1rem;
-  color: #cbd5e1;
+  font-size: 0.95rem;
+  color: #64748b;
   font-weight: 400;
+  margin-top: 4px;
+  margin-bottom: 0;
 }
 
-.dosen-semester-pill {
-  background-color: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  padding: 0.5rem 1.15rem;
-  border-radius: var(--radius-full);
-  font-size: 0.825rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #ffffff;
-}
-
-/* Stats Metric Cards */
-.dosen-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2rem;
-}
-
-.dosen-stat-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.dosen-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.dosen-stat-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.4rem;
-  flex-shrink: 0;
-}
-
-.dosen-stat-value {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.dosen-stat-label {
-  font-size: 0.825rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* Quick Action Shortcuts */
+/* Quick Action Cards (3-Column Grid) */
 .dosen-actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2rem;
 }
 
 .dosen-action-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   text-decoration: none;
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-base);
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .dosen-action-card:hover {
-  border-color: #3b82f6;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
 }
 
 .dosen-action-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--radius-md);
-  background-color: #eff6ff;
-  color: #2563eb;
-  display: flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.3rem;
   margin-bottom: 1rem;
+}
+
+.dosen-action-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dosen-action-icon.action-blue {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.dosen-action-icon.action-green {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.dosen-action-icon.action-amber {
+  background-color: #fefce8;
+  color: #d97706;
 }
 
 .dosen-action-title {
   font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 0.35rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.3;
 }
 
 .dosen-action-desc {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-  margin-bottom: 1rem;
-}
-
-.dosen-action-link-text {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #2563eb;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-/* Teaching Courses Section Table */
-.dosen-table-wrapper {
-  overflow-x: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-.dosen-courses-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
   font-size: 0.875rem;
-  background-color: var(--bg-surface);
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
 }
 
-.dosen-courses-table th {
-  background-color: var(--bg-muted);
-  color: var(--text-main);
-  font-weight: 600;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  white-space: nowrap;
+/* Assigned Courses Card ("Mata Kuliah Yang Diajar") */
+.dosen-courses-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
-.dosen-courses-table td {
-  padding: 0.9rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-main);
-  vertical-align: middle;
-}
-
-.dosen-courses-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.dosen-courses-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-.course-code-badge {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-weight: 700;
-  font-size: 0.825rem;
-  color: #1e3a8a;
-  background-color: #dbeafe;
-  padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-sm);
-  display: inline-block;
-}
-
-.course-class-badge {
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: #0f766e;
-  background-color: #ccfbf1;
-  padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-sm);
-  display: inline-block;
-}
-
-.course-time-chip {
-  display: inline-flex;
+.dosen-courses-card-header {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.825rem;
-  color: var(--text-muted);
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+.dosen-section-icon {
+  width: 20px;
+  height: 20px;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.dosen-courses-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Dynamic List Container */
+.dosen-course-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dosen-course-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #f1f5f9;
+  gap: 1rem;
+}
+
+.dosen-course-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dosen-course-code {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 0.9375rem;
+}
+
+.dosen-course-separator {
+  color: #94a3b8;
+}
+
+.dosen-course-name {
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.9375rem;
+}
+
+.dosen-class-pill {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dosen-course-empty {
+  padding: 2rem 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  border-top: 1px solid #f1f5f9;
 }
 
 /* Responsive adjustments */
@@ -736,10 +702,11 @@
     flex-direction: row;
     overflow-x: auto;
   }
-  .dosen-welcome-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+  .dosen-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  .dosen-content {
+    padding: 1.5rem;
   }
 }
 
