@@ -9,4 +9,5 @@ import java.util.List;
 public interface AnggotaKelompokRepository extends JpaRepository<AnggotaKelompok, Integer> {
     List<AnggotaKelompok> findByKelompok_IdKelompok(Integer idKelompok);
     List<AnggotaKelompok> findByKelas_IdKelas(Integer idKelas);
+    void deleteByKelompok_IdKelompok(Integer idKelompok);
 }

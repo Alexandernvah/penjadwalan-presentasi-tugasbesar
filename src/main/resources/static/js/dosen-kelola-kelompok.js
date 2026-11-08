@@ -33,13 +33,36 @@
   // DOM Elements
   const selectKelas = document.getElementById('select-kelas');
   const containerKelompok = document.getElementById('container-kelompok');
+
+  // Modal Tambah (Batch) Elements
   const modalTambahKelompok = document.getElementById('modal-tambah-kelompok');
   const btnOpenModal = document.getElementById('btn-open-modal-tambah');
   const btnCloseModal = document.getElementById('btn-close-modal-tambah');
   const btnCancelModal = document.getElementById('btn-cancel-modal-tambah');
   const formTambahKelompok = document.getElementById('form-tambah-kelompok');
 
-  // Modal Control
+  // Modal Edit Elements
+  const modalEditKelompok = document.getElementById('modal-edit-kelompok');
+  const btnCloseModalEdit = document.getElementById('btn-close-modal-edit');
+  const btnCancelModalEdit = document.getElementById('btn-cancel-modal-edit');
+  const formEditKelompok = document.getElementById('form-edit-kelompok');
+  const modalEditTitle = document.getElementById('modal-edit-title');
+  const editIdKelompokInput = document.getElementById('edit-id-kelompok');
+  const editTopikInput = document.getElementById('edit-topik');
+  const editKapasitasInput = document.getElementById('edit-kapasitas');
+  const editDurasiInput = document.getElementById('edit-durasi');
+
+  // Modal Konfirmasi Hapus Elements
+  const modalKonfirmasiHapus = document.getElementById('modal-konfirmasi-hapus');
+  const deleteGroupNameEl = document.getElementById('delete-group-name');
+  const btnCancelDelete = document.getElementById('btn-cancel-delete');
+  const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+  let groupToDelete = null;
+
+  // Current kelompok cache for fallback / local state updates
+  let currentKelompokList = [];
+
+  // Modal Control - Tambah
   function openModal() {
     if (modalTambahKelompok) {
       modalTambahKelompok.classList.add('active');
@@ -53,9 +76,62 @@
     }
   }
 
+  // Modal Control - Edit
+  function openEditModal(group) {
+    if (!modalEditKelompok) return;
+    if (modalEditTitle) {
+      modalEditTitle.textContent = `Edit Kelompok ${group.nomorKelompok || ''}`;
+    }
+    if (editIdKelompokInput) editIdKelompokInput.value = group.idKelompok;
+    if (editTopikInput) editTopikInput.value = group.topik || '';
+    if (editKapasitasInput) editKapasitasInput.value = group.batasKapasitas || 4;
+    if (editDurasiInput) editDurasiInput.value = group.durasiMenit || 30;
+
+    modalEditKelompok.classList.add('active');
+  }
+
+  function closeEditModal() {
+    if (modalEditKelompok) {
+      modalEditKelompok.classList.remove('active');
+      if (formEditKelompok) formEditKelompok.reset();
+    }
+  }
+
+  // Modal Control - Konfirmasi Hapus
+  function openDeleteModal(idKelompok, nomorKelompok) {
+    if (!modalKonfirmasiHapus) return;
+    groupToDelete = { id: idKelompok, nomor: nomorKelompok };
+    if (deleteGroupNameEl) {
+      deleteGroupNameEl.textContent = `Kelompok ${nomorKelompok}`;
+    }
+    modalKonfirmasiHapus.classList.remove('hidden');
+    modalKonfirmasiHapus.classList.add('active');
+  }
+
+  function closeDeleteModal() {
+    if (!modalKonfirmasiHapus) return;
+    modalKonfirmasiHapus.classList.remove('active');
+    modalKonfirmasiHapus.classList.add('hidden');
+    groupToDelete = null;
+  }
+
   if (btnOpenModal) btnOpenModal.addEventListener('click', openModal);
   if (btnCloseModal) btnCloseModal.addEventListener('click', closeModal);
   if (btnCancelModal) btnCancelModal.addEventListener('click', closeModal);
+
+  if (btnCloseModalEdit) btnCloseModalEdit.addEventListener('click', closeEditModal);
+  if (btnCancelModalEdit) btnCancelModalEdit.addEventListener('click', closeEditModal);
+
+  if (btnCancelDelete) btnCancelDelete.addEventListener('click', closeDeleteModal);
+
+  if (btnConfirmDelete) {
+    btnConfirmDelete.addEventListener('click', async function () {
+      if (!groupToDelete || !groupToDelete.id) return;
+      const targetId = groupToDelete.id;
+      closeDeleteModal();
+      await executeDeleteKelompok(targetId);
+    });
+  }
 
   if (modalTambahKelompok) {
     modalTambahKelompok.addEventListener('click', function (e) {
@@ -64,6 +140,47 @@
       }
     });
   }
+
+  if (modalEditKelompok) {
+    modalEditKelompok.addEventListener('click', function (e) {
+      if (e.target === modalEditKelompok) {
+        closeEditModal();
+      }
+    });
+  }
+
+  if (modalKonfirmasiHapus) {
+    modalKonfirmasiHapus.addEventListener('click', function (e) {
+      if (e.target === modalKonfirmasiHapus) {
+        closeDeleteModal();
+      }
+    });
+  }
+
+  // Global Outside Click and Escape Key Handling for Dropdowns & Modals
+  function closeAllCardDropdowns() {
+    document.querySelectorAll('.card-action-menu').forEach(function (menu) {
+      menu.classList.add('hidden');
+    });
+    document.querySelectorAll('.dosen-card-action-btn').forEach(function (btn) {
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.dosen-kelompok-card-header')) {
+      closeAllCardDropdowns();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeAllCardDropdowns();
+      closeModal();
+      closeEditModal();
+      closeDeleteModal();
+    }
+  });
 
   // Load Classes into Filter
   async function loadClasses() {
@@ -145,10 +262,13 @@
       }
 
       const list = await response.json();
-      renderKelompokCards(list);
+      currentKelompokList = Array.isArray(list) ? list : [];
+      renderKelompokCards(currentKelompokList);
     } catch (err) {
       console.error('Error fetching kelompok:', err);
-      renderKelompokCards(getFallbackKelompok());
+      // ONLY use local mock data if offline or network connection failure
+      currentKelompokList = getFallbackKelompok();
+      renderKelompokCards(currentKelompokList);
     }
   }
 
@@ -175,6 +295,7 @@
     groups.forEach(function (group) {
       const card = document.createElement('article');
       card.className = 'dosen-kelompok-card';
+      card.setAttribute('data-id', group.idKelompok);
 
       const nomor = group.nomorKelompok || 1;
       const topik = group.topik || 'Belum Ditentukan';
@@ -228,13 +349,31 @@
       card.innerHTML = `
         <div class="dosen-kelompok-card-header">
           <h3 class="dosen-kelompok-card-title">Kelompok ${nomor}</h3>
-          <button type="button" class="dosen-card-action-btn" aria-label="Menu Opsi Kelompok ${nomor}">
+          <button type="button" class="dosen-card-action-btn btn-card-menu" aria-label="Menu Opsi Kelompok ${nomor}" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
               <circle cx="12" cy="12" r="1"></circle>
               <circle cx="12" cy="5" r="1"></circle>
               <circle cx="12" cy="19" r="1"></circle>
             </svg>
           </button>
+          <div class="card-action-menu hidden">
+            <button type="button" class="action-menu-item btn-edit-group" data-id="${group.idKelompok}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" aria-hidden="true">
+                <path d="M12 20h9"></path>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+              </svg>
+              <span>Edit Kelompok</span>
+            </button>
+            <button type="button" class="action-menu-item text-danger btn-delete-group" data-id="${group.idKelompok}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+              <span>Hapus Kelompok</span>
+            </button>
+          </div>
         </div>
 
         <hr class="dosen-kelompok-card-divider">
@@ -272,6 +411,41 @@
           ${statusBadgeHtml}
         </div>
       `;
+
+      // Wire Dropdown Toggle on Three Dots
+      const menuBtn = card.querySelector('.btn-card-menu');
+      const actionMenu = card.querySelector('.card-action-menu');
+      if (menuBtn && actionMenu) {
+        menuBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isCurrentlyHidden = actionMenu.classList.contains('hidden');
+          closeAllCardDropdowns();
+          if (isCurrentlyHidden) {
+            actionMenu.classList.remove('hidden');
+            menuBtn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      }
+
+      // Wire Edit Action
+      const editBtn = card.querySelector('.btn-edit-group');
+      if (editBtn) {
+        editBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          closeAllCardDropdowns();
+          openEditModal(group);
+        });
+      }
+
+      // Wire Delete Action
+      const deleteBtn = card.querySelector('.btn-delete-group');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          closeAllCardDropdowns();
+          openDeleteModal(group.idKelompok, nomor);
+        });
+      }
 
       containerKelompok.appendChild(card);
     });
@@ -371,7 +545,102 @@
     }
 
     // Append fallback created groups
+    currentKelompokList = currentKelompokList.concat(newGroups);
     renderKelompokCards(newGroups, true);
+  }
+
+  // Handle Edit Group Form Submission
+  if (formEditKelompok) {
+    formEditKelompok.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const idVal = parseInt(editIdKelompokInput.value, 10);
+      const topikVal = editTopikInput.value.trim();
+      const kapasitasVal = parseInt(editKapasitasInput.value, 10);
+      const durasiVal = parseInt(editDurasiInput.value, 10);
+
+      if (!idVal) {
+        alert('ID kelompok tidak ditemukan.');
+        return;
+      }
+
+      if (!topikVal) {
+        alert('Topik / Judul kelompok tidak boleh kosong.');
+        return;
+      }
+
+      if (isNaN(kapasitasVal) || kapasitasVal <= 0) {
+        alert('Kapasitas kelompok minimal 1 orang.');
+        return;
+      }
+
+      if (isNaN(durasiVal) || durasiVal <= 0) {
+        alert('Durasi presentasi minimal 5 menit.');
+        return;
+      }
+
+      const payload = {
+        topik: topikVal,
+        batasKapasitas: kapasitasVal,
+        durasiMenit: durasiVal
+      };
+
+      const currentClassId = selectKelas ? parseInt(selectKelas.value, 10) : 102;
+
+      try {
+        const response = await fetch(`/api/dosen/kelompok/${idVal}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        closeEditModal();
+        loadKelompokData(currentClassId);
+      } catch (err) {
+        console.warn('API update failed, updating local fallback state:', err);
+        const idx = currentKelompokList.findIndex(k => k.idKelompok === idVal);
+        if (idx !== -1) {
+          currentKelompokList[idx].topik = topikVal;
+          currentKelompokList[idx].batasKapasitas = kapasitasVal;
+          currentKelompokList[idx].durasiMenit = durasiVal;
+          const currAnggota = currentKelompokList[idx].anggota ? currentKelompokList[idx].anggota.length : 0;
+          currentKelompokList[idx].status = currAnggota >= kapasitasVal ? 'Lengkap' : 'Menunggu Mahasiswa';
+        }
+        closeEditModal();
+        renderKelompokCards(currentKelompokList);
+      }
+    });
+  }
+
+  // Handle Delete Group Execution
+  async function executeDeleteKelompok(idKelompok) {
+    if (!idKelompok) return;
+    const currentClassId = selectKelas ? parseInt(selectKelas.value, 10) : 102;
+
+    try {
+      const response = await fetch(`/api/dosen/kelompok/${idKelompok}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok && response.status !== 204) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // Refresh directly from backend so state reflects actual database state without re-indexing
+      await loadKelompokData(currentClassId);
+    } catch (err) {
+      console.warn('API delete request failed or backend running in fallback mode:', err);
+      // Offline fallback: preserve original group numbers, DO NOT re-number
+      currentKelompokList = currentKelompokList.filter(k => String(k.idKelompok) !== String(idKelompok));
+      renderKelompokCards(currentKelompokList);
+    }
   }
 
   // Change Event on Filter Select
