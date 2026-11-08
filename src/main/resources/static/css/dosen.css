@@ -254,3 +254,459 @@
   color: #9f1239;
   margin-bottom: 0.5rem;
 }
+
+/* ==========================================================================
+   Lecturer Dashboard Layout & Components
+   ========================================================================== */
+
+.dosen-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+}
+
+/* Sidebar Navigation */
+.dosen-sidebar {
+  width: 270px;
+  background-color: #0b2545;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 40;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dosen-sidebar-header {
+  padding: 1.5rem 1.25rem 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dosen-brand-badge {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.dosen-brand-logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Navigation List */
+.dosen-nav-list {
+  list-style: none;
+  padding: 1.25rem 0.85rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.dosen-nav-item {
+  width: 100%;
+}
+
+.dosen-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.dosen-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.dosen-nav-link:hover .dosen-nav-icon svg {
+  stroke: #ffffff;
+}
+
+.dosen-nav-link.active {
+  background-color: #1d4ed8;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.dosen-nav-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dosen-nav-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.dosen-sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.725rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Main Area Container */
+.dosen-main-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: #f8fafc;
+}
+
+/* Top Bar */
+.dosen-topbar {
+  height: 4rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.dosen-topbar-spacer {
+  flex: 1;
+}
+
+.dosen-profile-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.dosen-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.dosen-profile-btn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.dosen-profile-icon {
+  width: 16px;
+  height: 16px;
+  color: #64748b;
+}
+
+.dosen-dropdown-arrow {
+  width: 12px;
+  height: 12px;
+  color: #94a3b8;
+}
+
+.dosen-dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  display: none;
+  flex-direction: column;
+  padding: 0.5rem 0;
+  z-index: 50;
+}
+
+.dosen-dropdown-menu.show {
+  display: flex;
+}
+
+.dosen-dropdown-header {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.dosen-dropdown-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dosen-dropdown-email {
+  color: #64748b;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dosen-dropdown-item {
+  padding: 0.6rem 1rem;
+  color: #0f172a;
+  font-size: 0.85rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.dosen-dropdown-item:hover {
+  background-color: #f8fafc;
+}
+
+.dosen-dropdown-item.text-danger {
+  color: #dc2626;
+}
+
+.dosen-menu-svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Page Content Body */
+.dosen-content {
+  padding: 2rem 2.5rem;
+  flex: 1;
+}
+
+/* Welcome Section */
+.dosen-welcome-section {
+  margin-bottom: 2rem;
+}
+
+.dosen-welcome-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.dosen-welcome-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  font-weight: 400;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Quick Action Cards (3-Column Grid) */
+.dosen-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.dosen-action-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dosen-action-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  border-color: #cbd5e1;
+}
+
+.dosen-action-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.dosen-action-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dosen-action-icon.action-blue {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.dosen-action-icon.action-green {
+  background-color: #f0fdf4;
+  color: #16a34a;
+}
+
+.dosen-action-icon.action-amber {
+  background-color: #fefce8;
+  color: #d97706;
+}
+
+.dosen-action-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.3;
+}
+
+.dosen-action-desc {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Assigned Courses Card ("Mata Kuliah Yang Diajar") */
+.dosen-courses-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.dosen-courses-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+.dosen-section-icon {
+  width: 20px;
+  height: 20px;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.dosen-courses-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Dynamic List Container */
+.dosen-course-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dosen-course-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #f1f5f9;
+  gap: 1rem;
+}
+
+.dosen-course-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dosen-course-code {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 0.9375rem;
+}
+
+.dosen-course-separator {
+  color: #94a3b8;
+}
+
+.dosen-course-name {
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.9375rem;
+}
+
+.dosen-class-pill {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dosen-course-empty {
+  padding: 2rem 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .dosen-layout {
+    flex-direction: column;
+  }
+  .dosen-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .dosen-nav-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .dosen-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  .dosen-content {
+    padding: 1.5rem;
+  }
+}
+

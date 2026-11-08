@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard Dosen - Sistem Penjadwalan Presentasi Tugas Besar UNPAR">
+  <title>Dashboard Dosen - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+</head>
+<body>
+  <div class="dosen-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dosen-sidebar" aria-label="Sidebar Navigasi Dosen">
+      <div class="dosen-sidebar-header">
+        <div class="dosen-brand-badge">
+          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img">
+          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img">
+        </div>
+      </div>
+
+      <nav aria-label="Navigasi Utama">
+        <ul class="dosen-nav-list">
+          <li class="dosen-nav-item">
+            <a href="dashboard.html" class="dosen-nav-link active">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="jadwal-pribadi.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span>Jadwal Pribadi</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="kelola-kelompok.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
+              <span>Kelola Kelompok</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="penjadwalan.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <span>Penjadwalan</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="dosen-main-container">
+      <!-- Top Bar -->
+      <header class="dosen-topbar">
+        <div class="dosen-topbar-spacer"></div>
+
+        <div class="dosen-profile-menu">
+          <button type="button" id="btn-lecturer-profile-menu" class="dosen-profile-btn" aria-haspopup="true" aria-expanded="false">
+            <svg class="dosen-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
+            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div id="lecturer-dropdown-panel" class="dosen-dropdown-menu" role="menu">
+            <div class="dosen-dropdown-header">
+              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Dr. Budi Santoso</div>
+              <div id="dropdown-lecturer-email" class="dosen-dropdown-email">budi.santoso@unpar.ac.id</div>
+            </div>
+            <a href="jadwal-pribadi.html" class="dosen-dropdown-item" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Agenda Saya</span>
+            </a>
+            <button type="button" id="btn-lecturer-logout" class="dosen-dropdown-item text-danger" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Keluar</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Main Content -->
+      <main class="dosen-content">
+        <!-- Welcome Header -->
+        <section class="dosen-welcome-section" aria-labelledby="heading-dashboard-dosen">
+          <h1 id="heading-dashboard-dosen" class="dosen-welcome-title">Dashboard Dosen</h1>
+          <p id="welcome-lecturer-subtitle" class="dosen-welcome-subtitle">
+            Selamat datang kembali, <span id="welcome-lecturer-name">Dr. Budi Santoso</span>.
+          </p>
+        </section>
+
+        <!-- Quick Action Cards (3-Column Grid) -->
+        <section class="dosen-actions-grid" aria-label="Akses Cepat Pengelolaan">
+          <a href="kelola-kelompok.html" class="dosen-action-card">
+            <div class="dosen-action-icon action-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h2 class="dosen-action-title">Kelola Kelompok</h2>
+            <p class="dosen-action-desc">Atur kapasitas & durasi presentasi kelompok</p>
+          </a>
+
+          <a href="penjadwalan.html" class="dosen-action-card">
+            <div class="dosen-action-icon action-green" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <polyline points="9 16 11 18 15 14"></polyline>
+              </svg>
+            </div>
+            <h2 class="dosen-action-title">Atur Jadwal</h2>
+            <p class="dosen-action-desc">Tetapkan waktu presentasi akhir</p>
+          </a>
+
+          <a href="jadwal-pribadi.html" class="dosen-action-card">
+            <div class="dosen-action-icon action-amber" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <h2 class="dosen-action-title">Jadwal Pribadi</h2>
+            <p class="dosen-action-desc">Lihat jadwal mengajar & mengawas</p>
+          </a>
+        </section>
+
+        <!-- Assigned Courses Card ("Mata Kuliah Yang Diajar") -->
+        <section class="dosen-courses-card" aria-labelledby="heading-courses-taught">
+          <div class="dosen-courses-card-header">
+            <svg class="dosen-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <h2 id="heading-courses-taught" class="dosen-courses-card-title">Mata Kuliah Yang Diajar (Semester Ganjil 2025/2026)</h2>
+          </div>
+
+          <div id="list-matkul-ajar" class="dosen-course-list">
+            <div class="dosen-course-empty">Memuat daftar mata kuliah...</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/dosen-dashboard.js"></script>
+</body>
+</html>
+
+
