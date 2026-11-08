@@ -1,6 +1,7 @@
 package com.unpar.scheduler.service;
 
 import com.unpar.scheduler.dto.kelompok.AnggotaItemDTO;
+import com.unpar.scheduler.dto.kelompok.BatchCreateKelompokRequestDTO;
 import com.unpar.scheduler.dto.kelompok.CreateKelompokRequestDTO;
 import com.unpar.scheduler.dto.kelompok.KelompokDetailDTO;
 import com.unpar.scheduler.model.entity.AnggotaKelompok;
@@ -101,6 +102,45 @@ public class KelompokService {
             "Menunggu Mahasiswa",
             new ArrayList<>()
         );
+    }
+
+    public List<KelompokDetailDTO> batchCreateKelompok(BatchCreateKelompokRequestDTO request) {
+        if (request == null || request.idKelas() == null) {
+            throw new IllegalArgumentException("Data kelas tidak valid");
+        }
+
+        int jumlah = (request.jumlahKelompok() != null && request.jumlahKelompok() > 0) ? request.jumlahKelompok() : 1;
+        int kapasitas = (request.batasKapasitas() != null && request.batasKapasitas() > 0) ? request.batasKapasitas() : 5;
+        int durasi = (request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30;
+
+        Kelas kelas = kelasRepository.findById(request.idKelas())
+            .orElseThrow(() -> new IllegalArgumentException("Kelas dengan ID " + request.idKelas() + " tidak ditemukan"));
+
+        List<Kelompok> existingKelompok = kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(request.idKelas());
+        int currentMax = existingKelompok.stream()
+            .mapToInt(k -> k.getNoKelompok() != null ? k.getNoKelompok().intValue() : 0)
+            .max()
+            .orElse(0);
+
+        List<Kelompok> newEntities = new ArrayList<>();
+        boolean hasCustomTopik = (request.defaultTopik() != null && !request.defaultTopik().isBlank());
+        String customTopik = hasCustomTopik ? request.defaultTopik().trim() : null;
+
+        for (int i = 1; i <= jumlah; i++) {
+            int nomorBaru = currentMax + i;
+            String topik = hasCustomTopik ? customTopik : ("Kelompok " + nomorBaru);
+
+            Kelompok kelompok = new Kelompok();
+            kelompok.setKelas(kelas);
+            kelompok.setNoKelompok((short) nomorBaru);
+            kelompok.setKapasitas((short) kapasitas);
+            kelompok.setTopik(topik);
+            newEntities.add(kelompok);
+        }
+
+        kelompokRepository.saveAll(newEntities);
+
+        return getKelompokByKelas(request.idKelas());
     }
 
     public List<KelompokDetailDTO> buildFallbackKelompokList() {

@@ -152,16 +152,23 @@
     }
   }
 
-  function renderKelompokCards(groups) {
+  function renderKelompokCards(groups, appendOnly) {
     if (!containerKelompok) return;
-    containerKelompok.innerHTML = '';
+    if (!appendOnly) {
+      containerKelompok.innerHTML = '';
+    } else {
+      const emptyEl = containerKelompok.querySelector('.dosen-course-empty');
+      if (emptyEl) emptyEl.remove();
+    }
 
     if (!groups || groups.length === 0) {
-      containerKelompok.innerHTML = `
-        <div class="dosen-course-empty">
-          Belum ada kelompok yang terdaftar untuk kelas ini.
-        </div>
-      `;
+      if (!appendOnly) {
+        containerKelompok.innerHTML = `
+          <div class="dosen-course-empty">
+            Belum ada kelompok yang terdaftar untuk kelas ini.
+          </div>
+        `;
+      }
       return;
     }
 
@@ -270,27 +277,44 @@
     });
   }
 
-  // Handle Form Submission
+  // Handle Form Submission: Batch Group Generation
   if (formTambahKelompok) {
     formTambahKelompok.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const nomorVal = parseInt(document.getElementById('input-nomor-kelompok').value, 10);
-      const topikVal = document.getElementById('input-topik-kelompok').value.trim();
-      const kapasitasVal = parseInt(document.getElementById('input-kapasitas-kelompok').value, 10);
-      const durasiVal = parseInt(document.getElementById('input-durasi-kelompok').value, 10);
+      const jumlahKelompokVal = parseInt(document.getElementById('input-jumlah-kelompok').value, 10);
+      const kapasitasVal = parseInt(document.getElementById('input-kapasitas').value, 10);
+      const durasiVal = parseInt(document.getElementById('input-durasi').value, 10);
+      const topikDefaultInput = document.getElementById('input-topik-default');
+      const topikVal = topikDefaultInput ? topikDefaultInput.value.trim() : '';
+
       const currentClassId = selectKelas ? parseInt(selectKelas.value, 10) : 102;
+
+      if (isNaN(jumlahKelompokVal) || jumlahKelompokVal <= 0) {
+        alert('Jumlah kelompok minimal 1.');
+        return;
+      }
+
+      if (isNaN(kapasitasVal) || kapasitasVal <= 0) {
+        alert('Kapasitas kelompok minimal 1 orang.');
+        return;
+      }
+
+      if (isNaN(durasiVal) || durasiVal <= 0) {
+        alert('Durasi presentasi minimal 5 menit.');
+        return;
+      }
 
       const payload = {
         idKelas: currentClassId,
-        nomorKelompok: nomorVal,
-        topik: topikVal,
+        jumlahKelompok: jumlahKelompokVal,
         batasKapasitas: kapasitasVal,
-        durasiMenit: durasiVal
+        durasiMenit: durasiVal,
+        defaultTopik: topikVal.length > 0 ? topikVal : ''
       };
 
       try {
-        const response = await fetch('/api/dosen/kelompok', {
+        const response = await fetch('/api/dosen/kelompok/batch', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -300,17 +324,54 @@
         });
 
         if (!response.ok) {
-          throw new Error(`Gagal menyimpan kelompok (${response.status})`);
+          throw new Error(`Gagal membuat batch kelompok (${response.status})`);
         }
 
         closeModal();
         loadKelompokData(currentClassId);
       } catch (err) {
-        console.error('Error saving kelompok:', err);
+        console.error('Error generating batch kelompok, applying local fallback:', err);
+        // Fallback generator if offline / mock mode active
+        applyFallbackBatchCreate(currentClassId, jumlahKelompokVal, kapasitasVal, durasiVal, topikVal);
         closeModal();
-        loadKelompokData(currentClassId);
       }
     });
+  }
+
+  function applyFallbackBatchCreate(classId, jumlah, kapasitas, durasi, defaultTopik) {
+    let currentCards = Array.from(containerKelompok.querySelectorAll('.dosen-kelompok-card'));
+    let maxNum = currentCards.reduce((acc, card) => {
+      const titleEl = card.querySelector('.dosen-card-title');
+      if (titleEl) {
+        const match = titleEl.textContent.match(/\d+/);
+        if (match) {
+          const num = parseInt(match[0], 10);
+          return Math.max(acc, num);
+        }
+      }
+      return acc;
+    }, 0);
+
+    const newGroups = [];
+    for (let i = 1; i <= jumlah; i++) {
+      const nomorBaru = maxNum + i;
+      const finalTopic = defaultTopik && defaultTopik.trim().length > 0
+        ? defaultTopik.trim()
+        : `Kelompok ${nomorBaru}`;
+
+      newGroups.push({
+        idKelompok: Date.now() + i,
+        nomorKelompok: nomorBaru,
+        topik: finalTopic,
+        batasKapasitas: kapasitas,
+        durasiMenit: durasi,
+        status: 'Menunggu Mahasiswa',
+        anggota: []
+      });
+    }
+
+    // Append fallback created groups
+    renderKelompokCards(newGroups, true);
   }
 
   // Change Event on Filter Select

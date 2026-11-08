@@ -1,5 +1,6 @@
 package com.unpar.scheduler.controller;
 
+import com.unpar.scheduler.dto.kelompok.BatchCreateKelompokRequestDTO;
 import com.unpar.scheduler.dto.kelompok.CreateKelompokRequestDTO;
 import com.unpar.scheduler.dto.kelompok.KelompokDetailDTO;
 import com.unpar.scheduler.service.KelompokService;
@@ -39,4 +40,13 @@ public class KelompokController {
         KelompokDetailDTO created = kelompokService.createKelompok(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<KelompokDetailDTO>> batchCreateKelompok(
+        @RequestBody BatchCreateKelompokRequestDTO request
+    ) {
+        List<KelompokDetailDTO> list = kelompokService.batchCreateKelompok(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(list);
+    }
 }
+

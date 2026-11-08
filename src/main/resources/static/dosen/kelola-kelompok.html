@@ -161,40 +161,55 @@
     </div>
   </div>
 
-  <!-- Minimalist Modal Dialog -->
+  <!-- Minimalist Modal Dialog: Batch Group Generator -->
   <div id="modal-tambah-kelompok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-kelompok-title">
     <div class="modal-dialog">
       <div class="modal-header">
         <h3 id="modal-kelompok-title" class="modal-title">Tambah Kelompok Tugas Besar</h3>
-        <button type="button" id="btn-close-modal-tambah" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+        <button type="button" id="btn-close-modal-tambah" class="modal-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
       <form id="form-tambah-kelompok" class="dosen-modal-form">
         <div class="modal-body">
           <div class="dosen-form-group">
-            <label for="input-nomor-kelompok" class="dosen-form-label required">Nomor Kelompok</label>
-            <input type="number" id="input-nomor-kelompok" name="nomorKelompok" class="dosen-form-input" placeholder="Contoh: 1" min="1" required>
-          </div>
-
-          <div class="dosen-form-group">
-            <label for="input-topik-kelompok" class="dosen-form-label required">Topik / Judul Tugas Besar</label>
-            <input type="text" id="input-topik-kelompok" name="topik" class="dosen-form-input" placeholder="Contoh: Sistem Pendeteksi Intrusi Jaringan" required>
+            <label for="input-jumlah-kelompok" class="dosen-form-label">Jumlah Kelompok</label>
+            <input type="number" id="input-jumlah-kelompok" name="jumlahKelompok" class="dosen-form-input" min="1" max="50" placeholder="Contoh: 5 Kelompok" required>
           </div>
 
           <div class="dosen-form-grid-2">
             <div class="dosen-form-group">
-              <label for="input-kapasitas-kelompok" class="dosen-form-label required">Batas Kapasitas (Orang)</label>
-              <input type="number" id="input-kapasitas-kelompok" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 4" min="1" max="10" value="4" required>
+              <label for="input-kapasitas" class="dosen-form-label">Kapasitas per Kelompok</label>
+              <input type="number" id="input-kapasitas" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 5 Orang" min="1" max="20" required>
             </div>
             <div class="dosen-form-group">
-              <label for="input-durasi-kelompok" class="dosen-form-label required">Durasi Presentasi (Menit)</label>
-              <input type="number" id="input-durasi-kelompok" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30" min="5" max="180" step="5" value="30" required>
+              <label for="input-durasi" class="dosen-form-label">Durasi Presentasi</label>
+              <input type="number" id="input-durasi" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30 Menit" min="5" max="180" step="5" required>
+            </div>
+          </div>
+
+          <div class="dosen-form-group">
+            <label for="input-topik-default" class="dosen-form-label">Topik / Judul (Opsional)</label>
+            <input type="text" id="input-topik-default" name="defaultTopik" class="dosen-form-input" placeholder="Contoh: Perancangan Topologi Jaringan">
+            <div class="form-note-box">
+              <span class="note-badge">Note:</span>
+              <span class="note-text">Jika dikosongkan, judul/topik otomatis dinamai sesuai nomor kelompok (contoh: Kelompok 1, Kelompok 2, dst.)</span>
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" id="btn-cancel-modal-tambah" class="dosen-btn-secondary">Batal</button>
-          <button type="submit" id="btn-save-kelompok" class="dosen-btn-primary">Simpan Kelompok</button>
+          <button type="submit" id="btn-save-kelompok" class="dosen-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <path d="M12 3v18"></path>
+              <path d="M3 12h18"></path>
+            </svg>
+            <span>Generate Kelompok</span>
+          </button>
         </div>
       </form>
     </div>
