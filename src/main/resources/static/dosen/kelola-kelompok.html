@@ -3,154 +3,295 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Kelola Kelompok Tugas Besar - Tubes Scheduler">
+  <meta name="description" content="Kelola Kelompok Tugas Besar - Tubes Scheduler UNPAR">
   <title>Kelola Kelompok - Tubes Scheduler</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/dosen.css">
 </head>
 <body>
-  <!-- Lecturer Navigation Bar -->
-  <header class="navbar">
-    <div class="container navbar-container">
-      <a href="penjadwalan.html" class="navbar-brand">
-        <span>Tubes Scheduler</span>
-        <span class="navbar-brand-badge">Dosen</span>
-      </a>
+  <div class="dosen-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dosen-sidebar" aria-label="Sidebar Navigasi Dosen">
+      <div class="dosen-sidebar-header">
+        <div class="dosen-brand-badge">
+          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img">
+          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img">
+        </div>
+      </div>
 
-      <nav aria-label="Main Navigation">
-        <ul class="navbar-nav">
-          <li><a href="penjadwalan.html" class="nav-link">Matriks Penjadwalan</a></li>
-          <li><a href="kelola-kelompok.html" class="nav-link active">Kelola Kelompok</a></li>
-          <li><a href="jadwal-pribadi.html" class="nav-link">Agenda Saya</a></li>
+      <nav aria-label="Navigasi Utama">
+        <ul class="dosen-nav-list">
+          <li class="dosen-nav-item">
+            <a href="dashboard.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="jadwal-pribadi.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span>Jadwal Pribadi</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="kelola-kelompok.html" class="dosen-nav-link active">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
+              <span>Kelola Kelompok</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="penjadwalan.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <span>Penjadwalan</span>
+            </a>
+          </li>
         </ul>
       </nav>
+    </aside>
 
-      <div class="user-profile-menu">
-        <div class="user-info">
-          <span id="current-user-name" class="user-name">Dr. Dosen Pengampu</span>
-          <span id="current-user-role" class="user-role-label">Dosen</span>
+
+    <!-- Main Container -->
+    <div class="dosen-main-container">
+      <!-- Top Bar -->
+      <header class="dosen-topbar">
+        <div class="dosen-topbar-spacer"></div>
+
+        <div class="dosen-profile-menu">
+          <button type="button" id="btn-lecturer-profile-menu" class="dosen-profile-btn" aria-haspopup="true" aria-expanded="false">
+            <svg class="dosen-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
+            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div id="lecturer-dropdown-panel" class="dosen-dropdown-menu" role="menu">
+            <div class="dosen-dropdown-header">
+              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Dr. Budi Santoso</div>
+              <div id="dropdown-lecturer-email" class="dosen-dropdown-email">budi.santoso@unpar.ac.id</div>
+            </div>
+            <a href="jadwal-pribadi.html" class="dosen-dropdown-item" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Agenda Saya</span>
+            </a>
+            <button type="button" id="btn-lecturer-logout" class="dosen-dropdown-item text-danger" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Keluar</span>
+            </button>
+          </div>
         </div>
-        <button type="button" id="btn-dosen-logout" class="btn btn-secondary btn-sm">Keluar</button>
-      </div>
-    </div>
-  </header>
+      </header>
 
-  <!-- Main Container -->
-  <main class="container flex-1 mt-4 mb-4">
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Konfigurasi & Pembagian Kelompok</h1>
-        <p class="page-subtitle">Atur skema pembentukan kelompok dan penugasan anggota.</p>
-      </div>
-      <div class="page-actions">
-        <button type="button" id="btn-open-create-group-modal" class="btn btn-primary btn-sm">
-          <span>+</span> Buat Kelompok Baru
-        </button>
-      </div>
-    </div>
+      <!-- Main Content -->
+      <main class="dosen-content">
+        <!-- Page Header -->
+        <section class="dosen-welcome-section" aria-labelledby="heading-kelola-kelompok">
+          <h1 id="heading-kelola-kelompok" class="dosen-welcome-title">Kelola Kelompok Tugas Besar</h1>
+          <p class="dosen-welcome-subtitle">
+            Kelola kapasitas, durasi, dan topik kelompok tugas besar Anda.
+          </p>
+        </section>
 
-    <!-- Notification Alert Placeholder -->
-    <div id="kelompok-alert" class="alert alert-info hidden" role="alert">
-      <span class="alert-icon" aria-hidden="true">ℹ️</span>
-      <div class="flex-1" id="kelompok-alert-message"></div>
-      <button type="button" class="alert-close" id="btn-close-kelompok-alert" aria-label="Tutup">&times;</button>
-    </div>
-
-    <!-- Course & Class Selection Card -->
-    <section class="card">
-      <div class="card-header">
-        <h2 class="card-title">Pilih Kelas Perkuliahan</h2>
-      </div>
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <label for="select-kelas-kuliah" class="form-label required">Mata Kuliah / Kelas</label>
-          <select id="select-kelas-kuliah" class="form-control">
-            <option value="">-- Pilih Kelas Kuliah Diampu --</option>
+        <!-- Course Filter Card -->
+        <section class="dosen-filter-card" aria-labelledby="label-select-kelas">
+          <label id="label-select-kelas" for="select-kelas" class="dosen-filter-label">Pilih Mata Kuliah yang Diajar</label>
+          <select id="select-kelas" class="dosen-select-field">
+            <!-- Dynamically populated or fallback options -->
           </select>
-        </div>
-        <div class="form-group flex-1">
-          <label for="select-mode-pembentukan" class="form-label required">Metode Pembentukan Kelompok</label>
-          <select id="select-mode-pembentukan" class="form-control">
-    <!-- Group Management & Member Assignment -->
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Daftar Kelompok & Alokasi Mahasiswa</h2>
-          <p class="card-subtitle">Daftar kelompok terdaftar dan status kelengkapan anggota mahasiswa.</p>
-        </div>
-        <div class="d-flex align-center gap-2">
-          <input 
-            type="text" 
-            id="filter-kelompok-input" 
-            class="form-control" 
-            placeholder="Cari kelompok / nama anggota..."
-          >
-        </div>
-      </div>
+        </section>
 
-      <div class="table-responsive">
-        <table class="table" id="table-kelompok">
-          <thead>
-            <tr>
-              <th scope="col">No</th>
-              <th scope="col">Nama / Kode Kelompok</th>
-              <th scope="col">Judul Tugas Besar</th>
-              <th scope="col">Jumlah Anggota</th>
-              <th scope="col">Daftar Anggota</th>
-              <th scope="col">Status Penjadwalan</th>
-              <th scope="col" class="text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-kelompok">
-            <tr>
-              <td colspan="7" class="text-center text-muted">Silakan pilih kelas kuliah terlebih dahulu.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+        <!-- Group Section Bar -->
+        <div class="dosen-section-bar">
+          <h2 class="dosen-section-bar-title">Daftar Kelompok</h2>
+          <button type="button" id="btn-open-modal-tambah" class="dosen-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Tambah Kelompok</span>
+          </button>
+        </div>
 
-  <!-- Create Group Modal Dialog -->
-  <div id="modal-create-group" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-group-title">
+        <!-- Group Cards Grid -->
+        <section id="container-kelompok" class="dosen-kelompok-grid" aria-label="Daftar Kartu Kelompok">
+          <div class="dosen-course-empty">Memuat daftar kelompok...</div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Minimalist Modal Dialog: Batch Group Generator -->
+  <div id="modal-tambah-kelompok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-kelompok-title">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 id="modal-group-title" class="modal-title">Buat Kelompok Baru</h3>
-        <button type="button" id="btn-close-group-modal" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
+        <h3 id="modal-kelompok-title" class="modal-title">Tambah Kelompok Tugas Besar</h3>
+        <button type="button" id="btn-close-modal-tambah" class="modal-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
-      <form id="form-create-group">
+      <form id="form-tambah-kelompok" class="dosen-modal-form">
         <div class="modal-body">
-          <div class="form-group">
-            <label for="input-group-name" class="form-label required">Nama / Nomor Kelompok</label>
-            <input type="text" id="input-group-name" name="namaKelompok" class="form-control" placeholder="Contoh: Kelompok 01" required>
+          <div class="dosen-form-group">
+            <label for="input-jumlah-kelompok" class="dosen-form-label">Jumlah Kelompok</label>
+            <input type="number" id="input-jumlah-kelompok" name="jumlahKelompok" class="dosen-form-input" min="1" max="50" placeholder="Contoh: 5 Kelompok" required>
           </div>
-          <div class="form-group">
-            <label for="input-group-title" class="form-label required">Judul Proyek / Tugas Besar</label>
-            <input type="text" id="input-group-title" name="judulProyek" class="form-control" placeholder="Contoh: Rancang Bangun IoT Agrikultur" required>
+
+          <div class="dosen-form-grid-2">
+            <div class="dosen-form-group">
+              <label for="input-kapasitas" class="dosen-form-label">Kapasitas per Kelompok</label>
+              <input type="number" id="input-kapasitas" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 5 Orang" min="1" max="20" required>
+            </div>
+            <div class="dosen-form-group">
+              <label for="input-durasi" class="dosen-form-label">Durasi Presentasi</label>
+              <input type="number" id="input-durasi" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30 Menit" min="5" max="180" step="5" required>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="select-assign-members" class="form-label">Tambahkan Anggota Mahasiswa (NPM)</label>
-            <select id="select-assign-members" name="anggotaNpmList" class="form-control select-multiline" multiple>
-              <!-- Dynamic options -->
-            </select>
-            <p class="form-helper">Tahan tombol Ctrl (Windows) untuk memilih lebih dari 1 mahasiswa.</p>
+
+          <div class="dosen-form-group">
+            <label for="input-topik-default" class="dosen-form-label">Topik / Judul (Opsional)</label>
+            <input type="text" id="input-topik-default" name="defaultTopik" class="dosen-form-input" placeholder="Contoh: Perancangan Topologi Jaringan">
+            <div class="form-note-box">
+              <span class="note-badge">Note:</span>
+              <span class="note-text">Jika dikosongkan, judul/topik otomatis dinamai sesuai nomor kelompok (contoh: Kelompok 1, Kelompok 2, dst.)</span>
+            </div>
           </div>
         </div>
+
         <div class="modal-footer">
-          <button type="button" id="btn-cancel-group-modal" class="btn btn-secondary">Batal</button>
-          <button type="submit" id="btn-save-group" class="btn btn-primary">Simpan Kelompok</button>
+          <button type="button" id="btn-cancel-modal-tambah" class="dosen-btn-secondary">Batal</button>
+          <button type="submit" id="btn-save-kelompok" class="dosen-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <path d="M12 3v18"></path>
+              <path d="M3 12h18"></path>
+            </svg>
+            <span>Generate Kelompok</span>
+          </button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Minimalist Modal Dialog: Edit Kelompok -->
+  <div id="modal-edit-kelompok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-edit-title" class="modal-title">Edit Kelompok</h3>
+        <button type="button" id="btn-close-modal-edit" class="modal-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <form id="form-edit-kelompok" class="dosen-modal-form">
+        <input type="hidden" id="edit-id-kelompok" name="idKelompok">
+        <div class="modal-body">
+          <div class="dosen-form-group">
+            <label for="edit-topik" class="dosen-form-label">Topik / Judul</label>
+            <input type="text" id="edit-topik" name="topik" class="dosen-form-input" placeholder="Contoh: Perancangan Topologi Jaringan" required>
+          </div>
+
+          <div class="dosen-form-grid-2">
+            <div class="dosen-form-group">
+              <label for="edit-kapasitas" class="dosen-form-label">Kapasitas per Kelompok</label>
+              <input type="number" id="edit-kapasitas" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 5 Orang" min="1" max="20" required>
+            </div>
+            <div class="dosen-form-group">
+              <label for="edit-durasi" class="dosen-form-label">Durasi Presentasi</label>
+              <input type="number" id="edit-durasi" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30 Menit" min="5" max="180" step="5" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-modal-edit" class="dosen-btn-secondary">Batal</button>
+          <button type="submit" id="btn-save-edit-kelompok" class="dosen-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Simpan Perubahan</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Minimalist Modal Dialog: Konfirmasi Hapus Kelompok -->
+  <div id="modal-konfirmasi-hapus" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="modal-card modal-delete-card">
+      <div class="modal-delete-icon-wrapper">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+      
+      <div class="modal-delete-content">
+        <h3 id="delete-modal-title" class="modal-delete-title">Hapus Kelompok</h3>
+        <p id="delete-modal-desc" class="modal-delete-desc">
+          Apakah Anda yakin ingin menghapus <strong id="delete-group-name">Kelompok 1</strong>?
+        </p>
+        <p class="modal-delete-subdesc">
+          Data kelompok akan dihapus permanen dan seluruh anggota terdaftar akan dilepas.
+        </p>
+      </div>
+
+      <div class="modal-delete-actions">
+        <button type="button" id="btn-cancel-delete" class="btn-delete-cancel">Batal</button>
+        <button type="button" id="btn-confirm-delete" class="btn-delete-confirm">Hapus Kelompok</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/api.js"></script>
+  <script src="../js/dosen-kelola-kelompok.js"></script>
 </body>
 </html>
 
-            <option value="MAHASISWA_MANDIRI">Mahasiswa Mandiri (Self-Selection)</option>
-            <option value="DOSEN_TETAPKAN">Dosen Menetapkan Anggota</option>
-          </select>
-        </div>
-      </div>
-    </section>
