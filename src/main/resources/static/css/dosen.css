@@ -889,22 +889,47 @@
   }
 }
 
-.dosen-topic-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
+/* Outlined Topic Container */
+.dosen-topic-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0.875rem;
+  min-height: 2.75rem;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dosen-topic-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
   color: #64748b;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin: 0 0 0.25rem 0;
+  margin-top: 2px;
+}
+
+.dosen-topic-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .dosen-topic-text {
-  font-size: 0.9375rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: #0f172a;
   line-height: 1.4;
-  margin: 0 0 1rem 0;
-  min-height: 2.6rem;
+  margin: 0;
+  word-break: break-word;
+}
+
+.dosen-topic-text.is-placeholder {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: #94a3b8;
+  font-style: italic;
 }
 
 .dosen-chips-row {

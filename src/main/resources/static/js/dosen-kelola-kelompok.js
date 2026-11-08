@@ -298,12 +298,21 @@
       card.setAttribute('data-id', group.idKelompok);
 
       const nomor = group.nomorKelompok || 1;
-      const topik = group.topik || 'Belum Ditentukan';
+      const topikRaw = group.topik || '';
       const kapasitas = group.batasKapasitas || 4;
       const durasi = group.durasiMenit || 30;
       const anggota = group.anggota || [];
       const currentAnggota = anggota.length;
       const isLengkap = group.status === 'Lengkap' || currentAnggota >= kapasitas;
+
+      const isDefaultOrBlankTopic = !topikRaw || 
+        topikRaw.trim() === '' || 
+        topikRaw.trim().toLowerCase() === 'belum ditentukan' || 
+        new RegExp(`^Kelompok\\s+${nomor}$`, 'i').test(topikRaw.trim()) ||
+        /^Kelompok\s+\d+$/i.test(topikRaw.trim());
+
+      const displayTopic = isDefaultOrBlankTopic ? 'Belum ada topik tugas besar' : topikRaw.trim();
+      const topicClass = isDefaultOrBlankTopic ? 'dosen-topic-text is-placeholder' : 'dosen-topic-text';
 
       let statusBadgeHtml = '';
       if (isLengkap) {
@@ -378,8 +387,15 @@
 
         <hr class="dosen-kelompok-card-divider">
 
-        <p class="dosen-topic-label">Topik / Judul:</p>
-        <p class="dosen-topic-text">${topik}</p>
+        <div class="dosen-topic-container" title="${isDefaultOrBlankTopic ? 'Topik belum ditentukan' : displayTopic}">
+          <svg class="dosen-topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <div class="dosen-topic-content">
+            <p class="${topicClass}">${displayTopic}</p>
+          </div>
+        </div>
 
         <div class="dosen-chips-row">
           <span class="dosen-soft-chip">
