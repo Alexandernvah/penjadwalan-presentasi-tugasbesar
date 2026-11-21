@@ -100,14 +100,14 @@
     feedbackBanner.classList.add(isError ? 'banner-danger' : 'banner-success');
   }
 
-  function hideFeedback() {
+  function hideNotificationBanner() {
     if (feedbackBanner) {
       feedbackBanner.classList.add('hidden');
     }
   }
 
   if (btnCloseFeedback) {
-    btnCloseFeedback.addEventListener('click', hideFeedback);
+    btnCloseFeedback.addEventListener('click', hideNotificationBanner);
   }
 
   function getSelectedClassObj() {
@@ -351,6 +351,7 @@
 
   if (selectKelas) {
     selectKelas.addEventListener('change', function () {
+      hideNotificationBanner();
       const idKelas = parseInt(this.value, 10);
       loadKelompokList(idKelas);
     });
@@ -358,6 +359,7 @@
 
   if (selectKelompok) {
     selectKelompok.addEventListener('change', function () {
+      hideNotificationBanner();
       renderGroupInfoCard();
     });
   }
@@ -376,6 +378,7 @@
 
   function openModalVisualisasi() {
     if (!modalVisualisasi) return;
+    hideNotificationBanner();
     modalVisualisasi.classList.add('active');
     loadWeeklyMatrixData();
   }
