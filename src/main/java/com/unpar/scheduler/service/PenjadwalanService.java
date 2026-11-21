@@ -564,13 +564,88 @@ public class PenjadwalanService {
             ? kelas.getMataKuliahBuka().getIdMatkulBuka()
             : null;
 
-        // 1. Check Lecturer Conflict (BENTROK_DOSEN)
+        // 1. Check Existing Presentations (TERJADWAL / BENTROK_DOSEN)
+        List<String> bookedIntervals = new ArrayList<>();
+        Presentasi ownPresentation = null;
+        Presentasi otherPresentation = null;
+
+        for (Presentasi p : ctx.presentasiWeekAll()) {
+            if (p.getKelompok() == null || !date.equals(p.getTanggal())) {
+                continue;
+            }
+            if (!isOverlapping(slotStart, slotEnd, p.getJamMulai(), p.getJamSelesai())) {
+                continue;
+            }
+            String pRange = p.getJamMulai().format(TIME_FMT) + " - " + p.getJamSelesai().format(TIME_FMT);
+            if (!bookedIntervals.contains(pRange)) {
+                bookedIntervals.add(pRange);
+            }
+
+            if (idKelompok != null && idKelompok.equals(p.getKelompok().getIdKelompok())) {
+                ownPresentation = p;
+            } else {
+                Kelas pKelas = p.getKelompok().getKelas();
+                boolean sameLecturer = false;
+                if (pKelas != null) {
+                    if (idKelas.equals(pKelas.getIdKelas())) {
+                        sameLecturer = true;
+                    } else if (pKelas.getPenanggungJawab() != null
+                        && ctx.dosenIds().contains(pKelas.getPenanggungJawab().getNomorIndukDosen())) {
+                        sameLecturer = true;
+                    } else if (pKelas.getMataKuliahBuka() != null
+                        && pKelas.getMataKuliahBuka().getKoordinator() != null
+                        && ctx.dosenIds().contains(pKelas.getMataKuliahBuka().getKoordinator().getNomorIndukDosen())) {
+                        sameLecturer = true;
+                    }
+                }
+                if (sameLecturer) {
+                    otherPresentation = p;
+                }
+            }
+        }
+
+        if (ownPresentation != null) {
+            int noKel = ownPresentation.getKelompok().getNoKelompok() != null
+                ? ownPresentation.getKelompok().getNoKelompok().intValue()
+                : 1;
+            String timeRange = ownPresentation.getJamMulai().format(TIME_FMT) + " - " + ownPresentation.getJamSelesai().format(TIME_FMT);
+            String ruangan = (ownPresentation.getRuangan() != null && !ownPresentation.getRuangan().isBlank())
+                ? ownPresentation.getRuangan()
+                : "Ruang 9122";
+            return new RawCell(
+                "TERJADWAL",
+                "Terjadwal: Kelompok " + noKel + " (" + timeRange + ")",
+                timeRange + " (" + ruangan + ")",
+                "",
+                "",
+                ownPresentation.getIdPresentasi(),
+                bookedIntervals
+            );
+        }
+
+        if (otherPresentation != null) {
+            int noKel = otherPresentation.getKelompok().getNoKelompok() != null
+                ? otherPresentation.getKelompok().getNoKelompok().intValue()
+                : 1;
+            String timeRange = otherPresentation.getJamMulai().format(TIME_FMT) + " - " + otherPresentation.getJamSelesai().format(TIME_FMT);
+            return new RawCell(
+                "BENTROK_DOSEN",
+                "Dosen Sibuk",
+                "Menguji Kelompok " + noKel + " (" + timeRange + ")",
+                "",
+                "",
+                otherPresentation.getIdPresentasi(),
+                bookedIntervals
+            );
+        }
+
+        // 2. Check Lecturer Teaching / Exam Conflict (BENTROK_DOSEN)
         if ("REGULER".equals(mode)) {
             for (Kuliah kul : ctx.kuliahDosenAllDays()) {
                 if (kul.getHari() != null && kul.getHari() == hariKe
                     && !idKelas.equals(kul.getKelas().getIdKelas())
                     && isOverlapping(slotStart, slotEnd, kul.getJamMulai(), kul.getJamSelesai())) {
-                    return new RawCell("BENTROK_DOSEN", "Dosen Sibuk", "Mengajar Kelas Lain", "", "", null);
+                    return new RawCell("BENTROK_DOSEN", "Dosen Sibuk", "Mengajar Kelas Lain", "", "", null, bookedIntervals);
                 }
             }
         } else {
@@ -582,46 +657,12 @@ public class PenjadwalanService {
                     && (classMatkulBukaId == null || !classMatkulBukaId.equals(u.getMataKuliahBuka().getIdMatkulBuka()))
                     && isOverlapping(slotStart, slotEnd, u.getJamMulai(), u.getJamSelesai())) {
                     String mkShort = abbreviateCourseName(u.getMataKuliahBuka().getMatakuliah().getNama());
-                    return new RawCell("BENTROK_DOSEN", "Dosen Sibuk", "Mengawas Ujian " + mkShort, "", "", null);
+                    return new RawCell("BENTROK_DOSEN", "Dosen Sibuk", "Mengawas Ujian " + mkShort, "", "", null, bookedIntervals);
                 }
             }
         }
 
-        for (Presentasi p : ctx.presentasiWeekAll()) {
-            if (p.getKelompok() == null || !date.equals(p.getTanggal())) {
-                continue;
-            }
-            if (idKelompok != null && idKelompok.equals(p.getKelompok().getIdKelompok())) {
-                continue;
-            }
-            Kelas pKelas = p.getKelompok().getKelas();
-            boolean sameLecturer = false;
-            if (pKelas != null) {
-                if (idKelas.equals(pKelas.getIdKelas())) {
-                    sameLecturer = true;
-                } else if (pKelas.getPenanggungJawab() != null
-                    && ctx.dosenIds().contains(pKelas.getPenanggungJawab().getNomorIndukDosen())) {
-                    sameLecturer = true;
-                } else if (pKelas.getMataKuliahBuka() != null
-                    && pKelas.getMataKuliahBuka().getKoordinator() != null
-                    && ctx.dosenIds().contains(pKelas.getMataKuliahBuka().getKoordinator().getNomorIndukDosen())) {
-                    sameLecturer = true;
-                }
-            }
-            if (sameLecturer && isOverlapping(slotStart, slotEnd, p.getJamMulai(), p.getJamSelesai())) {
-                int noKel = p.getKelompok().getNoKelompok() != null ? p.getKelompok().getNoKelompok().intValue() : 1;
-                return new RawCell(
-                    "BENTROK_DOSEN",
-                    "Dosen Sibuk",
-                    "Menguji Kelompok " + noKel,
-                    "",
-                    "",
-                    p.getIdPresentasi()
-                );
-            }
-        }
-
-        // 2. Check Student Conflict (BENTROK_MAHASISWA)
+        // 3. Check Student Conflict (BENTROK_MAHASISWA)
         Map<Integer, List<PesertaKelas>> pesertaByKelasId = new HashMap<>();
         Map<Integer, List<PesertaKelas>> pesertaByMatkulBukaId = new HashMap<>();
         for (PesertaKelas pk : ctx.pesertaMahasiswa()) {
@@ -651,7 +692,8 @@ public class PenjadwalanService {
                             names + " (" + agenda + ")",
                             names,
                             agenda,
-                            null
+                            null,
+                            bookedIntervals
                         );
                     }
                 }
@@ -674,7 +716,8 @@ public class PenjadwalanService {
                             names + " (" + agenda + ")",
                             names,
                             agenda,
-                            null
+                            null,
+                            bookedIntervals
                         );
                     }
                 }
@@ -718,7 +761,8 @@ public class PenjadwalanService {
                     names + " (" + agenda + ")",
                     names,
                     agenda,
-                    null
+                    null,
+                    bookedIntervals
                 );
             }
         }
@@ -734,7 +778,8 @@ public class PenjadwalanService {
                         "Aman, Semua Bisa Hadir",
                         "",
                         "",
-                        null
+                        null,
+                        bookedIntervals
                     );
                 }
             }
@@ -750,14 +795,15 @@ public class PenjadwalanService {
                         "Aman, Semua Bisa Hadir",
                         "",
                         "",
-                        null
+                        null,
+                        bookedIntervals
                     );
                 }
             }
         }
 
         // 4. Default: KOSONG
-        return new RawCell("KOSONG", "Kosong", "", "", "", null);
+        return new RawCell("KOSONG", "Kosong", "", "", "", null, bookedIntervals);
     }
 
     private List<BarisMatriksMingguanDTO> buildMergedRowsWithRowSpan(
@@ -800,6 +846,7 @@ public class PenjadwalanService {
             for (int d = 0; d < numDays; d++) {
                 HariMingguanDTO hari = hariList.get(d);
                 RawCell rc = grid[h][d];
+                List<String> intervals = rc.intervalTerpakai() != null ? rc.intervalTerpakai() : Collections.emptyList();
                 if (skip[h][d]) {
                     cells.add(new SelMatriksMingguanDTO(
                         hari.hariKe(),
@@ -816,7 +863,8 @@ public class PenjadwalanService {
                         rc.namaAgendaBentrok(),
                         0,
                         true,
-                        rc.idPresentasiTerjadwal()
+                        rc.idPresentasiTerjadwal(),
+                        intervals
                     ));
                 } else {
                     LocalTime effectiveEnd = blockEnd[h][d] != null ? blockEnd[h][d] : rowEnd;
@@ -837,7 +885,8 @@ public class PenjadwalanService {
                         rc.namaAgendaBentrok(),
                         rowSpans[h][d],
                         false,
-                        rc.idPresentasiTerjadwal()
+                        rc.idPresentasiTerjadwal(),
+                        intervals
                     ));
                 }
             }
@@ -2023,6 +2072,70 @@ public class PenjadwalanService {
             grid[3][4] = mhsUasBackend;
         }
 
+        // Overlay existing scheduled presentations from fallbackPresentasiById
+        for (int d = 0; d < 5; d++) {
+            LocalDate date = monday.plusDays(d);
+            for (int h = 0; h < 11; h++) {
+                LocalTime slotStart = LocalTime.of(7 + h, 0);
+                LocalTime slotEnd = LocalTime.of(8 + h, 0);
+
+                List<String> bookedIntervals = new ArrayList<>();
+                PresentasiTerjadwalDTO own = null;
+                PresentasiTerjadwalDTO other = null;
+
+                for (PresentasiTerjadwalDTO p : fallbackPresentasiById.values()) {
+                    if (p.tanggal() != null && p.tanggal().equals(date.toString())) {
+                        LocalTime pStart = parseTimeOrDefault(p.jamMulai(), LocalTime.of(13, 0));
+                        LocalTime pEnd = parseTimeOrDefault(p.jamSelesai(), LocalTime.of(13, 30));
+                        if (isOverlapping(slotStart, slotEnd, pStart, pEnd)) {
+                            String pRange = pStart.format(TIME_FMT) + " - " + pEnd.format(TIME_FMT);
+                            if (!bookedIntervals.contains(pRange)) {
+                                bookedIntervals.add(pRange);
+                            }
+                            if (selected != null && selected.idKelompok() != null && selected.idKelompok().equals(p.idKelompok())) {
+                                own = p;
+                            } else {
+                                other = p;
+                            }
+                        }
+                    }
+                }
+
+                if (own != null) {
+                    grid[h][d] = new RawCell(
+                        "TERJADWAL",
+                        "Terjadwal: Kelompok " + own.nomorKelompok() + " (" + own.jamMulai() + " - " + own.jamSelesai() + ")",
+                        own.jamMulai() + " - " + own.jamSelesai() + " (" + (own.ruangan() != null ? own.ruangan() : ruanganDefault) + ")",
+                        "",
+                        "",
+                        own.idPresentasi(),
+                        bookedIntervals
+                    );
+                } else if (other != null) {
+                    grid[h][d] = new RawCell(
+                        "BENTROK_DOSEN",
+                        "Dosen Sibuk",
+                        "Menguji Kelompok " + other.nomorKelompok() + " (" + other.jamMulai() + " - " + other.jamSelesai() + ")",
+                        "",
+                        "",
+                        other.idPresentasi(),
+                        bookedIntervals
+                    );
+                } else if (!bookedIntervals.isEmpty()) {
+                    RawCell existing = grid[h][d];
+                    grid[h][d] = new RawCell(
+                        existing.status(),
+                        existing.badgeText(),
+                        existing.deskripsi(),
+                        existing.daftarMahasiswaBentrok(),
+                        existing.namaAgendaBentrok(),
+                        existing.idPresentasiTerjadwal(),
+                        bookedIntervals
+                    );
+                }
+            }
+        }
+
         List<BarisMatriksMingguanDTO> barisList = buildMergedRowsWithRowSpan(grid, hariList);
 
         return new MatriksMingguanResponseDTO(
@@ -2281,8 +2394,27 @@ public class PenjadwalanService {
         String deskripsi,
         String daftarMahasiswaBentrok,
         String namaAgendaBentrok,
-        Integer idPresentasiTerjadwal
+        Integer idPresentasiTerjadwal,
+        List<String> intervalTerpakai
     ) {
+        public RawCell(
+            String status,
+            String badgeText,
+            String deskripsi,
+            String daftarMahasiswaBentrok,
+            String namaAgendaBentrok,
+            Integer idPresentasiTerjadwal
+        ) {
+            this(
+                status,
+                badgeText,
+                deskripsi,
+                daftarMahasiswaBentrok,
+                namaAgendaBentrok,
+                idPresentasiTerjadwal,
+                Collections.emptyList()
+            );
+        }
     }
 
     private record WeeklyBatchContext(

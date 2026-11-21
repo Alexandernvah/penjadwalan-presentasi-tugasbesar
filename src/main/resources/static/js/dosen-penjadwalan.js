@@ -90,6 +90,8 @@
   let currentWeeklyMatrix = null;
   let selectedCellContext = null;
   let presentasiToCancel = null;
+  let activeMatrixAbortController = null;
+  let latestMatrixRequestId = 0;
 
   function showFeedback(message, isError) {
     if (!feedbackBanner || !feedbackText) return;
@@ -141,32 +143,46 @@
     return `${h}:${m}`;
   }
 
-  function generateSubSlots(jamMulaiBlock, jamSelesaiBlock, durasiMenit) {
+  function generateSubSlots(jamMulaiBlock, jamSelesaiBlock, durasiMenit, intervalTerpakai) {
     const durasi = durasiMenit && durasiMenit > 0 ? durasiMenit : 30;
     const startMins = parseMinutes(jamMulaiBlock);
     const endMins = parseMinutes(jamSelesaiBlock);
     const subSlots = [];
 
-    let cursor = startMins;
-    while (cursor + durasi <= endMins) {
-      const subStart = formatMinutes(cursor);
-      const subEnd = formatMinutes(cursor + durasi);
-      subSlots.push({
-        jamMulai: subStart,
-        jamSelesai: subEnd,
-        label: `${subStart} - ${subEnd}`
+    const bookedRanges = [];
+    if (Array.isArray(intervalTerpakai)) {
+      intervalTerpakai.forEach(function (rangeStr) {
+        if (!rangeStr) return;
+        const parts = rangeStr.split('-').map(function (s) { return s.trim(); });
+        if (parts.length === 2) {
+          bookedRanges.push({
+            start: parseMinutes(parts[0]),
+            end: parseMinutes(parts[1])
+          });
+        }
       });
-      cursor += durasi;
     }
 
-    if (subSlots.length === 0) {
-      const subStart = formatMinutes(startMins);
-      const subEnd = formatMinutes(startMins + durasi);
-      subSlots.push({
-        jamMulai: subStart,
-        jamSelesai: subEnd,
-        label: `${subStart} - ${subEnd}`
+    let cursor = startMins;
+    while (cursor + durasi <= endMins) {
+      const subStartMins = cursor;
+      const subEndMins = cursor + durasi;
+
+      const isBooked = bookedRanges.some(function (b) {
+        return subStartMins < b.end && b.start < subEndMins;
       });
+
+      if (!isBooked) {
+        const subStart = formatMinutes(subStartMins);
+        const subEnd = formatMinutes(subEndMins);
+        subSlots.push({
+          jamMulai: subStart,
+          jamSelesai: subEnd,
+          label: `${subStart} - ${subEnd}`
+        });
+      }
+
+      cursor += durasi;
     }
 
     return subSlots;
@@ -413,7 +429,24 @@
 
   async function loadWeeklyMatrixData() {
     if (!tbodyMatriksMingguan) return;
-    tbodyMatriksMingguan.innerHTML = '<tr><td colspan="6" class="dosen-course-empty">Memuat matriks jadwal gabungan...</td></tr>';
+
+    if (activeMatrixAbortController) {
+      activeMatrixAbortController.abort();
+    }
+    activeMatrixAbortController = new AbortController();
+    const currentAbortController = activeMatrixAbortController;
+    const currentRequestId = ++latestMatrixRequestId;
+
+    const tableEl = document.querySelector('.jadwal-weekly-table');
+    const hasExistingRows = tbodyMatriksMingguan.children.length > 0 &&
+      !tbodyMatriksMingguan.querySelector('.dosen-course-empty');
+
+    if (tableEl) {
+      tableEl.classList.add('is-loading');
+    }
+    if (!hasExistingRows) {
+      tbodyMatriksMingguan.innerHTML = '<tr><td colspan="6" class="dosen-course-empty">Memuat matriks jadwal gabungan...</td></tr>';
+    }
 
     const kelas = getSelectedClassObj();
     const group = getSelectedGroupObj();
@@ -431,17 +464,33 @@
       }
 
       const response = await fetch(`/api/dosen/penjadwalan/matriks-mingguan?${params.toString()}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Accept': 'application/json' },
+        signal: currentAbortController.signal
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      currentWeeklyMatrix = await response.json();
-    } catch (err) {
-      console.warn('Gagal mengambil matriks mingguan dari API:', err);
-      tbodyMatriksMingguan.innerHTML = '<tr><td colspan="6" class="dosen-course-empty">Gagal memuat matriks jadwal gabungan.</td></tr>';
-      return;
-    }
+      const data = await response.json();
 
-    renderWeeklyMatrixTable(currentWeeklyMatrix);
+      if (currentRequestId === latestMatrixRequestId) {
+        currentWeeklyMatrix = data;
+        renderWeeklyMatrixTable(currentWeeklyMatrix);
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return;
+      }
+      console.warn('Gagal mengambil matriks mingguan dari API:', err);
+      if (currentRequestId === latestMatrixRequestId) {
+        if (!hasExistingRows) {
+          tbodyMatriksMingguan.innerHTML = '<tr><td colspan="6" class="dosen-course-empty">Gagal memuat matriks jadwal gabungan.</td></tr>';
+        }
+      }
+    } finally {
+      if (currentRequestId === latestMatrixRequestId) {
+        if (tableEl) {
+          tableEl.classList.remove('is-loading');
+        }
+      }
+    }
   }
 
   function renderWeeklyMatrixTable(matrix) {
@@ -482,7 +531,24 @@
 
         const status = sel.status || 'KOSONG';
 
-        if (status === 'KOSONG') {
+        if (status === 'TERJADWAL') {
+          td.className = 'cell-state-terjadwal';
+          td.setAttribute('role', 'button');
+          td.setAttribute('tabindex', '0');
+          td.innerHTML = `
+            <div class="jadwal-cell-box">
+              <span class="cell-pill-badge pill-indigo">${sel.badgeText || 'Terjadwal'}</span>
+              <span class="cell-subtext-terjadwal">${sel.deskripsi || 'Jadwal Presentasi'}</span>
+            </div>
+          `;
+          bindCellClick(td, function () {
+            if (sel.idPresentasiTerjadwal) {
+              const group = getSelectedGroupObj();
+              const noKel = (group && (group.noKelompok || group.nomorKelompok)) || (currentWeeklyMatrix && currentWeeklyMatrix.noKelompok) || 1;
+              openModalBatal(sel.idPresentasiTerjadwal, noKel);
+            }
+          });
+        } else if (status === 'KOSONG') {
           td.className = 'cell-state-kosong';
           td.setAttribute('role', 'button');
           td.setAttribute('tabindex', '0');
@@ -574,15 +640,24 @@
       labelSubslotAman.textContent = `Pilih Slot Waktu Spesifik (Durasi: ${durasi} Menit)`;
     }
 
-    const subSlots = generateSubSlots(sel.jamMulai, sel.jamSelesai, durasi);
+    const subSlots = generateSubSlots(sel.jamMulai, sel.jamSelesai, durasi, sel.intervalTerpakai);
     if (selectSubslotAman) {
       selectSubslotAman.innerHTML = '';
-      subSlots.forEach(function (sub) {
+      if (subSlots.length === 0) {
         const opt = document.createElement('option');
-        opt.value = `${sub.jamMulai}|${sub.jamSelesai}`;
-        opt.textContent = sub.label;
+        opt.value = '';
+        opt.textContent = 'Tidak ada slot waktu tersisa';
         selectSubslotAman.appendChild(opt);
-      });
+        if (btnSimpanSlotAman) btnSimpanSlotAman.disabled = true;
+      } else {
+        if (btnSimpanSlotAman) btnSimpanSlotAman.disabled = false;
+        subSlots.forEach(function (sub) {
+          const opt = document.createElement('option');
+          opt.value = `${sub.jamMulai}|${sub.jamSelesai}`;
+          opt.textContent = sub.label;
+          selectSubslotAman.appendChild(opt);
+        });
+      }
     }
 
     modalKonfirmasiSlot.classList.add('active');
@@ -628,15 +703,24 @@
       labelSubslotBentrok.textContent = `Pilih Slot Waktu Spesifik (Durasi: ${durasi} Menit)`;
     }
 
-    const subSlots = generateSubSlots(sel.jamMulai, sel.jamSelesai, durasi);
+    const subSlots = generateSubSlots(sel.jamMulai, sel.jamSelesai, durasi, sel.intervalTerpakai);
     if (selectSubslotBentrok) {
       selectSubslotBentrok.innerHTML = '';
-      subSlots.forEach(function (sub) {
+      if (subSlots.length === 0) {
         const opt = document.createElement('option');
-        opt.value = `${sub.jamMulai}|${sub.jamSelesai}`;
-        opt.textContent = sub.label;
+        opt.value = '';
+        opt.textContent = 'Tidak ada slot waktu tersisa';
         selectSubslotBentrok.appendChild(opt);
-      });
+        if (btnTetapSimpanBentrok) btnTetapSimpanBentrok.disabled = true;
+      } else {
+        if (btnTetapSimpanBentrok) btnTetapSimpanBentrok.disabled = false;
+        subSlots.forEach(function (sub) {
+          const opt = document.createElement('option');
+          opt.value = `${sub.jamMulai}|${sub.jamSelesai}`;
+          opt.textContent = sub.label;
+          selectSubslotBentrok.appendChild(opt);
+        });
+      }
     }
 
     modalPeringatanBentrok.classList.add('active');
@@ -730,6 +814,7 @@
       );
 
       await loadKelompokList(kelas ? kelas.idKelas : 102, group.idKelompok);
+      await loadWeeklyMatrixData();
     } catch (err) {
       console.error('Gagal menyimpan jadwal presentasi:', err);
       closeModalSlotAman();
@@ -773,6 +858,7 @@
         const group = getSelectedGroupObj();
         showFeedback(`Jadwal presentasi Kelompok ${target.noKelompok} berhasil dibatalkan.`, false);
         await loadKelompokList(kelas ? kelas.idKelas : 102, group ? group.idKelompok : null);
+        await loadWeeklyMatrixData();
       } catch (err) {
         console.error('Gagal membatalkan jadwal:', err);
         showFeedback('Gagal membatalkan jadwal presentasi.', true);

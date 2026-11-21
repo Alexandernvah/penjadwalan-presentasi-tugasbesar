@@ -1894,6 +1894,7 @@
 /* 4. Weekly Timetable Grid (Senin - Jumat, 07:00 - 18:00) */
 .jadwal-weekly-table-container {
   overflow-x: auto;
+  min-height: 520px;
   border: 1px solid #cbd5e1;
   border-radius: 10px;
   background-color: #ffffff;
@@ -1904,6 +1905,12 @@
   min-width: 820px;
   border-collapse: collapse;
   table-layout: fixed;
+  transition: opacity 120ms ease;
+}
+
+.jadwal-weekly-table.is-loading {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .jadwal-weekly-table th {
@@ -2033,6 +2040,11 @@ td.cell-state-prioritas:hover {
   color: #ffffff;
 }
 
+.cell-pill-badge.pill-indigo {
+  background-color: #4338ca;
+  color: #ffffff;
+}
+
 .cell-subtext-prioritas {
   font-size: 0.74rem;
   font-weight: 700;
@@ -2067,6 +2079,24 @@ td.cell-state-bentrok-dosen {
   font-size: 0.74rem;
   font-weight: 700;
   color: #713f12;
+  line-height: 1.3;
+}
+
+/* State E: TERJADWAL (Indigo / Purple) */
+td.cell-state-terjadwal {
+  background-color: #e0e7ff;
+  border-color: #c7d2fe;
+  cursor: pointer;
+}
+
+td.cell-state-terjadwal:hover {
+  background-color: #c7d2fe;
+}
+
+.cell-subtext-terjadwal {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #312e81;
   line-height: 1.3;
 }
 
