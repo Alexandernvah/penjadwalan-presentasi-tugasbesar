@@ -123,10 +123,23 @@
       </header>
 
       <!-- Main Content -->
-      <main class="dosen-content">
+      <main class="dosen-content jp-main">
         <!-- Page Header with Segmented Filter -->
         <section class="jp-page-header" aria-labelledby="heading-jadwal-pribadi">
           <div class="jp-page-header-text">
+            <div class="jp-context-row">
+              <span class="jp-breadcrumb-label">Portal Dosen</span>
+              <span class="jp-breadcrumb-sep" aria-hidden="true">/</span>
+              <span class="jp-semester-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Semester Ganjil 2026/2027</span>
+              </span>
+            </div>
             <h1 id="heading-jadwal-pribadi" class="dosen-welcome-title">Jadwal Pribadi</h1>
             <p class="dosen-welcome-subtitle">
               Kelola jadwal mengajar rutin, pengawasan ujian, dan jadwal presentasi mahasiswa.
@@ -134,10 +147,64 @@
           </div>
 
           <div class="jp-segmented" role="group" aria-label="Filter jenis jadwal">
-            <button type="button" class="jp-segmented-btn active" data-filter="SEMUA" aria-pressed="true">Semua</button>
-            <button type="button" class="jp-segmented-btn" data-filter="UJIAN" aria-pressed="false">Ujian</button>
-            <button type="button" class="jp-segmented-btn" data-filter="PRESENTASI" aria-pressed="false">Presentasi</button>
+            <button type="button" class="jp-segmented-btn active" data-filter="SEMUA" aria-pressed="true">
+              <span>Semua</span>
+              <span id="filter-count-semua" class="jp-segmented-count">(0)</span>
+            </button>
+            <button type="button" class="jp-segmented-btn" data-filter="UJIAN" aria-pressed="false">
+              <span>Ujian</span>
+              <span id="filter-count-ujian" class="jp-segmented-count">(0)</span>
+            </button>
+            <button type="button" class="jp-segmented-btn" data-filter="PRESENTASI" aria-pressed="false">
+              <span>Presentasi</span>
+              <span id="filter-count-presentasi" class="jp-segmented-count">(0)</span>
+            </button>
           </div>
+        </section>
+
+        <!-- 3-Card Summary Strip -->
+        <section class="jp-summary-grid" aria-label="Ringkasan Jadwal Dosen">
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Mata Kuliah Diajar</span>
+              <span id="summary-rutin-value" class="jp-summary-value">0 Kelas Aktif</span>
+            </div>
+          </article>
+
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-amber" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                <path d="M9 14l2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Pengawasan Ujian</span>
+              <span id="summary-ujian-value" class="jp-summary-value">0 Jadwal UTS/UAS</span>
+            </div>
+          </article>
+
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-emerald" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Presentasi Tugas Besar</span>
+              <span id="summary-presentasi-value" class="jp-summary-value">0 Kelompok Terjadwal</span>
+            </div>
+          </article>
         </section>
 
         <!-- Error Banner -->
@@ -154,7 +221,18 @@
 
         <!-- Section 1: Jadwal Rutin -->
         <section id="section-rutin" class="jp-section" aria-labelledby="title-rutin">
-          <h2 id="title-rutin" class="jp-section-title">Jadwal Rutin (Pekan Perkuliahan)</h2>
+          <div class="jp-section-header">
+            <div class="jp-section-heading">
+              <span class="jp-section-icon jp-icon-blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+              </span>
+              <h2 id="title-rutin" class="jp-section-title">Jadwal Rutin (Pekan Perkuliahan)</h2>
+            </div>
+            <span id="section-count-rutin" class="jp-section-count">0 Kelas</span>
+          </div>
           <div id="list-jadwal-rutin" class="jp-rutin-grid">
             <div class="jp-empty">Memuat jadwal mengajar...</div>
           </div>
@@ -162,7 +240,19 @@
 
         <!-- Section 2: Jadwal Ujian -->
         <section id="section-ujian" class="jp-section" aria-labelledby="title-ujian">
-          <h2 id="title-ujian" class="jp-section-title">Jadwal Ujian (UTS/UAS)</h2>
+          <div class="jp-section-header">
+            <div class="jp-section-heading">
+              <span class="jp-section-icon jp-icon-amber" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M9 14l2 2 4-4"></path>
+                </svg>
+              </span>
+              <h2 id="title-ujian" class="jp-section-title">Jadwal Ujian (UTS/UAS)</h2>
+            </div>
+            <span id="section-count-ujian" class="jp-section-count">0 Jadwal</span>
+          </div>
           <div id="list-jadwal-ujian" class="jp-stack">
             <div class="jp-empty">Memuat jadwal ujian...</div>
           </div>
@@ -170,7 +260,21 @@
 
         <!-- Section 3: Jadwal Presentasi -->
         <section id="section-presentasi" class="jp-section" aria-labelledby="title-presentasi">
-          <h2 id="title-presentasi" class="jp-section-title">Jadwal Presentasi Tugas Besar</h2>
+          <div class="jp-section-header">
+            <div class="jp-section-heading">
+              <span class="jp-section-icon jp-icon-emerald" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <h2 id="title-presentasi" class="jp-section-title">Jadwal Presentasi Tugas Besar</h2>
+            </div>
+            <span id="section-count-presentasi" class="jp-section-count">0 Kelompok</span>
+          </div>
           <div id="list-jadwal-presentasi" class="jp-stack">
             <div class="jp-empty">Memuat jadwal presentasi...</div>
           </div>
@@ -180,10 +284,23 @@
   </div>
 
   <!-- MODAL 1: DAFTAR MAHASISWA KELAS -->
-  <div id="modal-daftar-mahasiswa" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-mahasiswa-title">
+  <div id="modal-daftar-mahasiswa" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-mahasiswa-title">
     <div class="modal-dialog jp-modal-dialog jp-modal-mahasiswa">
       <div class="jp-modal-header">
-        <h3 id="modal-mahasiswa-title" class="jp-modal-title">Daftar Mahasiswa Kelas</h3>
+        <div class="jp-modal-header-left">
+          <span class="jp-modal-icon-badge jp-icon-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </span>
+          <div class="jp-modal-title-group">
+            <h3 id="modal-mahasiswa-title" class="jp-modal-title">Daftar Mahasiswa Kelas</h3>
+            <p class="jp-modal-subtitle">Peserta aktif yang terdaftar pada kelas perkuliahan ini</p>
+          </div>
+        </div>
         <button type="button" id="btn-close-modal-mahasiswa" class="jp-modal-close" aria-label="Tutup modal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -195,6 +312,10 @@
       <div class="jp-modal-body">
         <div class="jp-course-summary">
           <div class="jp-course-summary-main">
+            <div class="jp-course-summary-badges">
+              <span id="mahasiswa-course-code" class="jp-pill-code">-</span>
+              <span id="mahasiswa-course-class" class="jp-pill-class">-</span>
+            </div>
             <span id="mahasiswa-course-title" class="jp-course-summary-title">-</span>
             <span id="mahasiswa-course-meta" class="jp-course-summary-meta">-</span>
           </div>
@@ -214,9 +335,9 @@
           <table class="jp-student-table">
             <thead>
               <tr>
-                <th scope="col" class="jp-col-no">No</th>
+                <th scope="col" class="jp-col-no">NO</th>
                 <th scope="col" class="jp-col-npm">NPM</th>
-                <th scope="col">Nama Mahasiswa</th>
+                <th scope="col">NAMA MAHASISWA</th>
               </tr>
             </thead>
             <tbody id="tbody-daftar-mahasiswa"></tbody>
@@ -231,10 +352,24 @@
   </div>
 
   <!-- MODAL 2: DETAIL PRESENTASI -->
-  <div id="modal-detail-presentasi" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-presentasi-title">
+  <div id="modal-detail-presentasi" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-presentasi-title">
     <div class="modal-dialog jp-modal-dialog jp-modal-presentasi">
-      <div class="jp-modal-header">
-        <h3 id="modal-presentasi-title" class="jp-modal-title">Detail Presentasi</h3>
+      <div class="jp-modal-header jp-modal-header-emerald">
+        <div class="jp-modal-header-left">
+          <span class="jp-modal-icon-badge jp-icon-emerald" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+              <polyline points="9 16 11 18 15 14"></polyline>
+            </svg>
+          </span>
+          <div class="jp-modal-title-group">
+            <h3 id="modal-presentasi-title" class="jp-modal-title">Detail Presentasi</h3>
+            <p id="modal-presentasi-subtitle" class="jp-modal-subtitle">Informasi jadwal, topik, dan anggota kelompok tugas besar</p>
+          </div>
+        </div>
         <button type="button" id="btn-close-modal-presentasi" class="jp-modal-close" aria-label="Tutup modal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -245,26 +380,55 @@
 
       <div class="jp-modal-body">
         <div class="jp-meta-grid">
-          <div class="dosen-group-meta-block">
-            <span class="dosen-group-meta-label">MATA KULIAH</span>
-            <span id="detail-mata-kuliah" class="dosen-group-meta-value">-</span>
+          <div class="jp-detail-card">
+            <div class="jp-detail-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <span>MATA KULIAH</span>
+            </div>
+            <span id="detail-mata-kuliah" class="jp-detail-value">-</span>
           </div>
-          <div class="dosen-group-meta-block">
-            <span class="dosen-group-meta-label">TOPIK</span>
-            <span id="detail-topik" class="dosen-group-meta-value">-</span>
+
+          <div class="jp-detail-card">
+            <div class="jp-detail-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>TOPIK TUGAS BESAR</span>
+            </div>
+            <span id="detail-topik" class="jp-detail-value">-</span>
           </div>
-          <div class="dosen-group-meta-block">
-            <span class="dosen-group-meta-label">WAKTU</span>
-            <span id="detail-waktu" class="dosen-group-meta-value">-</span>
+
+          <div class="jp-detail-card">
+            <div class="jp-detail-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>WAKTU PRESENTASI</span>
+            </div>
+            <span id="detail-waktu" class="jp-detail-value">-</span>
           </div>
-          <div class="dosen-group-meta-block">
-            <span class="dosen-group-meta-label">RUANGAN</span>
-            <span id="detail-ruangan" class="dosen-group-meta-value">-</span>
+
+          <div class="jp-detail-card">
+            <div class="jp-detail-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>RUANGAN</span>
+            </div>
+            <span id="detail-ruangan" class="jp-detail-value">-</span>
           </div>
         </div>
 
-        <div class="dosen-group-members-block">
-          <div class="dosen-group-members-heading">
+        <div class="jp-members-section">
+          <div class="jp-members-heading">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
@@ -272,8 +436,9 @@
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
             <span>Anggota Kelompok</span>
+            <span id="detail-anggota-count" class="jp-members-count-pill">0 Anggota</span>
           </div>
-          <div id="detail-anggota" class="dosen-group-member-rows"></div>
+          <div id="detail-anggota" class="jp-member-list"></div>
         </div>
       </div>
 

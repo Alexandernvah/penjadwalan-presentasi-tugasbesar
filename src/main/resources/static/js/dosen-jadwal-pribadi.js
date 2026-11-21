@@ -36,6 +36,18 @@
   // DOM references
   // ---------------------------------------------------------------------
   const filterButtons = document.querySelectorAll('.jp-segmented-btn');
+  const filterCountSemua = document.getElementById('filter-count-semua');
+  const filterCountUjian = document.getElementById('filter-count-ujian');
+  const filterCountPresentasi = document.getElementById('filter-count-presentasi');
+
+  const summaryRutinValue = document.getElementById('summary-rutin-value');
+  const summaryUjianValue = document.getElementById('summary-ujian-value');
+  const summaryPresentasiValue = document.getElementById('summary-presentasi-value');
+
+  const sectionCountRutin = document.getElementById('section-count-rutin');
+  const sectionCountUjian = document.getElementById('section-count-ujian');
+  const sectionCountPresentasi = document.getElementById('section-count-presentasi');
+
   const sectionRutin = document.getElementById('section-rutin');
   const sectionUjian = document.getElementById('section-ujian');
   const sectionPresentasi = document.getElementById('section-presentasi');
@@ -48,6 +60,8 @@
   const modalMahasiswa = document.getElementById('modal-daftar-mahasiswa');
   const btnCloseMahasiswa = document.getElementById('btn-close-modal-mahasiswa');
   const btnTutupMahasiswa = document.getElementById('btn-tutup-modal-mahasiswa');
+  const mahasiswaCourseCode = document.getElementById('mahasiswa-course-code');
+  const mahasiswaCourseClass = document.getElementById('mahasiswa-course-class');
   const mahasiswaCourseTitle = document.getElementById('mahasiswa-course-title');
   const mahasiswaCourseMeta = document.getElementById('mahasiswa-course-meta');
   const mahasiswaCountBadge = document.getElementById('mahasiswa-count-badge');
@@ -62,6 +76,7 @@
   const detailTopik = document.getElementById('detail-topik');
   const detailWaktu = document.getElementById('detail-waktu');
   const detailRuangan = document.getElementById('detail-ruangan');
+  const detailAnggotaCount = document.getElementById('detail-anggota-count');
   const detailAnggota = document.getElementById('detail-anggota');
 
   // ---------------------------------------------------------------------
@@ -78,7 +93,7 @@
     clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
     mapPin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
     users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
-    user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>',
+    arrowRight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>',
     eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
   };
 
@@ -103,6 +118,13 @@
     row.appendChild(icon(iconName));
     row.appendChild(el('span', null, text));
     return row;
+  }
+
+  function inlineMetaItem(iconName, text) {
+    const item = el('span', 'jp-meta-inline-item');
+    item.appendChild(icon(iconName));
+    item.appendChild(el('span', null, text));
+    return item;
   }
 
   function clear(node) {
@@ -143,6 +165,35 @@
     return kode + ' - ' + nama;
   }
 
+  function extractInitials(fullName) {
+    const clean = String(fullName || '').trim();
+    if (!clean) return '?';
+    const parts = clean.split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    }
+    return clean.slice(0, 2).toUpperCase();
+  }
+
+  // ---------------------------------------------------------------------
+  // Counters & Summary Strip
+  // ---------------------------------------------------------------------
+  function updateCounts(rutinCount, ujianCount, presentasiCount) {
+    const totalSemua = rutinCount + ujianCount + presentasiCount;
+
+    if (filterCountSemua) filterCountSemua.textContent = '(' + totalSemua + ')';
+    if (filterCountUjian) filterCountUjian.textContent = '(' + ujianCount + ')';
+    if (filterCountPresentasi) filterCountPresentasi.textContent = '(' + presentasiCount + ')';
+
+    if (summaryRutinValue) summaryRutinValue.textContent = rutinCount + ' Kelas Aktif';
+    if (summaryUjianValue) summaryUjianValue.textContent = ujianCount + ' Jadwal UTS/UAS';
+    if (summaryPresentasiValue) summaryPresentasiValue.textContent = presentasiCount + ' Kelompok Terjadwal';
+
+    if (sectionCountRutin) sectionCountRutin.textContent = rutinCount + ' Kelas';
+    if (sectionCountUjian) sectionCountUjian.textContent = ujianCount + ' Jadwal';
+    if (sectionCountPresentasi) sectionCountPresentasi.textContent = presentasiCount + ' Kelompok';
+  }
+
   // ---------------------------------------------------------------------
   // Rendering: Jadwal Rutin
   // ---------------------------------------------------------------------
@@ -154,40 +205,72 @@
     }
 
     items.forEach(function (item) {
-      const judul = courseTitle(item.kodeMatkul, item.namaMatkul) + ' (' + item.namaKelas + ')';
       const card = el('article', 'jp-rutin-card');
 
-      card.appendChild(el('span', 'jp-badge jp-badge-blue', 'Mengajar'));
-      card.appendChild(el('h3', 'jp-card-title', judul));
+      const topRow = el('div', 'jp-rutin-top');
+      const pills = el('div', 'jp-rutin-pills');
+      pills.appendChild(el('span', 'jp-pill-code', item.kodeMatkul));
+      pills.appendChild(el('span', 'jp-pill-class', item.namaKelas));
+      topRow.appendChild(pills);
+
+      const status = el('span', 'jp-status-mengajar');
+      const dot = el('span', 'jp-status-dot');
+      dot.setAttribute('aria-hidden', 'true');
+      status.appendChild(dot);
+      status.appendChild(el('span', null, 'Mengajar'));
+      topRow.appendChild(status);
+      card.appendChild(topRow);
+
+      card.appendChild(el('h3', 'jp-card-title', item.namaMatkul));
 
       const meta = el('div', 'jp-meta-list');
       meta.appendChild(metaRow('clock', item.jadwalRingkas));
       meta.appendChild(metaRow('mapPin', item.ruangan));
       card.appendChild(meta);
 
-      const btn = el('button', 'jp-btn-subtle');
+      const footer = el('div', 'jp-rutin-footer');
+      const btn = el('button', 'jp-btn-card-footer');
       btn.type = 'button';
-      btn.appendChild(icon('users'));
-      btn.appendChild(el('span', null, 'Daftar Mahasiswa (' + item.jumlahMahasiswa + ')'));
+
+      const btnLeft = el('span', 'jp-btn-card-footer-left');
+      btnLeft.appendChild(icon('users'));
+      btnLeft.appendChild(el('span', null, 'Daftar Mahasiswa (' + item.jumlahMahasiswa + ')'));
+      btn.appendChild(btnLeft);
+
+      const arrow = el('span', 'jp-btn-card-footer-arrow');
+      arrow.appendChild(icon('arrowRight'));
+      btn.appendChild(arrow);
+
       btn.addEventListener('click', function () {
-        openMahasiswaModal(item, judul);
+        openMahasiswaModal(item);
       });
-      card.appendChild(btn);
+      footer.appendChild(btn);
+      card.appendChild(footer);
 
       listRutin.appendChild(card);
     });
   }
 
   // ---------------------------------------------------------------------
-  // Rendering: Jadwal Ujian
+  // Rendering: Jadwal Ujian & Presentasi (3-Zone Horizontal Cards)
   // ---------------------------------------------------------------------
   function dateBlock(iso) {
     const p = dateParts(iso);
     const block = el('div', 'jp-date-block');
-    block.appendChild(el('span', 'jp-date-day', p.day));
     block.appendChild(el('span', 'jp-date-month', p.month));
+    block.appendChild(el('span', 'jp-date-day', p.day));
     block.appendChild(el('span', 'jp-date-year', p.year));
     return block;
+  }
+
+  function buildInlineMeta(waktuMulai, waktuSelesai, ruangan) {
+    const meta = el('div', 'jp-meta-inline');
+    meta.appendChild(inlineMetaItem('clock', timeRange(waktuMulai, waktuSelesai)));
+    const sep = el('span', 'jp-meta-dot');
+    sep.setAttribute('aria-hidden', 'true');
+    meta.appendChild(sep);
+    meta.appendChild(inlineMetaItem('mapPin', ruangan));
+    return meta;
   }
 
   function renderUjian(items) {
@@ -203,26 +286,31 @@
       card.appendChild(dateBlock(item.tanggal));
 
       const content = el('div', 'jp-event-content');
-      content.appendChild(el(
+      const badges = el('div', 'jp-event-badges');
+      badges.appendChild(el(
         'span',
         'jp-badge ' + (isUas ? 'jp-badge-red' : 'jp-badge-amber'),
         'Mengawas ' + item.jenisUjian
       ));
-      content.appendChild(el('h3', 'jp-card-title', courseTitle(item.kodeMatkul, item.namaMatkul)));
+      badges.appendChild(el('span', 'jp-pill-code-sm', item.kodeMatkul));
+      content.appendChild(badges);
 
-      const meta = el('div', 'jp-meta-list');
-      meta.appendChild(metaRow('clock', timeRange(item.waktuMulai, item.waktuSelesai)));
-      meta.appendChild(metaRow('mapPin', item.ruangan));
-      content.appendChild(meta);
-
+      content.appendChild(el('h3', 'jp-card-title', item.namaMatkul));
+      content.appendChild(buildInlineMeta(item.waktuMulai, item.waktuSelesai, item.ruangan));
       card.appendChild(content);
+
+      const actionZone = el('div', 'jp-event-action');
+      actionZone.appendChild(el(
+        'span',
+        'jp-event-status-chip ' + (isUas ? 'jp-chip-uas' : 'jp-chip-uts'),
+        'Pengawasan'
+      ));
+      card.appendChild(actionZone);
+
       listUjian.appendChild(card);
     });
   }
 
-  // ---------------------------------------------------------------------
-  // Rendering: Jadwal Presentasi
-  // ---------------------------------------------------------------------
   function renderPresentasi(items) {
     clear(listPresentasi);
     if (!items.length) {
@@ -235,27 +323,29 @@
       card.appendChild(dateBlock(item.tanggal));
 
       const content = el('div', 'jp-event-content');
-      content.appendChild(el('span', 'jp-badge jp-badge-green', 'Presentasi Tugas Besar'));
+      const badges = el('div', 'jp-event-badges');
+      badges.appendChild(el('span', 'jp-badge jp-badge-green', 'Presentasi Tugas Besar'));
+      badges.appendChild(el('span', 'jp-pill-code-sm', item.kodeMatkul));
+      content.appendChild(badges);
+
       content.appendChild(el(
         'h3',
         'jp-card-title',
-        courseTitle(item.kodeMatkul, item.namaMatkul) + ' (' + item.namaKelompok + ')'
+        item.namaMatkul + ' (' + item.namaKelompok + ')'
       ));
-
-      const meta = el('div', 'jp-meta-list');
-      meta.appendChild(metaRow('clock', timeRange(item.waktuMulai, item.waktuSelesai)));
-      meta.appendChild(metaRow('mapPin', item.ruangan));
-      content.appendChild(meta);
+      content.appendChild(buildInlineMeta(item.waktuMulai, item.waktuSelesai, item.ruangan));
       card.appendChild(content);
 
-      const btn = el('button', 'jp-btn-outline-green');
+      const actionZone = el('div', 'jp-event-action');
+      const btn = el('button', 'jp-btn-detail');
       btn.type = 'button';
       btn.appendChild(icon('eye'));
       btn.appendChild(el('span', null, 'Lihat Detail'));
       btn.addEventListener('click', function () {
         openPresentasiModal(item);
       });
-      card.appendChild(btn);
+      actionZone.appendChild(btn);
+      card.appendChild(actionZone);
 
       listPresentasi.appendChild(card);
     });
@@ -302,18 +392,24 @@
     matches.forEach(function (student, index) {
       const row = document.createElement('tr');
       row.appendChild(el('td', 'jp-col-no', String(index + 1)));
-      row.appendChild(el('td', 'jp-col-npm', student.npm));
-      row.appendChild(el('td', null, student.nama));
+
+      const npmCell = el('td', 'jp-col-npm');
+      npmCell.appendChild(el('span', 'jp-npm-pill', student.npm));
+      row.appendChild(npmCell);
+
+      row.appendChild(el('td', 'jp-col-nama', student.nama));
       tbodyMahasiswa.appendChild(row);
     });
   }
 
-  function openMahasiswaModal(item, judul) {
+  function openMahasiswaModal(item) {
     activeStudents = (item.daftarMahasiswa || []).slice().sort(function (a, b) {
       return String(a.npm).localeCompare(String(b.npm));
     });
 
-    mahasiswaCourseTitle.textContent = judul;
+    if (mahasiswaCourseCode) mahasiswaCourseCode.textContent = item.kodeMatkul;
+    if (mahasiswaCourseClass) mahasiswaCourseClass.textContent = item.namaKelas;
+    mahasiswaCourseTitle.textContent = item.namaMatkul;
     mahasiswaCourseMeta.textContent = item.jadwalRingkas + ' | ' + item.ruangan;
     mahasiswaCountBadge.textContent = item.jumlahMahasiswa + ' Mahasiswa';
     inputCariMahasiswa.value = '';
@@ -333,16 +429,22 @@
 
     clear(detailAnggota);
     const anggota = item.anggotaKelompok || [];
+    if (detailAnggotaCount) detailAnggotaCount.textContent = anggota.length + ' Anggota';
+
     if (!anggota.length) {
-      detailAnggota.appendChild(el('div', 'dosen-members-empty', 'Belum ada anggota pada kelompok ini.'));
+      detailAnggota.appendChild(el('div', 'jp-members-empty', 'Belum ada anggota pada kelompok ini.'));
     } else {
       anggota.forEach(function (member) {
-        const row = el('div', 'dosen-group-member-row');
-        const left = el('div', 'dosen-group-member-left');
-        left.appendChild(icon('user'));
-        left.appendChild(el('span', 'dosen-group-member-name', member.nama));
-        left.appendChild(el('span', 'dosen-group-member-npm', '(' + member.npm + ')'));
+        const row = el('div', 'jp-member-row');
+
+        const left = el('div', 'jp-member-left');
+        const avatar = el('span', 'jp-avatar-circle', extractInitials(member.nama));
+        avatar.setAttribute('aria-hidden', 'true');
+        left.appendChild(avatar);
+        left.appendChild(el('span', 'jp-member-name', member.nama));
         row.appendChild(left);
+
+        row.appendChild(el('span', 'jp-npm-pill', member.npm));
         detailAnggota.appendChild(row);
       });
     }
@@ -421,12 +523,19 @@
 
       const data = await response.json();
       hideError();
-      renderRutin(data.jadwalRutin || []);
-      renderUjian(data.jadwalUjian || []);
-      renderPresentasi(data.jadwalPresentasi || []);
+
+      const rutin = data.jadwalRutin || [];
+      const ujian = data.jadwalUjian || [];
+      const presentasi = data.jadwalPresentasi || [];
+
+      updateCounts(rutin.length, ujian.length, presentasi.length);
+      renderRutin(rutin);
+      renderUjian(ujian);
+      renderPresentasi(presentasi);
     } catch (error) {
       console.error('Error fetching jadwal pribadi:', error);
       showError('Jadwal pribadi gagal dimuat. Muat ulang halaman atau coba beberapa saat lagi.');
+      updateCounts(0, 0, 0);
       clear(listRutin);
       clear(listUjian);
       clear(listPresentasi);
