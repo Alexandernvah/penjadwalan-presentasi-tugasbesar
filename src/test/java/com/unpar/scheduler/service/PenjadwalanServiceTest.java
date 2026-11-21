@@ -358,17 +358,32 @@ class PenjadwalanServiceTest {
         assertEquals("09:00 - 10:00", row09.labelWaktu());
         SelMatriksMingguanDTO wed09Kel1 = row09.selList().get(2); // Wednesday is index 2
         assertEquals("TERJADWAL", wed09Kel1.status());
-        assertTrue(wed09Kel1.badgeText().contains("Kelompok 1"));
+        assertEquals("Terjadwal", wed09Kel1.badgeText());
+        assertEquals("Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Kel1.deskripsi());
         assertEquals(Integer.valueOf(99), wed09Kel1.idPresentasiTerjadwal());
         assertTrue(wed09Kel1.intervalTerpakai().contains("09:00 - 09:30"));
 
-        // 2. Matrix for Kelompok 2 (different group) -> slot 09:00 - 10:00 on Wednesday MUST be BENTROK_DOSEN
+        // 2. Matrix for Kelompok 2 (different group) -> slot 09:00 - 10:00 on Wednesday MUST be BENTROK_DOSEN with course name
         MatriksMingguanResponseDTO matrixKel2 = penjadwalanService.getMatriksMingguan(102, 2, "REGULER", monday, "1975031501");
         assertNotNull(matrixKel2);
         SelMatriksMingguanDTO wed09Kel2 = matrixKel2.barisList().get(2).selList().get(2);
         assertEquals("BENTROK_DOSEN", wed09Kel2.status());
         assertEquals("Dosen Sibuk", wed09Kel2.badgeText());
-        assertTrue(wed09Kel2.deskripsi().contains("Menguji Kelompok 1"));
+        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Kel2.deskripsi());
         assertTrue(wed09Kel2.intervalTerpakai().contains("09:00 - 09:30"));
+
+        // 3. Cross-course check: Kelompok 1 in ASD (idKelas=105) sees Kelompok 1 in Jaringan Komputer as BENTROK_DOSEN
+        Kelompok kelompok1Asd = new Kelompok(3, kelasAsd, (short) 1, (short) 4, "Struktur Data");
+        when(kelasRepository.findByIdWithDetails(105)).thenReturn(Optional.of(kelasAsd));
+        when(kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(105)).thenReturn(List.of(kelompok1Asd));
+        when(kuliahRepository.findByKelas_IdKelas(105)).thenReturn(Collections.emptyList());
+        when(anggotaKelompokRepository.findByKelasIdWithMahasiswaAndKelompok(105)).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByKelasIdWithDetails(105)).thenReturn(Collections.emptyList());
+
+        MatriksMingguanResponseDTO matrixAsd = penjadwalanService.getMatriksMingguan(105, 3, "REGULER", monday, "1975031501");
+        SelMatriksMingguanDTO wed09Asd = matrixAsd.barisList().get(2).selList().get(2);
+        assertEquals("BENTROK_DOSEN", wed09Asd.status());
+        assertEquals("Dosen Sibuk", wed09Asd.badgeText());
+        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Asd.deskripsi());
     }
 }

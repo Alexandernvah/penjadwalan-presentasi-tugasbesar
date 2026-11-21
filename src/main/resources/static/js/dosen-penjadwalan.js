@@ -535,12 +535,13 @@
           td.className = 'cell-state-terjadwal';
           td.setAttribute('role', 'button');
           td.setAttribute('tabindex', '0');
-          td.innerHTML = `
-            <div class="jadwal-cell-box">
-              <span class="cell-pill-badge pill-indigo">${sel.badgeText || 'Terjadwal'}</span>
-              <span class="cell-subtext-terjadwal">${sel.deskripsi || 'Jadwal Presentasi'}</span>
-            </div>
-          `;
+          td.appendChild(createStackedCellBox(
+            'pill-indigo',
+            sel.badgeText || 'Terjadwal',
+            sel.deskripsi || 'Jadwal Presentasi',
+            'cell-subtext-terjadwal',
+            ['cell-terjadwal-group', 'cell-terjadwal-course', 'cell-terjadwal-time']
+          ));
           bindCellClick(td, function () {
             if (sel.idPresentasiTerjadwal) {
               const group = getSelectedGroupObj();
@@ -595,12 +596,13 @@
         } else {
           // State D: BENTROK_DOSEN
           td.className = 'cell-state-bentrok-dosen';
-          td.innerHTML = `
-            <div class="jadwal-cell-box">
-              <span class="cell-pill-badge pill-amber">${sel.badgeText || 'Dosen Sibuk'}</span>
-              <span class="cell-subtext-bentrok-dosen">${sel.deskripsi || 'Mengajar Kelas Lain'}</span>
-            </div>
-          `;
+          td.appendChild(createStackedCellBox(
+            'pill-amber',
+            sel.badgeText || 'Dosen Sibuk',
+            sel.deskripsi || 'Mengajar Kelas Lain',
+            'cell-subtext-bentrok-dosen',
+            ['cell-bentrok-dosen-group', 'cell-bentrok-dosen-course', 'cell-bentrok-dosen-time']
+          ));
         }
 
         tr.appendChild(td);
@@ -608,6 +610,30 @@
 
       tbodyMatriksMingguan.appendChild(tr);
     });
+  }
+
+  function createStackedCellBox(pillClass, badgeText, deskripsiText, subtextClass, lineClasses) {
+    const boxDiv = document.createElement('div');
+    boxDiv.className = 'jadwal-cell-box';
+
+    const badgeSpan = document.createElement('span');
+    badgeSpan.className = `cell-pill-badge ${pillClass}`;
+    badgeSpan.textContent = badgeText;
+    boxDiv.appendChild(badgeSpan);
+
+    const subtitleDiv = document.createElement('div');
+    subtitleDiv.className = subtextClass;
+    const lines = String(deskripsiText || '').split('\n');
+    const fallbackClass = lineClasses[lineClasses.length - 1] || '';
+    lines.forEach(function (lineText, idx) {
+      const lineEl = document.createElement('div');
+      lineEl.className = lineClasses[idx] || fallbackClass;
+      lineEl.textContent = lineText;
+      subtitleDiv.appendChild(lineEl);
+    });
+    boxDiv.appendChild(subtitleDiv);
+
+    return boxDiv;
   }
 
   function bindCellClick(element, handler) {

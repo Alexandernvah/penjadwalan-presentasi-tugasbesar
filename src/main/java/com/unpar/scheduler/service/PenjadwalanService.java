@@ -65,6 +65,7 @@ public class PenjadwalanService {
     private static final String DEFAULT_DOSEN_EMAIL = "budi.santoso@unpar.ac.id";
     private static final String DEFAULT_RUANGAN = "Ruang 9122";
     private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DOT_TIME_FMT = DateTimeFormatter.ofPattern("HH.mm");
 
     private static final LocalDate DEFAULT_REGULER_MONDAY = LocalDate.of(2026, 10, 5);
     private static final LocalDate DEFAULT_UTS_MONDAY = LocalDate.of(2026, 10, 19);
@@ -608,14 +609,13 @@ public class PenjadwalanService {
             int noKel = ownPresentation.getKelompok().getNoKelompok() != null
                 ? ownPresentation.getKelompok().getNoKelompok().intValue()
                 : 1;
-            String timeRange = ownPresentation.getJamMulai().format(TIME_FMT) + " - " + ownPresentation.getJamSelesai().format(TIME_FMT);
-            String ruangan = (ownPresentation.getRuangan() != null && !ownPresentation.getRuangan().isBlank())
-                ? ownPresentation.getRuangan()
-                : "Ruang 9122";
+            String timeDotRange = ownPresentation.getJamMulai().format(DOT_TIME_FMT)
+                + " - " + ownPresentation.getJamSelesai().format(DOT_TIME_FMT);
+            String matkulName = resolveNamaMatkul(ownPresentation, kelas);
             return new RawCell(
                 "TERJADWAL",
-                "Terjadwal: Kelompok " + noKel + " (" + timeRange + ")",
-                timeRange + " (" + ruangan + ")",
+                "Terjadwal",
+                "Kelompok " + noKel + "\n" + matkulName + "\n" + timeDotRange,
                 "",
                 "",
                 ownPresentation.getIdPresentasi(),
@@ -627,11 +627,13 @@ public class PenjadwalanService {
             int noKel = otherPresentation.getKelompok().getNoKelompok() != null
                 ? otherPresentation.getKelompok().getNoKelompok().intValue()
                 : 1;
-            String timeRange = otherPresentation.getJamMulai().format(TIME_FMT) + " - " + otherPresentation.getJamSelesai().format(TIME_FMT);
+            String timeDotRange = otherPresentation.getJamMulai().format(DOT_TIME_FMT)
+                + " - " + otherPresentation.getJamSelesai().format(DOT_TIME_FMT);
+            String matkulName = resolveNamaMatkul(otherPresentation, kelas);
             return new RawCell(
                 "BENTROK_DOSEN",
                 "Dosen Sibuk",
-                "Menguji Kelompok " + noKel + " (" + timeRange + ")",
+                "Menguji Kelompok " + noKel + "\n" + matkulName + "\n" + timeDotRange,
                 "",
                 "",
                 otherPresentation.getIdPresentasi(),
@@ -918,6 +920,19 @@ public class PenjadwalanService {
         String trimmed = fullName.trim();
         int spaceIdx = trimmed.indexOf(' ');
         return spaceIdx > 0 ? trimmed.substring(0, spaceIdx) : trimmed;
+    }
+
+    private String resolveNamaMatkul(Presentasi p, Kelas fallbackKelas) {
+        Kelas k = (p != null && p.getKelompok() != null && p.getKelompok().getKelas() != null)
+            ? p.getKelompok().getKelas()
+            : fallbackKelas;
+        if (k != null && k.getMataKuliahBuka() != null && k.getMataKuliahBuka().getMatakuliah() != null) {
+            String nama = k.getMataKuliahBuka().getMatakuliah().getNama();
+            if (nama != null && !nama.isBlank()) {
+                return nama;
+            }
+        }
+        return "Mata Kuliah";
     }
 
     private String abbreviateCourseName(String namaMatkul) {
@@ -2102,20 +2117,30 @@ public class PenjadwalanService {
                 }
 
                 if (own != null) {
+                    String ownMatkul = (own.namaMatkul() != null && !own.namaMatkul().isBlank())
+                        ? own.namaMatkul()
+                        : (isAsd ? "Algoritma dan Struktur Data" : "Jaringan Komputer");
+                    String dotStart = own.jamMulai() != null ? own.jamMulai().replace(':', '.') : "09.00";
+                    String dotEnd = own.jamSelesai() != null ? own.jamSelesai().replace(':', '.') : "09.30";
                     grid[h][d] = new RawCell(
                         "TERJADWAL",
-                        "Terjadwal: Kelompok " + own.nomorKelompok() + " (" + own.jamMulai() + " - " + own.jamSelesai() + ")",
-                        own.jamMulai() + " - " + own.jamSelesai() + " (" + (own.ruangan() != null ? own.ruangan() : ruanganDefault) + ")",
+                        "Terjadwal",
+                        "Kelompok " + own.nomorKelompok() + "\n" + ownMatkul + "\n" + dotStart + " - " + dotEnd,
                         "",
                         "",
                         own.idPresentasi(),
                         bookedIntervals
                     );
                 } else if (other != null) {
+                    String otherMatkul = (other.namaMatkul() != null && !other.namaMatkul().isBlank())
+                        ? other.namaMatkul()
+                        : (isAsd ? "Algoritma dan Struktur Data" : "Jaringan Komputer");
+                    String dotStart = other.jamMulai() != null ? other.jamMulai().replace(':', '.') : "09.00";
+                    String dotEnd = other.jamSelesai() != null ? other.jamSelesai().replace(':', '.') : "09.30";
                     grid[h][d] = new RawCell(
                         "BENTROK_DOSEN",
                         "Dosen Sibuk",
-                        "Menguji Kelompok " + other.nomorKelompok() + " (" + other.jamMulai() + " - " + other.jamSelesai() + ")",
+                        "Menguji Kelompok " + other.nomorKelompok() + "\n" + otherMatkul + "\n" + dotStart + " - " + dotEnd,
                         "",
                         "",
                         other.idPresentasi(),
