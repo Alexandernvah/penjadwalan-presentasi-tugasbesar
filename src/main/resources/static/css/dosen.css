@@ -400,49 +400,88 @@
 }
 
 .dosen-profile-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  padding: 8px 14px;
-  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  padding: 6px 14px 6px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #0f172a;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .dosen-profile-btn:hover {
   background-color: #f8fafc;
-  border-color: #cbd5e1;
+  border-color: #94a3b8;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+.dosen-profile-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.dosen-profile-btn[aria-expanded="true"],
+.dosen-profile-btn[aria-expanded="true"]:hover {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .dosen-profile-icon {
-  width: 16px;
-  height: 16px;
-  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.dosen-profile-btn > span,
+.dosen-profile-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .dosen-dropdown-arrow {
-  width: 12px;
-  height: 12px;
-  color: #94a3b8;
+  width: 15px;
+  height: 15px;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: transform 160ms ease, color 160ms ease;
+}
+
+.dosen-profile-btn[aria-expanded="true"] .dosen-dropdown-arrow {
+  transform: rotate(180deg);
+  color: #2563eb;
 }
 
 .dosen-dropdown-menu {
   position: absolute;
   right: 0;
   top: calc(100% + 0.5rem);
-  width: 220px;
+  width: 232px;
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 4px 10px -4px rgba(15, 23, 42, 0.05);
   display: none;
   flex-direction: column;
-  padding: 0.5rem 0;
+  padding: 0.375rem;
   z-index: 50;
 }
 
@@ -451,8 +490,9 @@
 }
 
 .dosen-dropdown-header {
-  padding: 0.65rem 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid #f1f5f9;
   font-size: 0.8rem;
 }
 
@@ -470,9 +510,10 @@
 }
 
 .dosen-dropdown-item {
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 0.75rem;
   color: #0f172a;
   font-size: 0.85rem;
+  font-weight: 500;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -480,8 +521,10 @@
   cursor: pointer;
   background: none;
   border: none;
+  border-radius: 8px;
   width: 100%;
   text-align: left;
+  transition: background-color 0.14s ease, color 0.14s ease;
 }
 
 .dosen-dropdown-item:hover {
@@ -490,6 +533,10 @@
 
 .dosen-dropdown-item.text-danger {
   color: #dc2626;
+}
+
+.dosen-dropdown-item.text-danger:hover {
+  background-color: #fef2f2;
 }
 
 .dosen-menu-svg {
@@ -2350,10 +2397,10 @@ td.cell-state-tersedia-sebagian:hover {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Page Header & Context Badge */
+/* Page Header & Semester Pill */
 .jp-page-header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1.25rem;
@@ -2364,31 +2411,19 @@ td.cell-state-tersedia-sebagian:hover {
   min-width: 0;
 }
 
-.jp-context-row {
+.jp-title-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.jp-breadcrumb-label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #64748b;
-}
-
-.jp-breadcrumb-sep {
-  font-size: 0.78rem;
-  color: #cbd5e1;
+  gap: 12px;
 }
 
 .jp-semester-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  font-size: 0.75rem;
+  padding: 4px 12px;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #1d4ed8;
   background-color: #eff6ff;
@@ -2402,13 +2437,13 @@ td.cell-state-tersedia-sebagian:hover {
   flex-shrink: 0;
 }
 
-/* Tactile Pill Switcher */
+/* Segmented Filter Pill Group */
 .jp-segmented {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 4px;
-  background-color: #eef2f6;
+  background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
 }
@@ -2421,22 +2456,26 @@ td.cell-state-tersedia-sebagian:hover {
   font-size: 0.85rem;
   font-weight: 600;
   color: #475569;
-  background-color: transparent;
+  background-color: #ffffff;
   border: none;
   border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+  transition: background-color 0.16s ease, color 0.16s ease;
 }
 
 .jp-segmented-btn:hover {
   color: #0f172a;
+  background-color: #f8fafc;
 }
 
 .jp-segmented-btn.active,
-.jp-segmented-btn.active:hover {
-  color: #1d4ed8;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+.jp-segmented-btn.is-active,
+.jp-segmented-btn.active:hover,
+.jp-segmented-btn.is-active:hover {
+  color: #ffffff;
+  font-weight: 600;
+  background-color: #2563eb;
+  border-radius: 7px;
 }
 
 .jp-segmented-count {
@@ -2446,8 +2485,9 @@ td.cell-state-tersedia-sebagian:hover {
   font-variant-numeric: tabular-nums;
 }
 
-.jp-segmented-btn.active .jp-segmented-count {
-  color: #2563eb;
+.jp-segmented-btn.active .jp-segmented-count,
+.jp-segmented-btn.is-active .jp-segmented-count {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .jp-segmented-btn:focus-visible,

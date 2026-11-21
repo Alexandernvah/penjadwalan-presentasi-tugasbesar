@@ -127,9 +127,8 @@
         <!-- Page Header with Segmented Filter -->
         <section class="jp-page-header" aria-labelledby="heading-jadwal-pribadi">
           <div class="jp-page-header-text">
-            <div class="jp-context-row">
-              <span class="jp-breadcrumb-label">Portal Dosen</span>
-              <span class="jp-breadcrumb-sep" aria-hidden="true">/</span>
+            <div class="jp-title-row">
+              <h1 id="heading-jadwal-pribadi" class="dosen-welcome-title">Jadwal Pribadi</h1>
               <span class="jp-semester-badge">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -140,14 +139,10 @@
                 <span>Semester Ganjil 2026/2027</span>
               </span>
             </div>
-            <h1 id="heading-jadwal-pribadi" class="dosen-welcome-title">Jadwal Pribadi</h1>
-            <p class="dosen-welcome-subtitle">
-              Kelola jadwal mengajar rutin, pengawasan ujian, dan jadwal presentasi mahasiswa.
-            </p>
           </div>
 
           <div class="jp-segmented" role="group" aria-label="Filter jenis jadwal">
-            <button type="button" class="jp-segmented-btn active" data-filter="SEMUA" aria-pressed="true">
+            <button type="button" class="jp-segmented-btn active is-active" data-filter="SEMUA" aria-pressed="true">
               <span>Semua</span>
               <span id="filter-count-semua" class="jp-segmented-count">(0)</span>
             </button>

@@ -483,6 +483,7 @@
     filterButtons.forEach(function (btn) {
       const isActive = btn.getAttribute('data-filter') === filter;
       btn.classList.toggle('active', isActive);
+      btn.classList.toggle('is-active', isActive);
       btn.setAttribute('aria-pressed', String(isActive));
     });
 
