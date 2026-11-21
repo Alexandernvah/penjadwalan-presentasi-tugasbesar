@@ -44,15 +44,21 @@ public class DosenDashboardService {
 
         Optional<Dosen> dosenOpt = dosenRepository.findByNomorIndukDosen(targetNidn);
         if (dosenOpt.isEmpty()) {
-            return buildFallbackSummary(targetNidn);
+            String fallbackSemester = resolveActiveSemesterCode(null);
+            return buildFallbackSummary(targetNidn, DEFAULT_FALLBACK_NAME, DEFAULT_FALLBACK_EMAIL, fallbackSemester);
         }
 
         Dosen dosen = dosenOpt.get();
-        String activeSemester = DEFAULT_FALLBACK_SEMESTER;
+        String activeSemester = resolveActiveSemesterCode(dosen.getNomorIndukDosen());
         List<Kelas> classes = kelasRepository.findClassesByLecturerAndSemester(dosen.getNomorIndukDosen(), activeSemester);
 
         if (classes.isEmpty()) {
-            return buildFallbackSummary(dosen.getNomorIndukDosen(), dosen.getNama(), dosen.getAkun() != null ? dosen.getAkun().getEmail() : DEFAULT_FALLBACK_EMAIL);
+            return buildFallbackSummary(
+                dosen.getNomorIndukDosen(),
+                dosen.getNama(),
+                dosen.getAkun() != null ? dosen.getAkun().getEmail() : DEFAULT_FALLBACK_EMAIL,
+                activeSemester
+            );
         }
 
         List<MataKuliahAjarItemDTO> items = new ArrayList<>();
@@ -99,16 +105,48 @@ public class DosenDashboardService {
             dosen.getNomorIndukDosen(),
             dosen.getNama(),
             lecturerEmail,
-            activeSemester,
+            formatSemesterLabel(activeSemester),
             items
         );
     }
 
-    private DosenDashboardSummaryDTO buildFallbackSummary(String nidn) {
-        return buildFallbackSummary(nidn, DEFAULT_FALLBACK_NAME, DEFAULT_FALLBACK_EMAIL);
+    private String resolveActiveSemesterCode(String nidn) {
+        if (nidn != null && !nidn.isBlank()) {
+            Optional<String> lecturerSemester = kelasRepository.findLatestSemesterByLecturer(nidn);
+            if (lecturerSemester.isPresent() && !lecturerSemester.get().isBlank()) {
+                return lecturerSemester.get().trim();
+            }
+        }
+        Optional<String> overallSemester = kelasRepository.findLatestSemesterOverall();
+        if (overallSemester.isPresent() && !overallSemester.get().isBlank()) {
+            return overallSemester.get().trim();
+        }
+        return DEFAULT_FALLBACK_SEMESTER;
     }
 
-    private DosenDashboardSummaryDTO buildFallbackSummary(String nidn, String name, String email) {
+    public static String formatSemesterLabel(String kodeSemester) {
+        if (kodeSemester == null || kodeSemester.isBlank()) {
+            return formatSemesterLabel(DEFAULT_FALLBACK_SEMESTER);
+        }
+        String trimmed = kodeSemester.trim();
+        if (trimmed.length() == 5 && trimmed.chars().allMatch(Character::isDigit)) {
+            int startYear = 2000 + Integer.parseInt(trimmed.substring(0, 2));
+            int endYear = 2000 + Integer.parseInt(trimmed.substring(2, 4));
+            char termDigit = trimmed.charAt(4);
+            String termName = switch (termDigit) {
+                case '1' -> "Semester Ganjil";
+                case '2' -> "Semester Genap";
+                case '3' -> "Semester Pendek";
+                default -> null;
+            };
+            if (termName != null) {
+                return termName + " " + startYear + "/" + endYear;
+            }
+        }
+        return trimmed;
+    }
+
+    private DosenDashboardSummaryDTO buildFallbackSummary(String nidn, String name, String email, String semesterCode) {
         List<MataKuliahAjarItemDTO> fallbackItems = List.of(
             new MataKuliahAjarItemDTO(
                 101,
@@ -138,7 +176,7 @@ public class DosenDashboardService {
             (nidn != null && !nidn.trim().isEmpty()) ? nidn : DEFAULT_FALLBACK_NIDN,
             name,
             email,
-            DEFAULT_FALLBACK_SEMESTER,
+            formatSemesterLabel(semesterCode),
             fallbackItems
         );
     }

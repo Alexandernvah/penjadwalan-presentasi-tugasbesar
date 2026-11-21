@@ -3,280 +3,463 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Matriks Penjadwalan Presentasi Tubes - Tubes Scheduler">
-  <title>Matriks Penjadwalan - Tubes Scheduler</title>
+  <meta name="description" content="Penentuan Jadwal Presentasi Tugas Besar - Tubes Scheduler UNPAR">
+  <title>Penentuan Jadwal Presentasi - Tubes Scheduler</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/dosen.css">
 </head>
 <body>
-  <!-- Lecturer Navigation Bar -->
-  <header class="navbar">
-    <div class="container navbar-container">
-      <a href="penjadwalan.html" class="navbar-brand">
-        <span>Tubes Scheduler</span>
-        <span class="navbar-brand-badge">Dosen</span>
-      </a>
+  <div class="dosen-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="dosen-sidebar" aria-label="Sidebar Navigasi Dosen">
+      <div class="dosen-sidebar-header">
+        <div class="dosen-brand-badge">
+          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img" width="40" height="40">
+          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img" width="40" height="40">
+        </div>
+      </div>
 
-      <nav aria-label="Main Navigation">
-        <ul class="navbar-nav">
-          <li><a href="penjadwalan.html" class="nav-link active">Matriks Penjadwalan</a></li>
-          <li><a href="kelola-kelompok.html" class="nav-link">Kelola Kelompok</a></li>
-          <li><a href="jadwal-pribadi.html" class="nav-link">Agenda Saya</a></li>
+      <nav aria-label="Navigasi Utama">
+        <ul class="dosen-nav-list">
+          <li class="dosen-nav-item">
+            <a href="dashboard.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="jadwal-pribadi.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span>Jadwal Pribadi</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="kelola-kelompok.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
+              <span>Kelola Kelompok</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="penjadwalan.html" class="dosen-nav-link active">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <span>Penjadwalan</span>
+            </a>
+          </li>
         </ul>
       </nav>
+    </aside>
 
-      <div class="user-profile-menu">
-        <div class="user-info">
-          <span id="current-user-name" class="user-name">Dr. Dosen Pengampu</span>
-          <span id="current-user-role" class="user-role-label">Dosen</span>
-        </div>
-        <button type="button" id="btn-dosen-logout" class="btn btn-secondary btn-sm">Keluar</button>
-      </div>
-    </div>
-  </header>
+    <!-- Main Container -->
+    <div class="dosen-main-container dosen-main">
+      <!-- Top Bar -->
+      <header class="dosen-topbar">
+        <div class="dosen-topbar-spacer"></div>
 
-  <!-- Main Container -->
-  <main class="container flex-1 mt-4 mb-4">
-    <!-- Page Header -->
-    <div class="page-header">
-      <div>
-        <h1 class="page-title">Visual Calendar & Matrix Penjadwalan</h1>
-        <p class="page-subtitle">Pilih slot waktu presentasi (07:00 - 18:00) dengan deteksi tabrakan jadwal otomatis.</p>
-      </div>
-      <div class="page-actions">
-        <button type="button" id="btn-refresh-matrix" class="btn btn-secondary btn-sm">Segarkan Matriks</button>
-      </div>
-    </div>
+        <div class="dosen-profile-menu">
+          <button type="button" id="btn-lecturer-profile-menu" class="dosen-profile-btn" aria-haspopup="true" aria-expanded="false">
+            <svg class="dosen-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
+            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
 
-    <!-- Scheduling Parameter Controls -->
-    <section class="card">
-      <div class="card-header">
-        <h2 class="card-title">Parameter Penjadwalan</h2>
-      </div>
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <label for="select-matrix-kelas" class="form-label required">Mata Kuliah / Kelas</label>
-          <select id="select-matrix-kelas" class="form-control">
-            <option value="">-- Pilih Kelas Kuliah --</option>
-          </select>
-        </div>
-        <div class="form-group flex-1">
-          <label for="select-matrix-kelompok" class="form-label required">Kelompok yang Dijadwalkan</label>
-          <select id="select-matrix-kelompok" class="form-control" disabled>
-            <option value="">-- Pilih Kelompok --</option>
-          </select>
-        </div>
-        <div class="form-group flex-1">
-          <label for="select-matrix-ruangan" class="form-label required">Ruangan</label>
-          <select id="select-matrix-ruangan" class="form-control">
-            <option value="">-- Pilih Ruangan Presentasi --</option>
-          </select>
-        </div>
-        <div class="form-group flex-1">
-          <label for="input-matrix-date" class="form-label required">Tanggal Presentasi</label>
-          <input type="date" id="input-matrix-date" class="form-control">
-        </div>
-      </div>
-    </section>
-
-    <!-- Conflict Alert Banner (Dynamic) -->
-    <div id="conflict-alert-box" class="conflict-alert-banner hidden">
-      <div class="conflict-alert-header">
-        <div class="conflict-alert-title">
-          <span>⚠️</span>
-          <span>Peringatan Bentrok Jadwal Terdeteksi!</span>
-        </div>
-        <button type="button" id="btn-dismiss-conflict" class="alert-close">&times;</button>
-      </div>
-      <p id="conflict-summary" class="mb-2">Slot waktu yang dipilih memiliki bentrokan jadwal:</p>
-      <ul id="conflict-detail-list" class="conflict-list">
-    <!-- Visual Calendar Timetable Grid -->
-    <section class="card">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title">Matriks Slot Waktu Harian (07:00 - 18:00)</h2>
-          <p class="card-subtitle">Klik slot tersedia (Hijau) atau pilih jadwal bertanda bentrok.</p>
-        </div>
-        <div class="d-flex align-center gap-2">
-          <span class="badge badge-success">Hijau: Tersedia</span>
-          <span class="badge badge-danger">Merah: Bentrok</span>
-          <span class="badge badge-info">Biru: Terisi</span>
-        </div>
-      </div>
-
-      <div class="timetable-wrapper">
-        <table class="timetable-grid" id="matrix-timetable">
-          <thead>
-            <tr>
-              <th scope="col">Waktu</th>
-              <th scope="col">Senin</th>
-              <th scope="col">Selasa</th>
-              <th scope="col">Rabu</th>
-              <th scope="col">Kamis</th>
-              <th scope="col">Jumat</th>
-              <th scope="col">Sabtu</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-matrix-slots">
-            <!-- 07:00 - 09:00 -->
-            <tr>
-              <td class="timetable-time-slot">07:00 - 08:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="07:00" data-end="08:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">08:00 - 09:00</td>
-              <td><div class="slot-cell-content slot-conflicted" data-day="SENIN" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Bentrok (Kuliah)</span><span class="slot-cell-sub">3 Mhs</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="08:00" data-end="09:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <!-- 09:00 - 11:00 -->
-            <tr>
-              <td class="timetable-time-slot">09:00 - 10:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-conflicted" data-day="RABU" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Bentrok (Dosen)</span><span class="slot-cell-sub">Rapat</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="09:00" data-end="10:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">10:00 - 11:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            <!-- 11:00 - 13:00 -->
-            <tr>
-              <td class="timetable-time-slot">11:00 - 12:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-conflicted" data-day="JUMAT" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Bentrok (Ujian)</span><span class="slot-cell-sub">UTS</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="11:00" data-end="12:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">12:00 - 13:00</td>
-              <td colspan="6" class="text-center text-muted break-slot">Istirahat Siang</td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">13:00 - 14:00</td>
-              <td><div class="slot-cell-content slot-booked" data-day="SENIN" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Kelompok 02</span><span class="slot-cell-sub">Lab 1</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="13:00" data-end="14:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="10:00" data-end="11:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <!-- 14:00 - 18:00 -->
-            <tr>
-              <td class="timetable-time-slot">14:00 - 15:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="14:00" data-end="15:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">15:00 - 16:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="15:00" data-end="16:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">16:00 - 17:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="16:00" data-end="17:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-            <tr>
-              <td class="timetable-time-slot">17:00 - 18:00</td>
-              <td><div class="slot-cell-content slot-available" data-day="SENIN" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SELASA" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="RABU" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="KAMIS" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="JUMAT" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-              <td><div class="slot-cell-content slot-available" data-day="SABTU" data-start="17:00" data-end="18:00"><span class="slot-cell-label">Tersedia</span></div></td>
-            </tr>
-
-          </tbody>
-        </table>
-      </div>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <!-- Confirmation Modal with Explicit 'Override Bentrok' Button -->
-  <div id="modal-override-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-override-title">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-override-title" class="modal-title">Konfirmasi Jadwal & Override Bentrok</h3>
-        <button type="button" id="btn-close-override-modal" class="modal-close-btn" aria-label="Tutup modal">&times;</button>
-      </div>
-      <form id="form-override-confirm">
-        <div class="modal-body">
-          <div class="conflict-detail-box">
-            <h5>Konflik Jadwal Ditemukan</h5>
-            <p id="modal-conflict-desc" class="mb-2">Slot waktu ini bertabrakan dengan jadwal terdaftar.</p>
-            <ul id="modal-conflict-reasons" class="conflict-list">
-              <li>Kuliah Pemrograman Berorientasi Objek (13:00 - 15:00)</li>
-            </ul>
-          </div>
-
-          <div class="form-group">
-            <label for="override-reason-note" class="form-label required">Alasan Override / Kebijakan Dosen</label>
-            <textarea 
-              id="override-reason-note" 
-              name="catatanOverride" 
-              class="form-control" 
-              rows="3" 
-              placeholder="Contoh: Telah disetujui bersama mahasiswa melalui dispensasi..." 
-              required
-            ></textarea>
+          <div id="lecturer-dropdown-panel" class="dosen-dropdown-menu" role="menu">
+            <div class="dosen-dropdown-header">
+              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Dr. Budi Santoso</div>
+              <div id="dropdown-lecturer-email" class="dosen-dropdown-email">budi.santoso@unpar.ac.id</div>
+            </div>
+            <a href="jadwal-pribadi.html" class="dosen-dropdown-item" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Agenda Saya</span>
+            </a>
+            <button type="button" id="btn-lecturer-logout" class="dosen-dropdown-item text-danger" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Keluar</span>
+            </button>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" id="btn-cancel-override" class="btn btn-secondary">Batal</button>
-          <button type="submit" id="btn-override-bentrok" class="btn btn-danger">
-            Override Bentrok & Simpan Jadwal
+      </header>
+
+      <!-- Main Content -->
+      <main class="dosen-content">
+        <!-- Page Header -->
+        <section class="dosen-welcome-section" aria-labelledby="heading-penjadwalan">
+          <h1 id="heading-penjadwalan" class="dosen-welcome-title">Penentuan Jadwal Presentasi</h1>
+          <p class="dosen-welcome-subtitle">
+            Pilih mata kuliah dan kelompok untuk meninjau informasi anggota serta menjadwalkan waktu presentasi kelompok.
+          </p>
+        </section>
+
+        <!-- Top Filter Card (2 Columns Only) -->
+        <section class="dosen-filter-card" aria-label="Filter Mata Kuliah dan Kelompok">
+          <div class="dosen-penjadwalan-filter-2col">
+            <div class="dosen-filter-field-group">
+              <label for="select-kelas" class="dosen-filter-label">Pilih Mata Kuliah</label>
+              <select id="select-kelas" class="dosen-select-field">
+                <option value="102">IF3130 - Jaringan Komputer (Kelas B)</option>
+              </select>
+            </div>
+
+            <div class="dosen-filter-field-group">
+              <label for="select-kelompok" class="dosen-filter-label">Pilih Kelompok</label>
+              <select id="select-kelompok" class="dosen-select-field">
+                <option value="1">Kelompok 1</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Inline Status Notification Banner -->
+        <div id="penjadwalan-feedback-banner" class="dosen-feedback-banner banner-success hidden" role="status" aria-live="polite">
+          <div class="dosen-feedback-banner-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="penjadwalan-feedback-text">Jadwal presentasi berhasil disimpan.</span>
+          </div>
+          <button type="button" id="btn-close-feedback-banner" class="dosen-feedback-close" aria-label="Tutup pemberitahuan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
-      </form>
+
+        <!-- Centered Group Information Card (#card-informasi-kelompok) -->
+        <section id="card-informasi-kelompok" class="dosen-group-info-card" aria-labelledby="title-informasi-kelompok">
+          <div class="dosen-group-info-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <h2 id="title-informasi-kelompok" class="dosen-group-info-title">Informasi Kelompok 1</h2>
+          </div>
+
+          <div class="dosen-group-meta-section">
+            <div class="dosen-group-meta-block">
+              <span class="dosen-group-meta-label">MATA KULIAH</span>
+              <span id="info-mata-kuliah" class="dosen-group-meta-value">IF3130 - Jaringan Komputer (Kelas B)</span>
+            </div>
+
+            <div class="dosen-group-meta-block">
+              <span class="dosen-group-meta-label">TOPIK TUGAS BESAR</span>
+              <span id="info-topik-kelompok" class="dosen-group-meta-value">Perancangan Topologi Jaringan Kampus</span>
+            </div>
+          </div>
+
+          <div class="dosen-group-members-block">
+            <div class="dosen-group-members-heading">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span>Anggota Kelompok</span>
+            </div>
+
+            <div id="list-anggota-kelompok" class="dosen-group-member-rows">
+              <div class="dosen-members-empty">Memuat daftar anggota kelompok...</div>
+            </div>
+          </div>
+
+          <div class="dosen-duration-box">
+            <div class="dosen-duration-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Durasi Presentasi:</span>
+            </div>
+            <span id="badge-durasi-kelompok" class="dosen-badge-durasi">30 Menit</span>
+          </div>
+
+          <!-- Current Schedule Banner (Visible when group already has a saved schedule) -->
+          <div id="banner-jadwal-aktif" class="dosen-scheduled-banner hidden">
+            <div class="dosen-scheduled-info">
+              <span class="dosen-scheduled-label">Jadwal Presentasi Terdaftar</span>
+              <span id="teks-jadwal-aktif" class="dosen-scheduled-detail">Rabu, 2026-10-07 (13:00 - 13:30 WIB) di Ruang 9122</span>
+            </div>
+            <button type="button" id="btn-batalkan-jadwal-aktif" class="dosen-btn-cancel-subtle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              <span>Batalkan Jadwal</span>
+            </button>
+          </div>
+
+          <button type="button" id="btn-lihat-visualisasi" class="dosen-btn-outline-primary-block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Lihat Visualisasi Jadwal Gabungan</span>
+          </button>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL 1: WEEKLY COMBINED SCHEDULE MATRIX (#modal-visualisasi-jadwal) -->
+  <div id="modal-visualisasi-jadwal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-visualisasi-title">
+    <div class="modal-dialog modal-visualisasi-dialog">
+      <div class="modal-visualisasi-header">
+        <h3 id="modal-visualisasi-title" class="modal-title">Visualisasi Jadwal Gabungan</h3>
+        <button type="button" id="btn-close-modal-visualisasi" class="modal-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-visualisasi-body">
+        <!-- 1. Period Mode Tabs -->
+        <div class="jadwal-mode-tabs-wrapper">
+          <div class="jadwal-mode-tabs" role="tablist" aria-label="Pilih Periode Jadwal">
+            <button type="button" class="jadwal-mode-tab active" data-mode="REGULER" role="tab" aria-selected="true">
+              Pekan Perkuliahan Biasa
+            </button>
+            <button type="button" class="jadwal-mode-tab" data-mode="UTS" role="tab" aria-selected="false">
+              Pekan UTS
+            </button>
+            <button type="button" class="jadwal-mode-tab" data-mode="UAS" role="tab" aria-selected="false">
+              Pekan UAS
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Color Legend Bar -->
+        <div class="jadwal-legend-bar" aria-label="Keterangan Warna Jadwal">
+          <span class="jadwal-legend-entry">
+            <span class="legend-swatch swatch-blue" aria-hidden="true"></span>
+            <span>Jadwal Kelas Reguler (Prioritas)</span>
+          </span>
+          <span class="jadwal-legend-entry">
+            <span class="legend-swatch swatch-green" aria-hidden="true"></span>
+            <span>Waktu Kosong (Bisa Presentasi)</span>
+          </span>
+          <span class="jadwal-legend-entry">
+            <span class="legend-swatch swatch-red" aria-hidden="true"></span>
+            <span>Bentrok (Jadwal Mahasiswa)</span>
+          </span>
+          <span class="jadwal-legend-entry">
+            <span class="legend-swatch swatch-amber" aria-hidden="true"></span>
+            <span>Bentrok (Jadwal Dosen)</span>
+          </span>
+        </div>
+
+        <!-- 3. Week Navigation Bar -->
+        <div class="jadwal-week-navbar">
+          <button type="button" id="btn-pekan-sebelumnya" class="btn-week-nav">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            <span>Pekan Sebelumnya</span>
+          </button>
+
+          <span id="label-rentang-pekan" class="jadwal-week-range-label">05 Oktober 2026 - 09 Oktober 2026</span>
+
+          <button type="button" id="btn-pekan-selanjutnya" class="btn-week-nav">
+            <span>Pekan Selanjutnya</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 4. Weekly Timetable Grid (Senin - Jumat, 07:00 - 18:00) -->
+        <div class="jadwal-weekly-table-container">
+          <table class="jadwal-weekly-table" aria-label="Matriks Jadwal Mingguan">
+            <thead>
+              <tr id="thead-row-hari">
+                <th scope="col">Waktu</th>
+                <th scope="col"><span class="jadwal-th-day">Senin</span><span class="jadwal-th-date">05 Okt</span></th>
+                <th scope="col"><span class="jadwal-th-day">Selasa</span><span class="jadwal-th-date">06 Okt</span></th>
+                <th scope="col"><span class="jadwal-th-day">Rabu</span><span class="jadwal-th-date">07 Okt</span></th>
+                <th scope="col"><span class="jadwal-th-day">Kamis</span><span class="jadwal-th-date">08 Okt</span></th>
+                <th scope="col"><span class="jadwal-th-day">Jumat</span><span class="jadwal-th-date">09 Okt</span></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-matriks-mingguan">
+              <tr>
+                <td colspan="6" class="dosen-course-empty">Memuat matriks jadwal mingguan...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-visualisasi-footer">
+        <button type="button" id="btn-tutup-modal-visualisasi" class="dosen-btn-secondary">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2A: SAFE SLOT CONFIRMATION (#modal-konfirmasi-slot) -->
+  <div id="modal-konfirmasi-slot" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-slot-aman-title">
+    <div class="modal-dialog modal-slot-aman-dialog">
+      <div class="modal-header">
+        <h3 id="modal-slot-aman-title" class="modal-title">Konfirmasi Pemilihan Jadwal</h3>
+        <button type="button" id="btn-close-modal-slot-aman" class="modal-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p id="teks-konfirmasi-slot-aman" class="slot-confirm-copy">
+          Anda memilih hari Rabu, 07 Okt pada rentang jam 10:00 - 11:00. Semua anggota kelompok dapat hadir.
+        </p>
+
+        <div class="dosen-form-group">
+          <label id="label-subslot-aman" for="select-subslot-aman" class="dosen-form-label">
+            Pilih Slot Waktu Spesifik (Durasi: 30 Menit)
+          </label>
+          <select id="select-subslot-aman" class="dosen-form-input">
+            <option value="10:00-10:30">10:00 - 10:30</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-batal-slot-aman" class="dosen-btn-secondary">Batal</button>
+        <button type="button" id="btn-simpan-slot-aman" class="dosen-btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Simpan Jadwal</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2B: PARTIAL CONFLICT WARNING & OVERRIDE (#modal-peringatan-bentrok) -->
+  <div id="modal-peringatan-bentrok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-bentrok-title">
+    <div class="modal-dialog modal-bentrok-dialog">
+      <div class="modal-amber-warning-header">
+        <div class="modal-amber-title-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <h3 id="modal-bentrok-title" class="modal-amber-title">Peringatan Bentrok Sebagian</h3>
+        </div>
+        <button type="button" id="btn-close-modal-bentrok" class="modal-amber-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-bentrok-body">
+        <p id="teks-peringatan-bentrok" class="slot-confirm-copy">
+          Anda memilih hari Senin, 05 Okt pada rentang jam 08:00 - 10:00. Mahasiswa atas nama Andi, Rizky, Salsabila berhalangan hadir (Kuliah ASD). Apakah Anda yakin ingin memaksakan jadwal ini?
+        </p>
+
+        <div class="dosen-form-group">
+          <label id="label-subslot-bentrok" for="select-subslot-bentrok" class="dosen-form-label">
+            Pilih Slot Waktu Spesifik (Durasi: 30 Menit)
+          </label>
+          <select id="select-subslot-bentrok" class="dosen-form-input">
+            <option value="08:00-08:30">08:00 - 08:30</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-bentrok-footer">
+        <button type="button" id="btn-cari-waktu-lain" class="dosen-btn-secondary">Cari Waktu Lain</button>
+        <button type="button" id="btn-tetap-simpan-bentrok" class="dosen-btn-danger-solid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Ya, Tetap Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minimalist Modal Dialog: Konfirmasi Batalkan Jadwal -->
+  <div id="modal-konfirmasi-batal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="batal-modal-title">
+    <div class="modal-card modal-delete-card">
+      <div class="modal-delete-icon-wrapper">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+
+      <div class="modal-delete-content">
+        <h3 id="batal-modal-title" class="modal-delete-title">Batalkan Jadwal Presentasi</h3>
+        <p id="batal-modal-desc" class="modal-delete-desc">
+          Apakah Anda yakin ingin membatalkan jadwal presentasi <strong id="batal-group-name">Kelompok 1</strong>?
+        </p>
+        <p class="modal-delete-subdesc">
+          Jadwal presentasi kelompok ini akan dihapus dan Anda dapat memilih ulang slot waktu baru.
+        </p>
+      </div>
+
+      <div class="modal-delete-actions">
+        <button type="button" id="btn-cancel-batal" class="btn-delete-cancel">Kembali</button>
+        <button type="button" id="btn-confirm-batal" class="btn-delete-confirm">Batalkan Jadwal</button>
+      </div>
     </div>
   </div>
 
   <script src="../js/api.js"></script>
+  <script src="../js/dosen-penjadwalan.js"></script>
 </body>
 </html>
-
-    </section>
-
-        <!-- Conflict items -->
-      </ul>
-      <div class="mt-4">
-        <button type="button" id="btn-trigger-override" class="btn btn-danger btn-sm">
-          Buka Konfirmasi Override Bentrok
-        </button>
-      </div>
-    </div>

@@ -18,7 +18,7 @@ public class DosenDashboardController {
         this.dosenDashboardService = dosenDashboardService;
     }
 
-    @GetMapping("/summary")
+    @GetMapping({"", "/summary"})
     public ResponseEntity<DosenDashboardSummaryDTO> getSummary(
         @RequestParam(name = "dosenId", required = false) String dosenId
     ) {
