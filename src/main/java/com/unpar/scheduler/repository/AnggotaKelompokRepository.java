@@ -33,4 +33,13 @@ public interface AnggotaKelompokRepository extends JpaRepository<AnggotaKelompok
         WHERE m.npm IN :npms
         """)
     List<AnggotaKelompok> findByMahasiswaNpmInWithDetails(@Param("npms") Collection<String> npms);
+
+    @Query("""
+        SELECT ak FROM AnggotaKelompok ak
+        JOIN FETCH ak.mahasiswa m
+        JOIN FETCH ak.kelompok kel
+        WHERE kel.idKelompok IN :kelompokIds
+        ORDER BY m.npm ASC
+        """)
+    List<AnggotaKelompok> findByKelompokIdsWithMahasiswa(@Param("kelompokIds") Collection<Integer> kelompokIds);
 }

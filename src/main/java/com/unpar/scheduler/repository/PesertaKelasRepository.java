@@ -21,4 +21,13 @@ public interface PesertaKelasRepository extends JpaRepository<PesertaKelas, Inte
         WHERE m.npm IN :npms
         """)
     List<PesertaKelas> findByMahasiswaNpmInWithDetails(@Param("npms") Collection<String> npms);
+
+    @Query("""
+        SELECT pk FROM PesertaKelas pk
+        JOIN FETCH pk.mahasiswa m
+        JOIN FETCH pk.kelas k
+        WHERE k.idKelas IN :kelasIds
+        ORDER BY m.npm ASC
+        """)
+    List<PesertaKelas> findByKelasIdsWithMahasiswa(@Param("kelasIds") Collection<Integer> kelasIds);
 }

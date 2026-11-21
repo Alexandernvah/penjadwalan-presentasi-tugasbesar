@@ -84,4 +84,15 @@ public interface PresentasiRepository extends JpaRepository<Presentasi, Integer>
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
     );
+
+    @Query("""
+        SELECT p FROM Presentasi p
+        JOIN FETCH p.kelompok kel
+        JOIN FETCH kel.kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        WHERE k.idKelas IN :kelasIds
+        ORDER BY p.tanggal ASC, p.jamMulai ASC
+        """)
+    List<Presentasi> findByKelasIdsWithDetails(@Param("kelasIds") Collection<Integer> kelasIds);
 }
