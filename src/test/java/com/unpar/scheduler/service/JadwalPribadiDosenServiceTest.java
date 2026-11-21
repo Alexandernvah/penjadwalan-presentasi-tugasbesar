@@ -276,5 +276,22 @@ class JadwalPribadiDosenServiceTest {
 
         assertEquals(2, response.jadwalRutin().size());
         assertEquals(3, response.jadwalUjian().size());
+        assertEquals("Semester Ganjil 2025/2026", response.semesterAktif());
+    }
+
+    @Test
+    void activeSemesterIsResolvedFromDatabaseAndFormattedAsLabel() {
+        when(dosenRepository.findByNomorIndukDosen(NIDN)).thenReturn(Optional.of(dosenBudi));
+        when(kelasRepository.findLatestSemesterByLecturer(NIDN)).thenReturn(Optional.of("26271"));
+        when(kelasRepository.findClassesByLecturerAndSemester(NIDN, "26271")).thenReturn(List.of(kelasJarkom));
+        when(kuliahRepository.findByKelas_IdKelasAndDosenPengajar_NomorIndukDosen(102, NIDN)).thenReturn(Collections.emptyList());
+        when(pesertaKelasRepository.findByKelasIdsWithMahasiswa(anyCollection())).thenReturn(Collections.emptyList());
+        when(pengawasUjianRepository.findByDosenAndSemesterWithDetails(NIDN, "26271")).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByKelasIdsWithDetails(anyCollection())).thenReturn(Collections.emptyList());
+
+        JadwalPribadiDosenResponseDTO response = service.getJadwalPribadi(NIDN);
+
+        assertEquals("Semester Ganjil 2026/2027", response.semesterAktif());
+        assertEquals(1, response.jadwalRutin().size());
     }
 }

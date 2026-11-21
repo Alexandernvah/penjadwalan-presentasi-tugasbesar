@@ -112,15 +112,16 @@ public class JadwalPribadiDosenService {
 
         Optional<Dosen> dosenOpt = dosenRepository.findByNomorIndukDosen(targetNidn);
         if (dosenOpt.isEmpty()) {
-            return buildFallback();
+            return buildFallback(resolveActiveSemesterCode(null));
         }
 
         String nidnDosen = dosenOpt.get().getNomorIndukDosen();
+        String activeSemester = resolveActiveSemesterCode(nidnDosen);
         List<Kelas> classes = new ArrayList<>(
-            kelasRepository.findClassesByLecturerAndSemester(nidnDosen, DEFAULT_SEMESTER)
+            kelasRepository.findClassesByLecturerAndSemester(nidnDosen, activeSemester)
         );
         if (classes.isEmpty()) {
-            return buildFallback();
+            return buildFallback(activeSemester);
         }
 
         classes.sort(
@@ -130,10 +131,25 @@ public class JadwalPribadiDosenService {
         List<Integer> kelasIds = classes.stream().map(Kelas::getIdKelas).toList();
 
         return new JadwalPribadiDosenResponseDTO(
+            DosenDashboardService.formatSemesterLabel(activeSemester),
             buildJadwalRutin(nidnDosen, classes, kelasIds),
-            buildJadwalUjian(nidnDosen),
+            buildJadwalUjian(nidnDosen, activeSemester),
             buildJadwalPresentasi(kelasIds)
         );
+    }
+
+    private String resolveActiveSemesterCode(String nidn) {
+        if (nidn != null && !nidn.isBlank()) {
+            Optional<String> lecturerSemester = kelasRepository.findLatestSemesterByLecturer(nidn);
+            if (lecturerSemester.isPresent() && !lecturerSemester.get().isBlank()) {
+                return lecturerSemester.get().trim();
+            }
+        }
+        Optional<String> overallSemester = kelasRepository.findLatestSemesterOverall();
+        if (overallSemester.isPresent() && !overallSemester.get().isBlank()) {
+            return overallSemester.get().trim();
+        }
+        return DEFAULT_SEMESTER;
     }
 
     // ---------------------------------------------------------------------
@@ -238,9 +254,9 @@ public class JadwalPribadiDosenService {
     // Jadwal ujian
     // ---------------------------------------------------------------------
 
-    private List<JadwalUjianItemDTO> buildJadwalUjian(String nidn) {
+    private List<JadwalUjianItemDTO> buildJadwalUjian(String nidn, String semester) {
         List<JadwalUjianItemDTO> result = new ArrayList<>();
-        for (PengawasUjian pengawas : pengawasUjianRepository.findByDosenAndSemesterWithDetails(nidn, DEFAULT_SEMESTER)) {
+        for (PengawasUjian pengawas : pengawasUjianRepository.findByDosenAndSemesterWithDetails(nidn, semester)) {
             Ujian ujian = pengawas.getUjian();
             if (ujian == null) {
                 continue;
@@ -326,7 +342,7 @@ public class JadwalPribadiDosenService {
     // Data contoh bila database belum terisi
     // ---------------------------------------------------------------------
 
-    private JadwalPribadiDosenResponseDTO buildFallback() {
+    private JadwalPribadiDosenResponseDTO buildFallback(String semesterCode) {
         List<MahasiswaSederhanaDTO> jarkomStudents = buildFallbackStudents("61821010", FALLBACK_NAMA_JARKOM);
         List<MahasiswaSederhanaDTO> asdStudents = buildFallbackStudents("61822010", FALLBACK_NAMA_ASD);
 
@@ -352,7 +368,12 @@ public class JadwalPribadiDosenService {
                 "IF2110", "Algoritma dan Struktur Data", "Lab Komputer 1")
         );
 
-        return new JadwalPribadiDosenResponseDTO(rutin, ujian, buildFallbackPresentasi(rutin));
+        return new JadwalPribadiDosenResponseDTO(
+            DosenDashboardService.formatSemesterLabel(semesterCode),
+            rutin,
+            ujian,
+            buildFallbackPresentasi(rutin)
+        );
     }
 
     /**

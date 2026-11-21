@@ -14,15 +14,15 @@
     <aside class="dosen-sidebar" aria-label="Sidebar Navigasi Dosen">
       <div class="dosen-sidebar-header">
         <div class="dosen-brand-badge">
-          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img">
-          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img">
+          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img" width="40" height="40">
+          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img" width="40" height="40">
         </div>
       </div>
 
       <nav aria-label="Navigasi Utama">
         <ul class="dosen-nav-list">
           <li class="dosen-nav-item">
-            <a href="dashboard.html" class="dosen-nav-link active">
+            <a href="dashboard.html" class="dosen-nav-link active" aria-current="page">
               <span class="dosen-nav-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="3" y="3" width="7" height="7"></rect>
@@ -91,7 +91,7 @@
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
             <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
-            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
@@ -123,73 +123,193 @@
       </header>
 
       <!-- Dashboard Main Content -->
-      <main class="dosen-content">
+      <main class="dosen-content db-main">
         <!-- Welcome Header -->
-        <section class="dosen-welcome-section" aria-labelledby="heading-dashboard-dosen">
-          <h1 id="heading-dashboard-dosen" class="dosen-welcome-title">Dashboard Dosen</h1>
+        <section class="db-header" aria-labelledby="heading-dashboard-dosen">
+          <div class="db-title-row">
+            <h1 id="heading-dashboard-dosen" class="dosen-welcome-title">Dashboard Dosen</h1>
+            <span class="db-semester-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span id="dashboardSemesterLabel">Semester Ganjil 2025/2026</span>
+            </span>
+          </div>
           <p id="welcome-lecturer-subtitle" class="dosen-welcome-subtitle">
             Selamat datang kembali, <span id="welcome-lecturer-name">Dr. Budi Santoso</span>.
           </p>
         </section>
 
         <!-- Quick Action Cards (3-Column Grid) -->
-        <section class="dosen-actions-grid" aria-label="Akses Cepat Pengelolaan">
-          <a href="kelola-kelompok.html" class="dosen-action-card">
-            <div class="dosen-action-icon action-blue" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
+        <section class="db-actions-grid" aria-label="Akses Cepat Pengelolaan">
+          <a href="kelola-kelompok.html" class="db-action-card">
+            <div class="db-action-top">
+              <span class="db-action-icon db-icon-blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
+              <span class="db-action-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
             </div>
-            <h2 class="dosen-action-title">Kelola Kelompok</h2>
-            <p class="dosen-action-desc">Atur kapasitas & durasi presentasi kelompok</p>
+            <h2 class="db-action-title">Kelola Kelompok</h2>
+            <p class="db-action-desc">Atur kapasitas &amp; durasi presentasi kelompok</p>
           </a>
 
-          <a href="penjadwalan.html" class="dosen-action-card">
-            <div class="dosen-action-icon action-green" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-                <polyline points="9 16 11 18 15 14"></polyline>
-              </svg>
+          <a href="penjadwalan.html" class="db-action-card">
+            <div class="db-action-top">
+              <span class="db-action-icon db-icon-emerald" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <span class="db-action-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
             </div>
-            <h2 class="dosen-action-title">Atur Jadwal</h2>
-            <p class="dosen-action-desc">Tetapkan waktu presentasi akhir</p>
+            <h2 class="db-action-title">Atur Jadwal</h2>
+            <p class="db-action-desc">Tetapkan waktu presentasi akhir</p>
           </a>
 
-          <a href="jadwal-pribadi.html" class="dosen-action-card">
-            <div class="dosen-action-icon action-amber" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
+          <a href="jadwal-pribadi.html" class="db-action-card">
+            <div class="db-action-top">
+              <span class="db-action-icon db-icon-amber" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span class="db-action-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </span>
             </div>
-            <h2 class="dosen-action-title">Jadwal Pribadi</h2>
-            <p class="dosen-action-desc">Lihat jadwal mengajar & mengawas</p>
+            <h2 class="db-action-title">Jadwal Pribadi</h2>
+            <p class="db-action-desc">Lihat jadwal mengajar &amp; mengawas</p>
           </a>
         </section>
 
-        <!-- Assigned Courses Card ("Mata Kuliah Yang Diajar") -->
-        <section class="dosen-courses-card" aria-labelledby="heading-courses-taught">
-          <div class="dosen-courses-card-header">
-            <svg class="dosen-section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-            </svg>
-            <h2 id="heading-courses-taught" class="dosen-courses-card-title">Mata Kuliah Yang Diajar (Semester Ganjil 2025/2026)</h2>
+        <!-- Scheduled Presentations Section (Presentation Schedule Only) -->
+        <section id="section-presentasi-dashboard" class="db-section" aria-labelledby="heading-jadwal-presentasi">
+          <div class="db-section-header">
+            <div class="db-section-heading">
+              <span class="db-section-icon db-icon-emerald" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <h2 id="heading-jadwal-presentasi" class="db-section-title">Jadwal Presentasi</h2>
+              <span id="dashboard-presentasi-count" class="db-count-pill">0 Terjadwal</span>
+            </div>
+
+            <a href="penjadwalan.html" class="db-section-link">
+              <span>Kelola di Penjadwalan</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
           </div>
 
-          <div id="list-matkul-ajar" class="dosen-course-list">
-            <div class="dosen-course-empty">Memuat daftar mata kuliah...</div>
+          <div id="list-dashboard-presentasi" class="db-stack">
+            <div class="db-loading-card">Memuat jadwal presentasi...</div>
           </div>
         </section>
       </main>
+    </div>
+  </div>
+
+  <!-- MODAL: DETAIL PRESENTASI -->
+  <div id="modal-detail-presentasi-db" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="db-detail-kelompok">
+    <div class="modal-dialog jp-modal-dialog jp-modal-presentasi">
+      <div class="jp-pres-header">
+        <div class="jp-pres-header-top">
+          <span class="jp-badge jp-badge-green">Presentasi Tugas Besar</span>
+          <button type="button" id="db-btn-close-modal-presentasi" class="jp-pres-close" aria-label="Tutup modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <h3 id="db-detail-kelompok" class="jp-pres-group">-</h3>
+        <div class="jp-pres-course-block">
+          <span class="jp-pres-micro-text">MATA KULIAH</span>
+          <span id="db-detail-mata-kuliah" class="jp-pres-course-value">-</span>
+        </div>
+      </div>
+
+      <div class="jp-pres-body">
+        <div class="jp-pres-topic-block">
+          <span class="jp-pres-micro-text">TOPIK TUGAS BESAR</span>
+          <p id="db-detail-topik" class="jp-pres-topic-title">-</p>
+        </div>
+
+        <div class="jp-pres-schedule-strip">
+          <div class="jp-pres-strip-cell jp-pres-strip-cell-time">
+            <div class="jp-pres-micro-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>WAKTU</span>
+            </div>
+            <div class="jp-pres-datetime-row">
+              <span id="db-detail-tanggal" class="jp-pres-date-line">-</span>
+              <span class="jp-meta-dot" aria-hidden="true"></span>
+              <span id="db-detail-waktu" class="jp-pres-time-line">-</span>
+            </div>
+          </div>
+
+          <div class="jp-pres-strip-cell">
+            <div class="jp-pres-micro-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>RUANGAN</span>
+            </div>
+            <span id="db-detail-ruangan" class="jp-pres-room-line">-</span>
+          </div>
+        </div>
+
+        <div class="jp-pres-members-section">
+          <div class="jp-pres-members-head">
+            <span class="jp-pres-members-title">Anggota Kelompok</span>
+            <span id="db-detail-anggota-count" class="jp-pres-count-pill">0 Anggota</span>
+          </div>
+          <div id="db-detail-anggota" class="jp-pres-member-list"></div>
+        </div>
+      </div>
+
+      <div class="jp-pres-footer">
+        <button type="button" id="db-btn-tutup-modal-presentasi" class="jp-pres-btn-close">Tutup</button>
+      </div>
     </div>
   </div>
 
@@ -197,5 +317,3 @@
   <script src="../js/dosen-dashboard.js"></script>
 </body>
 </html>
-
-

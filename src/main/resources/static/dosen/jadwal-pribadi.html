@@ -136,7 +136,7 @@
                   <line x1="8" y1="2" x2="8" y2="6"></line>
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                <span>Semester Ganjil 2026/2027</span>
+                <span id="jpSemesterLabel">Semester Ganjil 2025/2026</span>
               </span>
             </div>
           </div>
@@ -347,98 +347,70 @@
   </div>
 
   <!-- MODAL 2: DETAIL PRESENTASI -->
-  <div id="modal-detail-presentasi" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-presentasi-title">
+  <div id="modal-detail-presentasi" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detail-kelompok">
     <div class="modal-dialog jp-modal-dialog jp-modal-presentasi">
-      <div class="jp-modal-header jp-modal-header-emerald">
-        <div class="jp-modal-header-left">
-          <span class="jp-modal-icon-badge jp-icon-emerald" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-              <polyline points="9 16 11 18 15 14"></polyline>
+      <div class="jp-pres-header">
+        <div class="jp-pres-header-top">
+          <span class="jp-badge jp-badge-green">Presentasi Tugas Besar</span>
+          <button type="button" id="btn-close-modal-presentasi" class="jp-pres-close" aria-label="Tutup modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-          </span>
-          <div class="jp-modal-title-group">
-            <h3 id="modal-presentasi-title" class="jp-modal-title">Detail Presentasi</h3>
-            <p id="modal-presentasi-subtitle" class="jp-modal-subtitle">Informasi jadwal, topik, dan anggota kelompok tugas besar</p>
-          </div>
+          </button>
         </div>
-        <button type="button" id="btn-close-modal-presentasi" class="jp-modal-close" aria-label="Tutup modal">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <h3 id="detail-kelompok" class="jp-pres-group">-</h3>
+        <div class="jp-pres-course-block">
+          <span class="jp-pres-micro-text">MATA KULIAH</span>
+          <span id="detail-mata-kuliah" class="jp-pres-course-value">-</span>
+        </div>
       </div>
 
-      <div class="jp-modal-body">
-        <div class="jp-meta-grid">
-          <div class="jp-detail-card">
-            <div class="jp-detail-label">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-              </svg>
-              <span>MATA KULIAH</span>
-            </div>
-            <span id="detail-mata-kuliah" class="jp-detail-value">-</span>
-          </div>
+      <div class="jp-pres-body">
+        <div class="jp-pres-topic-block">
+          <span class="jp-pres-micro-text">TOPIK TUGAS BESAR</span>
+          <p id="detail-topik" class="jp-pres-topic-title">-</p>
+        </div>
 
-          <div class="jp-detail-card">
-            <div class="jp-detail-label">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-              </svg>
-              <span>TOPIK TUGAS BESAR</span>
-            </div>
-            <span id="detail-topik" class="jp-detail-value">-</span>
-          </div>
-
-          <div class="jp-detail-card">
-            <div class="jp-detail-label">
+        <div class="jp-pres-schedule-strip">
+          <div class="jp-pres-strip-cell jp-pres-strip-cell-time">
+            <div class="jp-pres-micro-label">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
               </svg>
-              <span>WAKTU PRESENTASI</span>
+              <span>WAKTU</span>
             </div>
-            <span id="detail-waktu" class="jp-detail-value">-</span>
+            <div class="jp-pres-datetime-row">
+              <span id="detail-tanggal" class="jp-pres-date-line">-</span>
+              <span class="jp-meta-dot" aria-hidden="true"></span>
+              <span id="detail-waktu" class="jp-pres-time-line">-</span>
+            </div>
           </div>
 
-          <div class="jp-detail-card">
-            <div class="jp-detail-label">
+          <div class="jp-pres-strip-cell">
+            <div class="jp-pres-micro-label">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
               <span>RUANGAN</span>
             </div>
-            <span id="detail-ruangan" class="jp-detail-value">-</span>
+            <span id="detail-ruangan" class="jp-pres-room-line">-</span>
           </div>
         </div>
 
-        <div class="jp-members-section">
-          <div class="jp-members-heading">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            <span>Anggota Kelompok</span>
-            <span id="detail-anggota-count" class="jp-members-count-pill">0 Anggota</span>
+        <div class="jp-pres-members-section">
+          <div class="jp-pres-members-head">
+            <span class="jp-pres-members-title">Anggota Kelompok</span>
+            <span id="detail-anggota-count" class="jp-pres-count-pill">0 Anggota</span>
           </div>
-          <div id="detail-anggota" class="jp-member-list"></div>
+          <div id="detail-anggota" class="jp-pres-member-list"></div>
         </div>
       </div>
 
-      <div class="jp-modal-footer">
-        <button type="button" id="btn-tutup-modal-presentasi" class="dosen-btn-secondary">Tutup</button>
+      <div class="jp-pres-footer">
+        <button type="button" id="btn-tutup-modal-presentasi" class="jp-pres-btn-close">Tutup</button>
       </div>
     </div>
   </div>

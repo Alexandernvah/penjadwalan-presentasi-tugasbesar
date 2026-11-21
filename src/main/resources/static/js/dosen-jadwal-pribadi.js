@@ -56,6 +56,7 @@
   const listPresentasi = document.getElementById('list-jadwal-presentasi');
   const errorBanner = document.getElementById('jp-error-banner');
   const errorText = document.getElementById('jp-error-text');
+  const semesterLabel = document.getElementById('jpSemesterLabel');
 
   const modalMahasiswa = document.getElementById('modal-daftar-mahasiswa');
   const btnCloseMahasiswa = document.getElementById('btn-close-modal-mahasiswa');
@@ -71,9 +72,10 @@
   const modalPresentasi = document.getElementById('modal-detail-presentasi');
   const btnClosePresentasi = document.getElementById('btn-close-modal-presentasi');
   const btnTutupPresentasi = document.getElementById('btn-tutup-modal-presentasi');
-  const modalPresentasiTitle = document.getElementById('modal-presentasi-title');
+  const detailKelompok = document.getElementById('detail-kelompok');
   const detailMataKuliah = document.getElementById('detail-mata-kuliah');
   const detailTopik = document.getElementById('detail-topik');
+  const detailTanggal = document.getElementById('detail-tanggal');
   const detailWaktu = document.getElementById('detail-waktu');
   const detailRuangan = document.getElementById('detail-ruangan');
   const detailAnggotaCount = document.getElementById('detail-anggota-count');
@@ -163,16 +165,6 @@
 
   function courseTitle(kode, nama) {
     return kode + ' - ' + nama;
-  }
-
-  function extractInitials(fullName) {
-    const clean = String(fullName || '').trim();
-    if (!clean) return '?';
-    const parts = clean.split(/\s+/);
-    if (parts.length >= 2) {
-      return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
-    }
-    return clean.slice(0, 2).toUpperCase();
   }
 
   // ---------------------------------------------------------------------
@@ -420,11 +412,11 @@
   function openPresentasiModal(item) {
     const p = dateParts(item.tanggal);
 
-    modalPresentasiTitle.textContent = 'Detail Presentasi - ' + item.namaKelompok;
+    if (detailKelompok) detailKelompok.textContent = item.namaKelompok || '-';
     detailMataKuliah.textContent = courseTitle(item.kodeMatkul, item.namaMatkul);
     detailTopik.textContent = item.topik || 'Belum ada topik tugas besar';
-    detailWaktu.textContent = p.hari + ', ' + p.day + ' ' + p.bulanTitle + ' ' + p.year
-      + ', ' + timeRange(item.waktuMulai, item.waktuSelesai);
+    if (detailTanggal) detailTanggal.textContent = p.hari + ', ' + p.day + ' ' + p.bulanTitle + ' ' + p.year;
+    detailWaktu.textContent = item.waktuMulai + ' \u2013 ' + item.waktuSelesai + ' WIB';
     detailRuangan.textContent = item.ruangan;
 
     clear(detailAnggota);
@@ -432,19 +424,12 @@
     if (detailAnggotaCount) detailAnggotaCount.textContent = anggota.length + ' Anggota';
 
     if (!anggota.length) {
-      detailAnggota.appendChild(el('div', 'jp-members-empty', 'Belum ada anggota pada kelompok ini.'));
+      detailAnggota.appendChild(el('div', 'jp-pres-members-empty', 'Belum ada anggota pada kelompok ini.'));
     } else {
       anggota.forEach(function (member) {
-        const row = el('div', 'jp-member-row');
-
-        const left = el('div', 'jp-member-left');
-        const avatar = el('span', 'jp-avatar-circle', extractInitials(member.nama));
-        avatar.setAttribute('aria-hidden', 'true');
-        left.appendChild(avatar);
-        left.appendChild(el('span', 'jp-member-name', member.nama));
-        row.appendChild(left);
-
-        row.appendChild(el('span', 'jp-npm-pill', member.npm));
+        const row = el('div', 'jp-pres-member-row');
+        row.appendChild(el('span', 'jp-pres-member-name', member.nama));
+        row.appendChild(el('span', 'jp-pres-npm-badge', member.npm));
         detailAnggota.appendChild(row);
       });
     }
@@ -524,6 +509,10 @@
 
       const data = await response.json();
       hideError();
+
+      if (semesterLabel && data.semesterAktif) {
+        semesterLabel.textContent = data.semesterAktif;
+      }
 
       const rutin = data.jadwalRutin || [];
       const ujian = data.jadwalUjian || [];
