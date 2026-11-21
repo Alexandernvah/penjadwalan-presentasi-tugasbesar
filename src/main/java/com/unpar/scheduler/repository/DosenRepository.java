@@ -11,4 +11,6 @@ public interface DosenRepository extends JpaRepository<Dosen, String> {
     Optional<Dosen> findByNomorIndukDosen(String nomorIndukDosen);
 
     Optional<Dosen> findByAkun_Email(String email);
+
+    Optional<Dosen> findByAkun_IdAkun(Integer idAkun);
 }

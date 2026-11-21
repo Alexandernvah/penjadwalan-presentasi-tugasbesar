@@ -1,5 +1,6 @@
 package com.unpar.scheduler.controller;
 
+import com.unpar.scheduler.config.AuthenticatedUserHelper;
 import com.unpar.scheduler.dto.penjadwalan.CekBentrokRequestDTO;
 import com.unpar.scheduler.dto.penjadwalan.CekBentrokResponseDTO;
 import com.unpar.scheduler.dto.penjadwalan.KelasPenjadwalanDTO;
@@ -43,7 +44,8 @@ public class PenjadwalanController {
     public ResponseEntity<List<KelasPenjadwalanDTO>> getDaftarKelas(
         @RequestParam(name = "dosenId", required = false) String dosenId
     ) {
-        List<KelasPenjadwalanDTO> kelasList = penjadwalanService.getDaftarKelasDosen(dosenId);
+        String resolvedDosenId = AuthenticatedUserHelper.resolveDosenNidn(dosenId);
+        List<KelasPenjadwalanDTO> kelasList = penjadwalanService.getDaftarKelasDosen(resolvedDosenId);
         return ResponseEntity.ok(kelasList);
     }
 
@@ -71,8 +73,9 @@ public class PenjadwalanController {
         @RequestParam(name = "dosenId", required = false) String dosenId,
         @RequestParam(name = "durasiMenit", required = false) Integer durasiMenit
     ) {
+        String resolvedDosenId = AuthenticatedUserHelper.resolveDosenNidn(dosenId);
         MatriksMingguanResponseDTO matriks = penjadwalanService.getMatriksMingguan(
-            idKelas, idKelompok, mode, tanggalMulai, dosenId, durasiMenit
+            idKelas, idKelompok, mode, tanggalMulai, resolvedDosenId, durasiMenit
         );
         return ResponseEntity.ok(matriks);
     }
@@ -86,8 +89,9 @@ public class PenjadwalanController {
         @RequestParam(name = "idKelompok", required = false) Integer idKelompok,
         @RequestParam(name = "dosenId", required = false) String dosenId
     ) {
+        String resolvedDosenId = AuthenticatedUserHelper.resolveDosenNidn(dosenId);
         MatriksPenjadwalanResponseDTO matriks = penjadwalanService.getMatriksHarian(
-            idKelas, ruangan, tanggal, idKelompok, dosenId
+            idKelas, ruangan, tanggal, idKelompok, resolvedDosenId
         );
         return ResponseEntity.ok(matriks);
     }

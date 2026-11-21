@@ -23,10 +23,14 @@
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function () {
+      if (typeof API !== 'undefined' && API.logout) {
+        API.logout('index.html');
+        return;
+      }
       if (typeof API !== 'undefined' && API.clearAuth) {
         API.clearAuth();
       }
-      window.location.href = 'index.html';
+      window.location.replace('index.html');
     });
   }
 

@@ -1,5 +1,6 @@
 package com.unpar.scheduler.controller;
 
+import com.unpar.scheduler.config.AuthenticatedUserHelper;
 import com.unpar.scheduler.dto.dashboard.DosenDashboardSummaryDTO;
 import com.unpar.scheduler.service.DosenDashboardService;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class DosenDashboardController {
     public ResponseEntity<DosenDashboardSummaryDTO> getSummary(
         @RequestParam(name = "dosenId", required = false) String dosenId
     ) {
-        DosenDashboardSummaryDTO summary = dosenDashboardService.getDashboardSummary(dosenId);
+        String resolvedDosenId = AuthenticatedUserHelper.resolveDosenNidn(dosenId);
+        DosenDashboardSummaryDTO summary = dosenDashboardService.getDashboardSummary(resolvedDosenId);
         return ResponseEntity.ok(summary);
     }
 }

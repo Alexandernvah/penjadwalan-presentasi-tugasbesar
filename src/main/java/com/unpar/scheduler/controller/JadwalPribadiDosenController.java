@@ -1,5 +1,6 @@
 package com.unpar.scheduler.controller;
 
+import com.unpar.scheduler.config.AuthenticatedUserHelper;
 import com.unpar.scheduler.dto.jadwalpribadi.JadwalPribadiDosenResponseDTO;
 import com.unpar.scheduler.service.JadwalPribadiDosenService;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class JadwalPribadiDosenController {
     public ResponseEntity<JadwalPribadiDosenResponseDTO> getJadwalPribadi(
         @RequestParam(name = "dosenId", required = false) String dosenId
     ) {
-        return ResponseEntity.ok(jadwalPribadiDosenService.getJadwalPribadi(dosenId));
+        String resolvedDosenId = AuthenticatedUserHelper.resolveDosenNidn(dosenId);
+        return ResponseEntity.ok(jadwalPribadiDosenService.getJadwalPribadi(resolvedDosenId));
     }
 }
