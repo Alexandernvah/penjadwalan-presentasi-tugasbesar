@@ -463,6 +463,20 @@ input[type=email]:focus {
   opacity: 1;
 }
 
+/* Layout-stable login feedback banner (shared across Dosen, Admin, Mahasiswa) */
+#login-alert-container {
+  line-height: 1.45;
+  margin-bottom: 1.15rem;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+  animation: none;
+  overflow-wrap: anywhere;
+}
+
+#login-alert-container.is-revalidating {
+  opacity: 0.72;
+}
+
 /* Data Tables */
 .table-responsive {
   width: 100%;
@@ -847,6 +861,11 @@ input[type=email]:focus {
 
 .btn-auth-submit:hover:not(:disabled) {
   background-color: #004494;
+}
+
+.btn-auth-submit:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
 }
 
 .btn-auth-submit:focus {
