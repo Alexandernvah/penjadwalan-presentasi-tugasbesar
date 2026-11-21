@@ -361,18 +361,25 @@ class PenjadwalanServiceTest {
         assertEquals("Terjadwal", wed09Kel1.badgeText());
         assertEquals("Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Kel1.deskripsi());
         assertEquals(Integer.valueOf(99), wed09Kel1.idPresentasiTerjadwal());
-        assertTrue(wed09Kel1.intervalTerpakai().contains("09:00 - 09:30"));
+        assertTrue(wed09Kel1.intervalTerpakai().contains("09:00-09:30"));
 
-        // 2. Matrix for Kelompok 2 (different group) -> slot 09:00 - 10:00 on Wednesday MUST be BENTROK_DOSEN with course name
-        MatriksMingguanResponseDTO matrixKel2 = penjadwalanService.getMatriksMingguan(102, 2, "REGULER", monday, "1975031501");
+        // 2. Matrix for 30-min Kelompok 2 when only 09:00-09:30 is booked -> TERSEDIA_SEBAGIAN
+        MatriksMingguanResponseDTO matrixKel2 = penjadwalanService.getMatriksMingguan(102, 2, "REGULER", monday, "1975031501", 30);
         assertNotNull(matrixKel2);
         SelMatriksMingguanDTO wed09Kel2 = matrixKel2.barisList().get(2).selList().get(2);
-        assertEquals("BENTROK_DOSEN", wed09Kel2.status());
-        assertEquals("Dosen Sibuk", wed09Kel2.badgeText());
-        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Kel2.deskripsi());
-        assertTrue(wed09Kel2.intervalTerpakai().contains("09:00 - 09:30"));
+        assertEquals("TERSEDIA_SEBAGIAN", wed09Kel2.status());
+        assertEquals("Kosong (09.30 - 10.00)", wed09Kel2.badgeText());
+        assertEquals("Terisi: Kelompok 1 \u00b7 09.00 - 09.30", wed09Kel2.deskripsi());
+        assertTrue(wed09Kel2.intervalTerpakai().contains("09:00-09:30"));
 
-        // 3. Cross-course check: Kelompok 1 in ASD (idKelas=105) sees Kelompok 1 in Jaringan Komputer as BENTROK_DOSEN
+        // 3. Matrix for 60-min group when 09:00-09:30 is booked -> no 60-min subslot fits -> BENTROK_DOSEN
+        MatriksMingguanResponseDTO matrix60Min = penjadwalanService.getMatriksMingguan(102, 2, "REGULER", monday, "1975031501", 60);
+        SelMatriksMingguanDTO wed09Kel2Full = matrix60Min.barisList().get(2).selList().get(2);
+        assertEquals("BENTROK_DOSEN", wed09Kel2Full.status());
+        assertEquals("Dosen Sibuk", wed09Kel2Full.badgeText());
+        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Kel2Full.deskripsi());
+
+        // 4. Cross-course check: 30-min Kelompok 1 in ASD (idKelas=105) sees partial free subslot 09:30-10:00
         Kelompok kelompok1Asd = new Kelompok(3, kelasAsd, (short) 1, (short) 4, "Struktur Data");
         when(kelasRepository.findByIdWithDetails(105)).thenReturn(Optional.of(kelasAsd));
         when(kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(105)).thenReturn(List.of(kelompok1Asd));
@@ -380,10 +387,107 @@ class PenjadwalanServiceTest {
         when(anggotaKelompokRepository.findByKelasIdWithMahasiswaAndKelompok(105)).thenReturn(Collections.emptyList());
         when(presentasiRepository.findByKelasIdWithDetails(105)).thenReturn(Collections.emptyList());
 
-        MatriksMingguanResponseDTO matrixAsd = penjadwalanService.getMatriksMingguan(105, 3, "REGULER", monday, "1975031501");
+        MatriksMingguanResponseDTO matrixAsd30 = penjadwalanService.getMatriksMingguan(105, 3, "REGULER", monday, "1975031501", 30);
+        SelMatriksMingguanDTO wed09Asd30 = matrixAsd30.barisList().get(2).selList().get(2);
+        assertEquals("TERSEDIA_SEBAGIAN", wed09Asd30.status());
+        assertTrue(wed09Asd30.intervalTerpakai().contains("09:00-09:30"));
+
+        // 5. Cross-course 60-min check & full-hour booked check -> BENTROK_DOSEN
+        MatriksMingguanResponseDTO matrixAsd60 = penjadwalanService.getMatriksMingguan(105, 3, "REGULER", monday, "1975031501", 60);
+        SelMatriksMingguanDTO wed09Asd60 = matrixAsd60.barisList().get(2).selList().get(2);
+        assertEquals("BENTROK_DOSEN", wed09Asd60.status());
+        assertEquals("Dosen Sibuk", wed09Asd60.badgeText());
+        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Asd60.deskripsi());
+    }
+
+    @Test
+    void testPartialHourSubSlot_SaveAdjacentHalfHourAndBlockFullHour() {
+        LocalDate monday = LocalDate.of(2026, 10, 5);
+        LocalDate wednesday = LocalDate.of(2026, 10, 7);
+        LocalDate friday = LocalDate.of(2026, 10, 9);
+
+        Kelompok kelompok2 = new Kelompok(2, kelasJarkom, (short) 2, (short) 4, "Sistem Keamanan Jaringan");
+        Kelompok kelompok3 = new Kelompok(3, kelasJarkom, (short) 3, (short) 4, "Optimasi Routing");
+
+        Presentasi presKel1 = new Presentasi(
+            99, kelompok1, wednesday, LocalTime.of(9, 0), LocalTime.of(9, 30), "Lab Komputer 1", false, null
+        );
+        Presentasi presKel2 = new Presentasi(
+            100, kelompok2, wednesday, LocalTime.of(9, 30), LocalTime.of(10, 0), "Lab Komputer 1", false, null
+        );
+
+        // Step A: Save Kelompok 2 at 09:30 - 10:00 right after Kelompok 1 (09:00 - 09:30)
+        when(kelasRepository.findByIdWithDetails(102)).thenReturn(Optional.of(kelasJarkom));
+        when(kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(102)).thenReturn(List.of(kelompok1, kelompok2, kelompok3));
+        when(kelompokRepository.findById(2)).thenReturn(Optional.of(kelompok2));
+        when(kuliahRepository.findByKelas_IdKelas(102)).thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByHariAndDosenIdsWithDetails(eq((short) 3), anyCollection())).thenReturn(Collections.emptyList());
+        when(pengawasUjianRepository.findByTanggalAndDosenIdsWithDetails(eq(wednesday), anyCollection())).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalWithDetails(wednesday)).thenReturn(List.of(presKel1));
+        when(anggotaKelompokRepository.findByKelasIdWithMahasiswaAndKelompok(102)).thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByHariAndRuanganWithDetails((short) 3, "Lab Komputer 1")).thenReturn(Collections.emptyList());
+        when(ujianRepository.findByTanggalAndRuanganWithDetails(wednesday, "Lab Komputer 1")).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalAndRuanganWithDetails(wednesday, "Lab Komputer 1")).thenReturn(List.of(presKel1));
+        when(presentasiRepository.findByKelasIdWithDetails(102)).thenReturn(List.of(presKel1));
+        when(anggotaKelompokRepository.findByKelompok_IdKelompok(2)).thenReturn(Collections.emptyList());
+        when(presentasiRepository.save(any(Presentasi.class))).thenAnswer(inv -> {
+            Presentasi p = inv.getArgument(0);
+            p.setIdPresentasi(100);
+            return p;
+        });
+
+        PresentasiTerjadwalDTO savedKel2 = penjadwalanService.simpanPresentasi(new SimpanPresentasiRequestDTO(
+            102, 2, "Lab Komputer 1", "Lab Komputer 1", wednesday.toString(), "09:30", "10:00", 30, null, false, "1975031501"
+        ));
+        assertNotNull(savedKel2);
+        assertEquals("09:30", savedKel2.jamMulai());
+        assertEquals("10:00", savedKel2.jamSelesai());
+
+        // Step B: Once both 09:00-09:30 and 09:30-10:00 are booked (even if returned unsorted),
+        // Kelompok 3 and another course (ASD) see aggregated BENTROK_DOSEN
+        when(kuliahRepository.findByDosenIdsWithDetails(anyCollection())).thenReturn(Collections.emptyList());
+        when(pengawasUjianRepository.findByTanggalBetweenAndDosenIdsWithDetails(eq(monday), eq(friday), anyCollection()))
+            .thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalBetweenWithDetails(monday, friday))
+            .thenReturn(List.of(presKel2, presKel1));
+        when(ujianRepository.findByTanggalBetweenAndMatkulBukaIds(eq(monday), eq(friday), anyCollection()))
+            .thenReturn(Collections.emptyList());
+
+        MatriksMingguanResponseDTO matrixKel3 = penjadwalanService.getMatriksMingguan(102, 3, "REGULER", monday, "1975031501", 30);
+        SelMatriksMingguanDTO wed09Kel3 = matrixKel3.barisList().get(2).selList().get(2);
+        assertEquals("BENTROK_DOSEN", wed09Kel3.status());
+        assertEquals("Dosen Sibuk", wed09Kel3.badgeText());
+        assertEquals("Menguji Kelompok 1 & Kelompok 2\nJaringan Komputer\n09.00 - 10.00", wed09Kel3.deskripsi());
+        assertTrue(wed09Kel3.intervalTerpakai().contains("09:00-09:30"));
+        assertTrue(wed09Kel3.intervalTerpakai().contains("09:30-10:00"));
+
+        Kelompok kelompok1Asd = new Kelompok(10, kelasAsd, (short) 1, (short) 4, "Struktur Data");
+        when(kelasRepository.findByIdWithDetails(105)).thenReturn(Optional.of(kelasAsd));
+        when(kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(105)).thenReturn(List.of(kelompok1Asd));
+        when(kuliahRepository.findByKelas_IdKelas(105)).thenReturn(Collections.emptyList());
+        when(anggotaKelompokRepository.findByKelasIdWithMahasiswaAndKelompok(105)).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByKelasIdWithDetails(105)).thenReturn(Collections.emptyList());
+
+        MatriksMingguanResponseDTO matrixAsd = penjadwalanService.getMatriksMingguan(105, 10, "REGULER", monday, "1975031501", 30);
         SelMatriksMingguanDTO wed09Asd = matrixAsd.barisList().get(2).selList().get(2);
         assertEquals("BENTROK_DOSEN", wed09Asd.status());
         assertEquals("Dosen Sibuk", wed09Asd.badgeText());
-        assertEquals("Menguji Kelompok 1\nJaringan Komputer\n09.00 - 09.30", wed09Asd.deskripsi());
+        assertEquals("Menguji Kelompok 1 & Kelompok 2\nJaringan Komputer\n09.00 - 10.00", wed09Asd.deskripsi());
+
+        // Step C: Multi-presentation partial hour (e.g., two 15-min slots leaving 09:30-10:00 free)
+        Presentasi pres15a = new Presentasi(
+            101, kelompok1, wednesday, LocalTime.of(9, 0), LocalTime.of(9, 15), "Lab Komputer 1", false, null
+        );
+        Presentasi pres15b = new Presentasi(
+            102, kelompok2, wednesday, LocalTime.of(9, 15), LocalTime.of(9, 30), "Lab Komputer 1", false, null
+        );
+        when(presentasiRepository.findByTanggalBetweenWithDetails(monday, friday))
+            .thenReturn(List.of(pres15b, pres15a));
+
+        MatriksMingguanResponseDTO matrixPartialMulti = penjadwalanService.getMatriksMingguan(102, 3, "REGULER", monday, "1975031501", 30);
+        SelMatriksMingguanDTO wed09PartialMulti = matrixPartialMulti.barisList().get(2).selList().get(2);
+        assertEquals("TERSEDIA_SEBAGIAN", wed09PartialMulti.status());
+        assertEquals("Kosong (09.30 - 10.00)", wed09PartialMulti.badgeText());
+        assertEquals("Terisi: Kelompok 1 & Kelompok 2 \u00b7 09.00 - 09.30", wed09PartialMulti.deskripsi());
     }
 }

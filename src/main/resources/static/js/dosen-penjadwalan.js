@@ -457,7 +457,8 @@
       const params = new URLSearchParams({
         idKelas: String(idKelas),
         idKelompok: String(idKelompok),
-        mode: activeMode
+        mode: activeMode,
+        durasiMenit: String((group && group.durasiMenit) ? group.durasiMenit : 30)
       });
       if (activeTanggalMulai) {
         params.set('tanggalMulai', activeTanggalMulai);
@@ -549,6 +550,17 @@
               openModalBatal(sel.idPresentasiTerjadwal, noKel);
             }
           });
+        } else if (status === 'TERSEDIA_SEBAGIAN' || status === 'PARTIAL_FREE') {
+          td.className = 'cell-state-tersedia-sebagian';
+          td.setAttribute('role', 'button');
+          td.setAttribute('tabindex', '0');
+          td.appendChild(createPartialFreeCellBox(
+            sel.badgeText || 'Kosong',
+            sel.deskripsi || ''
+          ));
+          bindCellClick(td, function () {
+            openModalSlotAman(sel);
+          });
         } else if (status === 'KOSONG') {
           td.className = 'cell-state-kosong';
           td.setAttribute('role', 'button');
@@ -624,14 +636,55 @@
     const subtitleDiv = document.createElement('div');
     subtitleDiv.className = subtextClass;
     const lines = String(deskripsiText || '').split('\n');
-    const fallbackClass = lineClasses[lineClasses.length - 1] || '';
+    const isResolverFn = typeof lineClasses === 'function';
+    const fallbackClass = !isResolverFn && Array.isArray(lineClasses)
+      ? (lineClasses[lineClasses.length - 1] || '')
+      : '';
     lines.forEach(function (lineText, idx) {
       const lineEl = document.createElement('div');
-      lineEl.className = lineClasses[idx] || fallbackClass;
+      lineEl.className = isResolverFn
+        ? lineClasses(lineText, idx)
+        : (lineClasses[idx] || fallbackClass);
       lineEl.textContent = lineText;
       subtitleDiv.appendChild(lineEl);
     });
     boxDiv.appendChild(subtitleDiv);
+
+    return boxDiv;
+  }
+
+  function formatNoBreakTime(text) {
+    return String(text || '').replace(/(\d{2}\.\d{2})\s-\s(\d{2}\.\d{2})/g, '$1\u00A0-\u00A0$2');
+  }
+
+  function createPartialFreeCellBox(primaryLabel, secondaryText) {
+    const boxDiv = document.createElement('div');
+    boxDiv.className = 'jadwal-cell-box cell-partial-box';
+
+    const primarySpan = document.createElement('span');
+    primarySpan.className = 'cell-partial-primary';
+    primarySpan.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    `;
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = formatNoBreakTime(primaryLabel);
+    primarySpan.appendChild(labelSpan);
+    boxDiv.appendChild(primarySpan);
+
+    if (secondaryText) {
+      const secondaryDiv = document.createElement('div');
+      secondaryDiv.className = 'cell-partial-secondary';
+      String(secondaryText).split('\n').forEach(function (lineText) {
+        const lineEl = document.createElement('div');
+        lineEl.className = 'cell-partial-booked';
+        lineEl.textContent = formatNoBreakTime(lineText);
+        secondaryDiv.appendChild(lineEl);
+      });
+      boxDiv.appendChild(secondaryDiv);
+    }
 
     return boxDiv;
   }
@@ -658,9 +711,12 @@
     const durasi = group && group.durasiMenit ? group.durasiMenit : 30;
     const labelHariTanggal = sel.labelHariTanggal || `${sel.namaHari}, ${sel.tanggal}`;
     const labelRentang = sel.labelRentangJam || `${sel.jamMulai} - ${sel.jamSelesai}`;
+    const isPartial = sel.status === 'TERSEDIA_SEBAGIAN' || sel.status === 'PARTIAL_FREE';
 
     if (teksKonfirmasiSlotAman) {
-      teksKonfirmasiSlotAman.textContent = `Anda memilih hari ${labelHariTanggal} pada rentang jam ${labelRentang}. Semua anggota kelompok dapat hadir.`;
+      teksKonfirmasiSlotAman.textContent = isPartial
+        ? `Anda memilih hari ${labelHariTanggal} pada rentang jam ${labelRentang}. Sisa sub-slot yang tersedia di blok ini dapat langsung dipilih tanpa bentrok.`
+        : `Anda memilih hari ${labelHariTanggal} pada rentang jam ${labelRentang}. Semua anggota kelompok dapat hadir.`;
     }
     if (labelSubslotAman) {
       labelSubslotAman.textContent = `Pilih Slot Waktu Spesifik (Durasi: ${durasi} Menit)`;
@@ -683,6 +739,7 @@
           opt.textContent = sub.label;
           selectSubslotAman.appendChild(opt);
         });
+        selectSubslotAman.selectedIndex = 0;
       }
     }
 

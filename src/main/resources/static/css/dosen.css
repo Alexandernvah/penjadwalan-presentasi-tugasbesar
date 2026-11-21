@@ -2137,6 +2137,56 @@ td.cell-state-terjadwal:hover {
   color: #4338ca;
 }
 
+/* State F: TERSEDIA_SEBAGIAN (Standard Green Theme Matching KOSONG) */
+td.cell-state-tersedia-sebagian {
+  background-color: #dcfce7;
+  cursor: pointer;
+}
+
+td.cell-state-tersedia-sebagian:hover {
+  background-color: #bbf7d0;
+}
+
+.jadwal-cell-box.cell-partial-box {
+  gap: 4px;
+  padding: 8px 6px;
+}
+
+.cell-partial-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #15803d;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.cell-partial-primary svg {
+  width: 14px;
+  height: 14px;
+  stroke: #15803d;
+  flex-shrink: 0;
+}
+
+.cell-partial-secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 3px;
+  border-top: 1px solid rgba(21, 128, 61, 0.18);
+  width: 100%;
+}
+
+.cell-partial-booked {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #166534;
+  line-height: 1.25;
+}
+
 /* ====
    Modal 2A: Safe Slot Confirmation (#modal-konfirmasi-slot)
    ==== */

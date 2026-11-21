@@ -68,10 +68,11 @@ public class PenjadwalanController {
         @RequestParam(name = "mode", required = false, defaultValue = "REGULER") String mode,
         @RequestParam(name = "tanggalMulai", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tanggalMulai,
-        @RequestParam(name = "dosenId", required = false) String dosenId
+        @RequestParam(name = "dosenId", required = false) String dosenId,
+        @RequestParam(name = "durasiMenit", required = false) Integer durasiMenit
     ) {
         MatriksMingguanResponseDTO matriks = penjadwalanService.getMatriksMingguan(
-            idKelas, idKelompok, mode, tanggalMulai, dosenId
+            idKelas, idKelompok, mode, tanggalMulai, dosenId, durasiMenit
         );
         return ResponseEntity.ok(matriks);
     }

@@ -45,6 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -321,6 +322,18 @@ public class PenjadwalanService {
         LocalDate tanggalMulai,
         String dosenId
     ) {
+        return getMatriksMingguan(idKelas, idKelompok, mode, tanggalMulai, dosenId, null);
+    }
+
+    @Transactional(readOnly = true)
+    public MatriksMingguanResponseDTO getMatriksMingguan(
+        Integer idKelas,
+        Integer idKelompok,
+        String mode,
+        LocalDate tanggalMulai,
+        String dosenId,
+        Integer requestedDurasiMenit
+    ) {
         Integer targetKelas = idKelas != null ? idKelas : 102;
         String normalizedMode = normalizeMode(mode);
         LocalDate monday = resolveWeekMonday(normalizedMode, tanggalMulai);
@@ -349,7 +362,8 @@ public class PenjadwalanService {
 
         if (dbKelasOpt.isEmpty() && dbKelompokList.isEmpty()) {
             return buildFallbackMatriksMingguan(
-                targetKelas, idKelompok, normalizedMode, monday, friday, rentangLabel, prevMonday, nextMonday, hariList
+                targetKelas, idKelompok, normalizedMode, monday, friday,
+                rentangLabel, prevMonday, nextMonday, hariList, requestedDurasiMenit
             );
         }
 
@@ -381,9 +395,9 @@ public class PenjadwalanService {
             targetKelas, kelas, activeKelompokId, monday, friday, dosenId
         );
 
-        int durasiMenit = 30;
+        int durasiMenit = (requestedDurasiMenit != null && requestedDurasiMenit > 0) ? requestedDurasiMenit : 30;
         Presentasi existingKelompokPres = weeklyCtx.presentasiByKelompokId().get(activeKelompokId);
-        if (existingKelompokPres != null) {
+        if (existingKelompokPres != null && (requestedDurasiMenit == null || requestedDurasiMenit <= 0)) {
             durasiMenit = computeDurationMinutes(existingKelompokPres.getJamMulai(), existingKelompokPres.getJamSelesai(), 30);
         }
 
@@ -414,6 +428,7 @@ public class PenjadwalanService {
                     targetKelas,
                     kelas,
                     activeKelompokId,
+                    durasiMenit,
                     namaSingkat,
                     normalizedMode,
                     hariKe,
@@ -554,6 +569,7 @@ public class PenjadwalanService {
         Integer idKelas,
         Kelas kelas,
         Integer idKelompok,
+        int durasiMenit,
         String namaSingkatMatkul,
         String mode,
         short hariKe,
@@ -565,10 +581,32 @@ public class PenjadwalanService {
             ? kelas.getMataKuliahBuka().getIdMatkulBuka()
             : null;
 
-        // 1. Check Existing Presentations (TERJADWAL / BENTROK_DOSEN)
+        Map<Integer, List<PesertaKelas>> pesertaByKelasId = new HashMap<>();
+        Map<Integer, List<PesertaKelas>> pesertaByMatkulBukaId = new HashMap<>();
+        for (PesertaKelas pk : ctx.pesertaMahasiswa()) {
+            if (pk.getKelas() != null) {
+                pesertaByKelasId.computeIfAbsent(pk.getKelas().getIdKelas(), k -> new ArrayList<>()).add(pk);
+                if (pk.getKelas().getMataKuliahBuka() != null) {
+                    pesertaByMatkulBukaId
+                        .computeIfAbsent(pk.getKelas().getMataKuliahBuka().getIdMatkulBuka(), k -> new ArrayList<>())
+                        .add(pk);
+                }
+            }
+        }
+
+        Map<Integer, List<AnggotaKelompok>> anggotaByKelompokAll = new HashMap<>();
+        for (AnggotaKelompok ak : ctx.anggotaSemuaKelasMahasiswa()) {
+            if (ak.getKelompok() != null) {
+                anggotaByKelompokAll
+                    .computeIfAbsent(ak.getKelompok().getIdKelompok(), k -> new ArrayList<>())
+                    .add(ak);
+            }
+        }
+
+        // 1. Check Existing Presentations (TERJADWAL / TERSEDIA_SEBAGIAN / BENTROK_DOSEN)
         List<String> bookedIntervals = new ArrayList<>();
         Presentasi ownPresentation = null;
-        Presentasi otherPresentation = null;
+        List<Presentasi> otherPresentations = new ArrayList<>();
 
         for (Presentasi p : ctx.presentasiWeekAll()) {
             if (p.getKelompok() == null || !date.equals(p.getTanggal())) {
@@ -577,31 +615,15 @@ public class PenjadwalanService {
             if (!isOverlapping(slotStart, slotEnd, p.getJamMulai(), p.getJamSelesai())) {
                 continue;
             }
-            String pRange = p.getJamMulai().format(TIME_FMT) + " - " + p.getJamSelesai().format(TIME_FMT);
+            String pRange = formatBookedRangeKey(p.getJamMulai(), p.getJamSelesai());
             if (!bookedIntervals.contains(pRange)) {
                 bookedIntervals.add(pRange);
             }
 
             if (idKelompok != null && idKelompok.equals(p.getKelompok().getIdKelompok())) {
                 ownPresentation = p;
-            } else {
-                Kelas pKelas = p.getKelompok().getKelas();
-                boolean sameLecturer = false;
-                if (pKelas != null) {
-                    if (idKelas.equals(pKelas.getIdKelas())) {
-                        sameLecturer = true;
-                    } else if (pKelas.getPenanggungJawab() != null
-                        && ctx.dosenIds().contains(pKelas.getPenanggungJawab().getNomorIndukDosen())) {
-                        sameLecturer = true;
-                    } else if (pKelas.getMataKuliahBuka() != null
-                        && pKelas.getMataKuliahBuka().getKoordinator() != null
-                        && ctx.dosenIds().contains(pKelas.getMataKuliahBuka().getKoordinator().getNomorIndukDosen())) {
-                        sameLecturer = true;
-                    }
-                }
-                if (sameLecturer) {
-                    otherPresentation = p;
-                }
+            } else if (isSameLecturerForPresentation(p, idKelas, ctx.dosenIds())) {
+                otherPresentations.add(p);
             }
         }
 
@@ -623,22 +645,18 @@ public class PenjadwalanService {
             );
         }
 
-        if (otherPresentation != null) {
-            int noKel = otherPresentation.getKelompok().getNoKelompok() != null
-                ? otherPresentation.getKelompok().getNoKelompok().intValue()
-                : 1;
-            String timeDotRange = otherPresentation.getJamMulai().format(DOT_TIME_FMT)
-                + " - " + otherPresentation.getJamSelesai().format(DOT_TIME_FMT);
-            String matkulName = resolveNamaMatkul(otherPresentation, kelas);
-            return new RawCell(
-                "BENTROK_DOSEN",
-                "Dosen Sibuk",
-                "Menguji Kelompok " + noKel + "\n" + matkulName + "\n" + timeDotRange,
-                "",
-                "",
-                otherPresentation.getIdPresentasi(),
-                bookedIntervals
+        if (!otherPresentations.isEmpty()) {
+            List<LocalTime[]> freeSubSlots = findFreeSubSlotsForHour(
+                ctx, idKelas, classMatkulBukaId, idKelompok, mode, hariKe, date,
+                slotStart, slotEnd, durasiMenit,
+                pesertaByKelasId, pesertaByMatkulBukaId, anggotaByKelompokAll, bookedIntervals
             );
+            List<OccupiedPresentationItem> occupiedItems = toOccupiedItems(otherPresentations, kelas);
+
+            if (!freeSubSlots.isEmpty()) {
+                return buildPartialAvailableRawCell(occupiedItems, freeSubSlots, bookedIntervals);
+            }
+            return buildAggregatedPresentationConflictCell(occupiedItems, bookedIntervals);
         }
 
         // 2. Check Lecturer Teaching / Exam Conflict (BENTROK_DOSEN)
@@ -665,19 +683,6 @@ public class PenjadwalanService {
         }
 
         // 3. Check Student Conflict (BENTROK_MAHASISWA)
-        Map<Integer, List<PesertaKelas>> pesertaByKelasId = new HashMap<>();
-        Map<Integer, List<PesertaKelas>> pesertaByMatkulBukaId = new HashMap<>();
-        for (PesertaKelas pk : ctx.pesertaMahasiswa()) {
-            if (pk.getKelas() != null) {
-                pesertaByKelasId.computeIfAbsent(pk.getKelas().getIdKelas(), k -> new ArrayList<>()).add(pk);
-                if (pk.getKelas().getMataKuliahBuka() != null) {
-                    pesertaByMatkulBukaId
-                        .computeIfAbsent(pk.getKelas().getMataKuliahBuka().getIdMatkulBuka(), k -> new ArrayList<>())
-                        .add(pk);
-                }
-            }
-        }
-
         if ("REGULER".equals(mode)) {
             for (Kuliah kul : ctx.kuliahMahasiswaAllDays()) {
                 if (kul.getHari() != null && kul.getHari() == hariKe
@@ -727,14 +732,6 @@ public class PenjadwalanService {
         }
 
         // Check if students have another presentation at the same time
-        Map<Integer, List<AnggotaKelompok>> anggotaByKelompokAll = new HashMap<>();
-        for (AnggotaKelompok ak : ctx.anggotaSemuaKelasMahasiswa()) {
-            if (ak.getKelompok() != null) {
-                anggotaByKelompokAll
-                    .computeIfAbsent(ak.getKelompok().getIdKelompok(), k -> new ArrayList<>())
-                    .add(ak);
-            }
-        }
         for (Presentasi p : ctx.presentasiWeekAll()) {
             if (p.getKelompok() == null || !date.equals(p.getTanggal())) {
                 continue;
@@ -769,7 +766,7 @@ public class PenjadwalanService {
             }
         }
 
-        // 3. Check Class Priority Schedule (PRIORITAS_KELAS)
+        // 4. Check Class Priority Schedule (PRIORITAS_KELAS)
         if ("REGULER".equals(mode)) {
             for (Kuliah kul : ctx.kuliahKelasIni()) {
                 if (kul.getHari() != null && kul.getHari() == hariKe
@@ -804,8 +801,298 @@ public class PenjadwalanService {
             }
         }
 
-        // 4. Default: KOSONG
+        // 5. Default: KOSONG
         return new RawCell("KOSONG", "Kosong", "", "", "", null, bookedIntervals);
+    }
+
+    private String formatBookedRangeKey(LocalTime start, LocalTime end) {
+        return start.format(TIME_FMT) + "-" + end.format(TIME_FMT);
+    }
+
+    private record OccupiedPresentationItem(
+        Integer idPresentasi,
+        String groupName,
+        String courseName,
+        LocalTime startTime,
+        LocalTime endTime
+    ) {
+    }
+
+    private List<OccupiedPresentationItem> toOccupiedItems(List<Presentasi> presentations, Kelas fallbackKelas) {
+        List<OccupiedPresentationItem> items = new ArrayList<>(presentations.size());
+        for (Presentasi p : presentations) {
+            int noKel = (p.getKelompok() != null && p.getKelompok().getNoKelompok() != null)
+                ? p.getKelompok().getNoKelompok().intValue()
+                : 1;
+            items.add(new OccupiedPresentationItem(
+                p.getIdPresentasi(),
+                "Kelompok " + noKel,
+                resolveNamaMatkul(p, fallbackKelas),
+                p.getJamMulai(),
+                p.getJamSelesai()
+            ));
+        }
+        return items;
+    }
+
+    private List<OccupiedPresentationItem> toFallbackOccupiedItems(
+        List<PresentasiTerjadwalDTO> presentations,
+        String defaultCourseName
+    ) {
+        List<OccupiedPresentationItem> items = new ArrayList<>(presentations.size());
+        for (PresentasiTerjadwalDTO op : presentations) {
+            String course = (op.namaMatkul() != null && !op.namaMatkul().isBlank())
+                ? op.namaMatkul()
+                : defaultCourseName;
+            LocalTime start = parseTimeOrDefault(op.jamMulai(), LocalTime.of(9, 0));
+            LocalTime end = parseTimeOrDefault(op.jamSelesai(), start.plusMinutes(30));
+            items.add(new OccupiedPresentationItem(
+                op.idPresentasi(),
+                "Kelompok " + op.nomorKelompok(),
+                course,
+                start,
+                end
+            ));
+        }
+        return items;
+    }
+
+    private RawCell buildAggregatedPresentationConflictCell(
+        List<OccupiedPresentationItem> items,
+        List<String> bookedIntervals
+    ) {
+        List<OccupiedPresentationItem> sorted = new ArrayList<>(items);
+        sorted.sort(Comparator.comparing(OccupiedPresentationItem::startTime)
+            .thenComparing(OccupiedPresentationItem::endTime));
+
+        String groupsLabel = formatAggregatedGroupNames(sorted);
+        String coursesLabel = formatAggregatedCourseNames(sorted);
+        String timeRangeLabel = mergeDotIntervals(sorted);
+        Integer firstId = sorted.isEmpty() ? null : sorted.get(0).idPresentasi();
+
+        return new RawCell(
+            "BENTROK_DOSEN",
+            "Dosen Sibuk",
+            "Menguji " + groupsLabel + "\n" + coursesLabel + "\n" + timeRangeLabel,
+            "",
+            "",
+            firstId,
+            bookedIntervals
+        );
+    }
+
+    private RawCell buildPartialAvailableRawCell(
+        List<OccupiedPresentationItem> occupiedItems,
+        List<LocalTime[]> freeSubSlots,
+        List<String> bookedIntervals
+    ) {
+        List<OccupiedPresentationItem> sorted = new ArrayList<>(occupiedItems);
+        sorted.sort(Comparator.comparing(OccupiedPresentationItem::startTime)
+            .thenComparing(OccupiedPresentationItem::endTime));
+
+        List<String> freeDotStrings = new ArrayList<>();
+        for (LocalTime[] free : freeSubSlots) {
+            freeDotStrings.add(free[0].format(DOT_TIME_FMT) + " - " + free[1].format(DOT_TIME_FMT));
+        }
+        String primaryLabel = "Kosong (" + String.join(", ", freeDotStrings) + ")";
+        String groupsLabel = formatAggregatedGroupNames(sorted);
+        String timeRangeLabel = mergeDotIntervals(sorted);
+        String secondaryInfo = "Terisi: " + groupsLabel + " \u00b7 " + timeRangeLabel;
+
+        return new RawCell(
+            "TERSEDIA_SEBAGIAN",
+            primaryLabel,
+            secondaryInfo,
+            "",
+            "",
+            null,
+            bookedIntervals
+        );
+    }
+
+    private String formatAggregatedGroupNames(List<OccupiedPresentationItem> sorted) {
+        Set<String> uniqueGroups = new LinkedHashSet<>();
+        for (OccupiedPresentationItem item : sorted) {
+            if (item.groupName() != null && !item.groupName().isBlank()) {
+                uniqueGroups.add(item.groupName());
+            }
+        }
+        List<String> list = new ArrayList<>(uniqueGroups);
+        int n = list.size();
+        if (n == 0) return "Kelompok";
+        if (n == 1) return list.get(0);
+        if (n == 2) return list.get(0) + " & " + list.get(1);
+        return String.join(", ", list.subList(0, n - 1)) + " & " + list.get(n - 1);
+    }
+
+    private String formatAggregatedCourseNames(List<OccupiedPresentationItem> sorted) {
+        Set<String> uniqueCourses = new LinkedHashSet<>();
+        for (OccupiedPresentationItem item : sorted) {
+            if (item.courseName() != null && !item.courseName().isBlank()) {
+                uniqueCourses.add(item.courseName());
+            }
+        }
+        if (uniqueCourses.isEmpty()) {
+            return "Mata Kuliah";
+        }
+        return String.join(" & ", uniqueCourses);
+    }
+
+    private String mergeDotIntervals(List<OccupiedPresentationItem> sorted) {
+        if (sorted.isEmpty()) {
+            return "";
+        }
+        List<LocalTime[]> merged = new ArrayList<>();
+        LocalTime curStart = sorted.get(0).startTime();
+        LocalTime curEnd = sorted.get(0).endTime();
+
+        for (int i = 1; i < sorted.size(); i++) {
+            LocalTime nextStart = sorted.get(i).startTime();
+            LocalTime nextEnd = sorted.get(i).endTime();
+            if (!nextStart.isAfter(curEnd)) {
+                if (nextEnd.isAfter(curEnd)) {
+                    curEnd = nextEnd;
+                }
+            } else {
+                merged.add(new LocalTime[]{curStart, curEnd});
+                curStart = nextStart;
+                curEnd = nextEnd;
+            }
+        }
+        merged.add(new LocalTime[]{curStart, curEnd});
+
+        List<String> formatted = new ArrayList<>(merged.size());
+        for (LocalTime[] interval : merged) {
+            formatted.add(interval[0].format(DOT_TIME_FMT) + " - " + interval[1].format(DOT_TIME_FMT));
+        }
+        return String.join(", ", formatted);
+    }
+
+    private boolean isSameLecturerForPresentation(Presentasi p, Integer idKelas, Set<String> dosenIds) {
+        if (p == null || p.getKelompok() == null || p.getKelompok().getKelas() == null) {
+            return false;
+        }
+        Kelas pKelas = p.getKelompok().getKelas();
+        if (idKelas != null && idKelas.equals(pKelas.getIdKelas())) {
+            return true;
+        }
+        if (pKelas.getPenanggungJawab() != null
+            && dosenIds.contains(pKelas.getPenanggungJawab().getNomorIndukDosen())) {
+            return true;
+        }
+        return pKelas.getMataKuliahBuka() != null
+            && pKelas.getMataKuliahBuka().getKoordinator() != null
+            && dosenIds.contains(pKelas.getMataKuliahBuka().getKoordinator().getNomorIndukDosen());
+    }
+
+    private List<LocalTime[]> findFreeSubSlotsForHour(
+        WeeklyBatchContext ctx,
+        Integer idKelas,
+        Integer classMatkulBukaId,
+        Integer idKelompok,
+        String mode,
+        short hariKe,
+        LocalDate date,
+        LocalTime slotStart,
+        LocalTime slotEnd,
+        int durasiMenit,
+        Map<Integer, List<PesertaKelas>> pesertaByKelasId,
+        Map<Integer, List<PesertaKelas>> pesertaByMatkulBukaId,
+        Map<Integer, List<AnggotaKelompok>> anggotaByKelompokAll,
+        List<String> bookedIntervals
+    ) {
+        List<LocalTime[]> freeSlots = new ArrayList<>();
+        int effectiveDurasi = durasiMenit > 0 ? durasiMenit : 30;
+        int stepMinutes = (effectiveDurasi >= 30) ? 30 : effectiveDurasi;
+
+        LocalTime cursor = slotStart;
+        while (!cursor.plusMinutes(effectiveDurasi).isAfter(slotEnd)) {
+            LocalTime subStart = cursor;
+            LocalTime subEnd = cursor.plusMinutes(effectiveDurasi);
+            if (hasSubSlotConflict(
+                ctx, idKelas, classMatkulBukaId, idKelompok, mode, hariKe, date,
+                subStart, subEnd, pesertaByKelasId, pesertaByMatkulBukaId, anggotaByKelompokAll
+            )) {
+                String blockedKey = formatBookedRangeKey(subStart, subEnd);
+                if (!bookedIntervals.contains(blockedKey)) {
+                    bookedIntervals.add(blockedKey);
+                }
+            } else {
+                freeSlots.add(new LocalTime[]{subStart, subEnd});
+            }
+            cursor = cursor.plusMinutes(stepMinutes);
+        }
+        return freeSlots;
+    }
+
+    private boolean hasSubSlotConflict(
+        WeeklyBatchContext ctx,
+        Integer idKelas,
+        Integer classMatkulBukaId,
+        Integer idKelompok,
+        String mode,
+        short hariKe,
+        LocalDate date,
+        LocalTime subStart,
+        LocalTime subEnd,
+        Map<Integer, List<PesertaKelas>> pesertaByKelasId,
+        Map<Integer, List<PesertaKelas>> pesertaByMatkulBukaId,
+        Map<Integer, List<AnggotaKelompok>> anggotaByKelompokAll
+    ) {
+        for (Presentasi p : ctx.presentasiWeekAll()) {
+            if (p.getKelompok() == null || !date.equals(p.getTanggal())) {
+                continue;
+            }
+            if (!isOverlapping(subStart, subEnd, p.getJamMulai(), p.getJamSelesai())) {
+                continue;
+            }
+            if (idKelompok != null && idKelompok.equals(p.getKelompok().getIdKelompok())) {
+                continue;
+            }
+            if (isSameLecturerForPresentation(p, idKelas, ctx.dosenIds())) {
+                return true;
+            }
+            if (!anggotaByKelompokAll.getOrDefault(p.getKelompok().getIdKelompok(), Collections.emptyList()).isEmpty()) {
+                return true;
+            }
+        }
+
+        if ("REGULER".equals(mode)) {
+            for (Kuliah kul : ctx.kuliahDosenAllDays()) {
+                if (kul.getHari() != null && kul.getHari() == hariKe
+                    && !idKelas.equals(kul.getKelas().getIdKelas())
+                    && isOverlapping(subStart, subEnd, kul.getJamMulai(), kul.getJamSelesai())) {
+                    return true;
+                }
+            }
+            for (Kuliah kul : ctx.kuliahMahasiswaAllDays()) {
+                if (kul.getHari() != null && kul.getHari() == hariKe
+                    && !idKelas.equals(kul.getKelas().getIdKelas())
+                    && isOverlapping(subStart, subEnd, kul.getJamMulai(), kul.getJamSelesai())
+                    && !pesertaByKelasId.getOrDefault(kul.getKelas().getIdKelas(), Collections.emptyList()).isEmpty()) {
+                    return true;
+                }
+            }
+        } else {
+            for (PengawasUjian pu : ctx.pengawasDosenWeek()) {
+                Ujian u = pu.getUjian();
+                if (u != null && date.equals(u.getTanggal()) && mode.equalsIgnoreCase(u.getJenisUjian())
+                    && (classMatkulBukaId == null || !classMatkulBukaId.equals(u.getMataKuliahBuka().getIdMatkulBuka()))
+                    && isOverlapping(subStart, subEnd, u.getJamMulai(), u.getJamSelesai())) {
+                    return true;
+                }
+            }
+            for (Ujian u : ctx.ujianMahasiswaWeek()) {
+                Integer mkbId = u.getMataKuliahBuka().getIdMatkulBuka();
+                if (date.equals(u.getTanggal()) && mode.equalsIgnoreCase(u.getJenisUjian())
+                    && (classMatkulBukaId == null || !classMatkulBukaId.equals(mkbId))
+                    && isOverlapping(subStart, subEnd, u.getJamMulai(), u.getJamSelesai())
+                    && !pesertaByMatkulBukaId.getOrDefault(mkbId, Collections.emptyList()).isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private List<BarisMatriksMingguanDTO> buildMergedRowsWithRowSpan(
@@ -1900,7 +2187,8 @@ public class PenjadwalanService {
         String rentangLabel,
         String prevMonday,
         String nextMonday,
-        List<HariMingguanDTO> hariList
+        List<HariMingguanDTO> hariList,
+        Integer requestedDurasiMenit
     ) {
         List<KelompokPenjadwalanDTO> groups = getFallbackKelompokByKelas(idKelas);
         KelompokPenjadwalanDTO selected = groups.get(0);
@@ -1912,6 +2200,9 @@ public class PenjadwalanService {
                 }
             }
         }
+        int effectiveDurasi = (requestedDurasiMenit != null && requestedDurasiMenit > 0)
+            ? requestedDurasiMenit
+            : (selected.durasiMenit() != null && selected.durasiMenit() > 0 ? selected.durasiMenit() : 30);
 
         boolean isAsd = Integer.valueOf(101).equals(idKelas);
         String idMatkul = isAsd ? "IF2110" : "IF3130";
@@ -2093,24 +2384,25 @@ public class PenjadwalanService {
             for (int h = 0; h < 11; h++) {
                 LocalTime slotStart = LocalTime.of(7 + h, 0);
                 LocalTime slotEnd = LocalTime.of(8 + h, 0);
+                RawCell existing = grid[h][d];
 
                 List<String> bookedIntervals = new ArrayList<>();
                 PresentasiTerjadwalDTO own = null;
-                PresentasiTerjadwalDTO other = null;
+                List<PresentasiTerjadwalDTO> otherPresentations = new ArrayList<>();
 
                 for (PresentasiTerjadwalDTO p : fallbackPresentasiById.values()) {
                     if (p.tanggal() != null && p.tanggal().equals(date.toString())) {
                         LocalTime pStart = parseTimeOrDefault(p.jamMulai(), LocalTime.of(13, 0));
                         LocalTime pEnd = parseTimeOrDefault(p.jamSelesai(), LocalTime.of(13, 30));
                         if (isOverlapping(slotStart, slotEnd, pStart, pEnd)) {
-                            String pRange = pStart.format(TIME_FMT) + " - " + pEnd.format(TIME_FMT);
+                            String pRange = formatBookedRangeKey(pStart, pEnd);
                             if (!bookedIntervals.contains(pRange)) {
                                 bookedIntervals.add(pRange);
                             }
                             if (selected != null && selected.idKelompok() != null && selected.idKelompok().equals(p.idKelompok())) {
                                 own = p;
                             } else {
-                                other = p;
+                                otherPresentations.add(p);
                             }
                         }
                     }
@@ -2131,23 +2423,42 @@ public class PenjadwalanService {
                         own.idPresentasi(),
                         bookedIntervals
                     );
-                } else if (other != null) {
-                    String otherMatkul = (other.namaMatkul() != null && !other.namaMatkul().isBlank())
-                        ? other.namaMatkul()
-                        : (isAsd ? "Algoritma dan Struktur Data" : "Jaringan Komputer");
-                    String dotStart = other.jamMulai() != null ? other.jamMulai().replace(':', '.') : "09.00";
-                    String dotEnd = other.jamSelesai() != null ? other.jamSelesai().replace(':', '.') : "09.30";
-                    grid[h][d] = new RawCell(
-                        "BENTROK_DOSEN",
-                        "Dosen Sibuk",
-                        "Menguji Kelompok " + other.nomorKelompok() + "\n" + otherMatkul + "\n" + dotStart + " - " + dotEnd,
-                        "",
-                        "",
-                        other.idPresentasi(),
-                        bookedIntervals
+                } else if (!otherPresentations.isEmpty()) {
+                    boolean baseBlocked = "BENTROK_DOSEN".equals(existing.status())
+                        || "BENTROK_MAHASISWA".equals(existing.status());
+                    List<LocalTime[]> freeSubSlots = new ArrayList<>();
+                    if (!baseBlocked) {
+                        int stepMinutes = (effectiveDurasi >= 30) ? 30 : effectiveDurasi;
+                        LocalTime cursor = slotStart;
+                        while (!cursor.plusMinutes(effectiveDurasi).isAfter(slotEnd)) {
+                            LocalTime subStart = cursor;
+                            LocalTime subEnd = cursor.plusMinutes(effectiveDurasi);
+                            boolean overlapsBooked = false;
+                            for (PresentasiTerjadwalDTO op : otherPresentations) {
+                                LocalTime opStart = parseTimeOrDefault(op.jamMulai(), LocalTime.of(13, 0));
+                                LocalTime opEnd = parseTimeOrDefault(op.jamSelesai(), LocalTime.of(13, 30));
+                                if (isOverlapping(subStart, subEnd, opStart, opEnd)) {
+                                    overlapsBooked = true;
+                                    break;
+                                }
+                            }
+                            if (!overlapsBooked) {
+                                freeSubSlots.add(new LocalTime[]{subStart, subEnd});
+                            }
+                            cursor = cursor.plusMinutes(stepMinutes);
+                        }
+                    }
+
+                    List<OccupiedPresentationItem> occupiedItems = toFallbackOccupiedItems(
+                        otherPresentations,
+                        isAsd ? "Algoritma dan Struktur Data" : "Jaringan Komputer"
                     );
+                    if (!freeSubSlots.isEmpty()) {
+                        grid[h][d] = buildPartialAvailableRawCell(occupiedItems, freeSubSlots, bookedIntervals);
+                    } else {
+                        grid[h][d] = buildAggregatedPresentationConflictCell(occupiedItems, bookedIntervals);
+                    }
                 } else if (!bookedIntervals.isEmpty()) {
-                    RawCell existing = grid[h][d];
                     grid[h][d] = new RawCell(
                         existing.status(),
                         existing.badgeText(),
@@ -2171,7 +2482,7 @@ public class PenjadwalanService {
             ruanganDefault,
             selected.idKelompok(),
             selected.noKelompok(),
-            selected.durasiMenit(),
+            effectiveDurasi,
             mode,
             monday.toString(),
             friday.toString(),
