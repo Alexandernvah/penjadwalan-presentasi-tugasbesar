@@ -4115,9 +4115,24 @@ td.cell-state-tersedia-sebagian:hover {
    Jadwal Mengawas Ujian (jadwal-mengawas.html)
    ==== */
 
+.jm-main .jp-summary-card,
+.jm-summary-card {
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.jm-summary-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 16px -6px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
 .jm-feedback-banner {
   max-width: 100%;
   margin: 0 0 1.5rem 0;
+  border-radius: 12px;
 }
 
 .jm-toolbar {
@@ -4131,6 +4146,9 @@ td.cell-state-tersedia-sebagian:hover {
 
 .jm-filter-pills {
   flex-wrap: wrap;
+  border-radius: 12px;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .jm-search-field {
@@ -4139,51 +4157,106 @@ td.cell-state-tersedia-sebagian:hover {
   max-width: 380px;
 }
 
-.jm-exam-card {
-  align-items: flex-start;
+.jm-search-input {
+  border-radius: 10px;
+  border-color: #e2e8f0;
 }
 
-.jm-exam-card .jp-date-block {
+.jm-exam-card {
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  padding: 16px 20px;
+  gap: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.jm-exam-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 20px -8px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+
+.jm-date-block {
+  align-self: flex-start;
   margin-top: 2px;
 }
 
-.jm-exam-card .jp-event-action {
-  align-self: center;
+.jm-date-weekday {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+  padding-bottom: 6px;
 }
 
-.jm-badge {
+.jm-card-content {
+  gap: 5px;
+}
+
+.jm-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  color: #475569;
+  line-height: 1.3;
+}
+
+.jm-card-title {
+  margin: 0;
+}
+
+.jm-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.jm-status-pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
   border-radius: 9999px;
+  white-space: nowrap;
 }
 
-.jm-badge svg {
-  width: 13px;
-  height: 13px;
+.jm-status-pill svg {
+  width: 12px;
+  height: 12px;
   flex-shrink: 0;
 }
 
-.jm-badge-proctors {
-  color: #1d4ed8;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
+.jm-status-success {
+  color: #15803d;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
 }
 
-.jm-badge-unassigned {
+.jm-status-warning {
   color: #b45309;
   background-color: #fffbeb;
-  border: 1px solid #fcd34d;
+  border: 1px solid #fde68a;
 }
 
-.jm-badge-conflict {
+.jm-status-danger {
   color: #b91c1c;
   background-color: #fef2f2;
   border: 1px solid #fecaca;
+}
+
+.jm-empty-state {
+  border-radius: 14px;
+  border-color: #cbd5e1;
 }
 
 .jm-proctors-row {
@@ -4191,9 +4264,9 @@ td.cell-state-tersedia-sebagian:hover {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 2px;
+  margin-top: 3px;
   font-size: 0.82rem;
-  color: #334155;
+  color: #475569;
 }
 
 .jm-proctors-row svg {
@@ -4222,23 +4295,24 @@ td.cell-state-tersedia-sebagian:hover {
 .jm-conflict-note {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
-  margin-top: 4px;
-  padding: 6px 10px;
+  gap: 7px;
+  margin-top: 6px;
+  padding: 8px 12px;
   font-size: 0.78rem;
   font-weight: 500;
+  line-height: 1.45;
   color: #991b1b;
   background-color: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .jm-conflict-note svg {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
   color: #dc2626;
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .jm-action-group {
@@ -4259,9 +4333,9 @@ td.cell-state-tersedia-sebagian:hover {
   padding: 8px 14px;
   font-size: 0.825rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 9px;
   cursor: pointer;
-  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease;
   white-space: nowrap;
 }
 
@@ -4278,11 +4352,14 @@ td.cell-state-tersedia-sebagian:hover {
   color: #ffffff;
   background-color: #2563eb;
   border: 1px solid #2563eb;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
 }
 
 .jm-btn-select:hover {
   background-color: #1d4ed8;
   border-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.28);
 }
 
 .jm-btn-selected {
@@ -4295,12 +4372,12 @@ td.cell-state-tersedia-sebagian:hover {
 .jm-btn-move {
   color: #1d4ed8;
   background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
+  border: 1px solid #dbeafe;
 }
 
 .jm-btn-move:hover {
   background-color: #dbeafe;
-  border-color: #93c5fd;
+  border-color: #bfdbfe;
 }
 
 .jm-btn-cancel {
@@ -4311,27 +4388,180 @@ td.cell-state-tersedia-sebagian:hover {
 
 .jm-btn-cancel:hover {
   background-color: #fef2f2;
-  border-color: #f87171;
+  border-color: #fca5a5;
 }
 
 .jm-btn-select:focus-visible,
 .jm-btn-move:focus-visible,
 .jm-btn-cancel:focus-visible,
-.jm-mode-tab:focus-visible {
+.jm-mode-tab:focus-visible,
+.jm-modal-close:focus-visible,
+.jm-modal-btn-secondary:focus-visible,
+.jm-modal-btn-primary:focus-visible,
+.jm-modal-btn-danger:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 
-/* Modal 1: Pindah / Tukar Jadwal Mengawas */
-.modal-dialog.jp-modal-dialog.jm-modal-pindah {
-  max-width: 580px;
+/* ==========================================================================
+   Modals (Linear / Stripe Precision Polish)
+   ========================================================================== */
+
+.is-hidden {
+  display: none !important;
+}
+
+.modal-overlay.jm-modal-overlay {
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.modal-dialog.jm-modal-dialog {
+  width: 94%;
+  max-width: 560px;
+  padding: 0;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
   background-color: #ffffff;
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 4px 12px -2px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  max-height: none;
+  animation: jmModalEnter 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-dialog.jm-modal-dialog.jm-modal-bentrok {
+  max-width: 500px;
+}
+
+.modal-dialog.jm-modal-dialog.jm-modal-batalkan {
+  max-width: 460px;
+}
+
+@keyframes jmModalEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.jm-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 20px 24px 16px 24px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  border-radius: 16px 16px 0 0;
+}
+
+.jm-modal-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.jm-modal-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.jm-modal-icon-badge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.jm-icon-badge-blue {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
+}
+
+.jm-icon-badge-amber {
+  background-color: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.jm-icon-badge-red {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.jm-modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.jm-modal-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: #0f172a;
+}
+
+.jm-modal-subtitle {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.jm-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  color: #64748b;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.jm-modal-close:hover {
+  color: #0f172a;
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
 }
 
 .jm-modal-body {
+  display: flex;
+  flex-direction: column;
   gap: 18px;
+  padding: 20px 24px 24px 24px;
+  background-color: #ffffff;
+  overflow: visible;
 }
 
+.jm-modal-copy {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #334155;
+}
+
+/* Source Exam Inset Card */
 .jm-source-box {
   display: flex;
   flex-direction: column;
@@ -4339,39 +4569,50 @@ td.cell-state-tersedia-sebagian:hover {
   padding: 14px 16px;
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .jm-source-box-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: #64748b;
 }
 
-.jm-source-box-header {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
 .jm-source-box-title {
-  font-size: 0.975rem;
+  font-size: 15px;
   font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
   color: #0f172a;
 }
 
 .jm-source-box-meta {
-  font-size: 0.8125rem;
+  margin-top: 2px;
+}
+
+.jm-source-box-meta .jp-meta-inline {
+  gap: 10px;
+  font-size: 12.5px;
   color: #475569;
 }
 
+.jm-source-box-meta .jp-meta-inline-item {
+  gap: 5px;
+}
+
+.jm-source-box-meta .jp-meta-inline-item svg {
+  width: 14px;
+  height: 14px;
+  color: #64748b;
+}
+
+/* Linear-style Segmented Mode Switcher */
 .jm-mode-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 4px;
   padding: 4px;
   background-color: #f1f5f9;
   border: 1px solid #e2e8f0;
@@ -4379,15 +4620,15 @@ td.cell-state-tersedia-sebagian:hover {
 }
 
 .jm-mode-tab {
-  padding: 9px 12px;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: #475569;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
   background-color: transparent;
   border: none;
   border-radius: 7px;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
 }
 
 .jm-mode-tab:hover {
@@ -4395,40 +4636,512 @@ td.cell-state-tersedia-sebagian:hover {
 }
 
 .jm-mode-tab.active {
-  color: #ffffff;
-  background-color: #2563eb;
-  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+  color: #0f172a;
+  font-weight: 600;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
 .jm-mode-panel {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+}
+
+.jm-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.jm-field-label {
+  display: block;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Custom Modern Dropdown Picker (.jm-custom-select) */
+.jm-custom-select {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.jm-select-trigger {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+
+.jm-select-trigger:hover {
+  border-color: #94a3b8;
+  background-color: #fcfcfd;
+}
+
+.jm-select-trigger:focus,
+.jm-select-trigger:focus-visible,
+.jm-custom-select.is-open .jm-select-trigger {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.jm-select-trigger-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.jm-select-placeholder {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-select-value {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.jm-select-trigger-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-select-trigger-course {
+  font-size: 12px;
+  font-weight: 500;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-select-value-meta {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jm-select-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #64748b;
+  transition: transform 0.18s ease, color 0.16s ease;
+}
+
+.jm-custom-select.is-open .jm-select-chevron {
+  transform: rotate(180deg);
+  color: #2563eb;
+}
+
+.jm-select-menu {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  width: 100%;
+  max-height: 210px;
+  overflow-y: auto;
+  padding: 4px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.14), 0 4px 10px -4px rgba(15, 23, 42, 0.06);
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+}
+
+.jm-custom-select.is-open .jm-select-menu {
+  display: flex;
+}
+
+.jm-select-option {
+  width: 100%;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid #f1f5f9;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.jm-select-option:last-child {
+  border-bottom: none;
+}
+
+.jm-select-option:hover,
+.jm-select-option:focus-visible {
+  outline: none;
+  background-color: #f8fafc;
+}
+
+.jm-select-option.is-selected {
+  background-color: #eff6ff;
+}
+
+.jm-select-option.is-selected:hover {
+  background-color: #e0edff;
+}
+
+.jm-option-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.jm-option-title-block {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.jm-option-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.jm-option-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+
+.jm-option-course {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #334155;
+}
+
+.jm-option-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.jm-option-pill-neutral {
+  color: #475569;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.jm-option-pill-amber {
+  color: #b45309;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+}
+
+.jm-option-pill-danger {
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.jm-option-check {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.jm-option-check svg {
+  width: 15px;
+  height: 15px;
+}
+
+.jm-select-option.is-selected .jm-option-check {
+  display: inline-flex;
+}
+
+.jm-option-meta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.jm-select-empty {
+  padding: 14px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Dynamic Transfer Impact Summary Card */
+.jm-impact-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.jm-impact-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.jm-impact-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: #2563eb;
+}
+
+.jm-impact-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #0f172a;
+}
+
+.jm-impact-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jm-impact-placeholder {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.jm-impact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.jm-impact-row:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.jm-impact-row-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.jm-impact-row-value {
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #0f172a;
+}
+
+/* Inline Conflict Callout Inside Modal */
+.jm-modal-conflict-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+}
+
+.jm-modal-conflict-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.jm-modal-conflict-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.jm-modal-conflict-heading {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.jm-modal-conflict-desc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #78350f;
+}
+
+/* Subtle Info Callout */
+.jm-info-callout {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.jm-info-callout-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #3b82f6;
+  margin-top: 2px;
+}
+
+.jm-info-callout-text {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #475569;
 }
 
 .jm-inline-error {
   margin: 0;
   max-width: 100%;
+  border-radius: 10px;
 }
 
+/* Modal Footer & Buttons */
 .jm-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  padding: 14px 24px;
+  background-color: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  border-radius: 0 0 16px 16px;
 }
 
-/* Modal 2: Peringatan Bentrok Jadwal Mengawas */
-.modal-dialog.modal-bentrok-dialog.jm-modal-bentrok {
-  max-width: 520px;
-  width: 92%;
-  border-radius: 12px;
-  padding: 0;
-  overflow: hidden;
+.jm-modal-btn-secondary,
+.jm-modal-btn-primary,
+.jm-modal-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.14s ease, box-shadow 0.16s ease;
+}
+
+.jm-modal-btn-secondary {
+  color: #334155;
   background-color: #ffffff;
-  border: 1px solid #f59e0b;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.16);
+  border: 1px solid #cbd5e1;
+}
+
+.jm-modal-btn-secondary:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.jm-modal-btn-primary {
+  color: #ffffff;
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.22);
+}
+
+.jm-modal-btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.3);
+}
+
+.jm-modal-btn-primary:disabled {
+  background-color: #cbd5e1;
+  border-color: #cbd5e1;
+  color: #f8fafc;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.jm-modal-btn-danger {
+  color: #ffffff;
+  background-color: #dc2626;
+  border: 1px solid #dc2626;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.22);
+}
+
+.jm-modal-btn-danger:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(220, 38, 38, 0.28);
 }
 
 .jm-conflict-detail-box {
   margin-bottom: 0;
+  border-radius: 12px;
+}
+
+@media (max-height: 640px) {
+  .modal-dialog.jm-modal-dialog {
+    max-height: 92vh;
+    overflow-y: auto;
+  }
 }
 
 @media (max-width: 768px) {
@@ -4444,9 +5157,31 @@ td.cell-state-tersedia-sebagian:hover {
   .jm-mode-tabs {
     grid-template-columns: 1fr;
   }
+
+  .jm-modal-header {
+    padding: 16px 18px 14px 18px;
+  }
+
+  .jm-modal-body {
+    padding: 16px 18px;
+  }
+
+  .jm-modal-footer {
+    padding: 12px 18px;
+  }
 }
 
 @media (max-width: 640px) {
+  .jm-exam-card {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .jm-card-right {
+    width: 100%;
+    align-items: flex-start;
+  }
+
   .jm-action-group {
     width: 100%;
   }
@@ -4456,5 +5191,15 @@ td.cell-state-tersedia-sebagian:hover {
   .jm-btn-move,
   .jm-btn-cancel {
     flex: 1;
+  }
+
+  .jm-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .jm-modal-btn-secondary,
+  .jm-modal-btn-primary,
+  .jm-modal-btn-danger {
+    width: 100%;
   }
 }

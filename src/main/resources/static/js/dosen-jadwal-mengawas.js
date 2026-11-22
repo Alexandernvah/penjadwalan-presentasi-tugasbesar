@@ -58,18 +58,18 @@
   const formPindah = document.getElementById('form-pindah-mengawas');
   const btnCloseModalPindah = document.getElementById('btn-close-modal-pindah');
   const btnBatalModalPindah = document.getElementById('btn-batal-modal-pindah');
-  const pindahSourceJenis = document.getElementById('pindah-source-jenis');
-  const pindahSourceCode = document.getElementById('pindah-source-code');
-  const pindahSourceClass = document.getElementById('pindah-source-class');
+  const btnSubmitPindah = document.getElementById('btn-submit-pindah');
+  const btnSubmitPindahLabel = document.getElementById('btn-submit-pindah-label');
+  const pindahSourceEyebrow = document.getElementById('pindah-source-eyebrow');
   const pindahSourceTitle = document.getElementById('pindah-source-title');
   const pindahSourceMeta = document.getElementById('pindah-source-meta');
   const tabModeMove = document.getElementById('tab-mode-move');
   const tabModeSwap = document.getElementById('tab-mode-swap');
   const panelModeMove = document.getElementById('panel-mode-move');
   const panelModeSwap = document.getElementById('panel-mode-swap');
-  const selectTargetUjianMove = document.getElementById('select-target-ujian-move');
-  const selectReplacementDosen = document.getElementById('select-replacement-dosen');
-  const selectTargetSwap = document.getElementById('select-target-swap');
+  const transferSummaryBody = document.getElementById('jm-transfer-summary-body');
+  const modalConflictCallout = document.getElementById('jm-modal-conflict-callout');
+  const modalConflictText = document.getElementById('jm-modal-conflict-text');
   const pindahModalError = document.getElementById('pindah-modal-error');
   const pindahModalErrorText = document.getElementById('pindah-modal-error-text');
 
@@ -81,6 +81,7 @@
   const btnKonfirmasiOverride = document.getElementById('btn-konfirmasi-override-mengawas');
 
   const modalBatalkan = document.getElementById('modal-batalkan-mengawas');
+  const btnCloseModalBatalkan = document.getElementById('btn-close-modal-batalkan');
   const batalExamNameEl = document.getElementById('batal-mengawas-exam-name');
   const btnCancelBatal = document.getElementById('btn-cancel-batal-mengawas');
   const btnConfirmBatal = document.getElementById('btn-confirm-batal-mengawas');
@@ -107,6 +108,7 @@
     searchQuery: '',
     activePindahSource: null,
     activePindahMode: 'MOVE',
+    isSubmittingPindah: false,
     pendingCancelExam: null,
     pendingOverrideAction: null
   };
@@ -158,6 +160,23 @@
 
   function formatTimeRange(mulai, selesai) {
     return (mulai || '-') + ' - ' + (selesai || '-') + ' WIB';
+  }
+
+  function formatAcademicEyebrow(item) {
+    const parts = [];
+    if (item.kodeMatkul) parts.push(item.kodeMatkul);
+    if (item.namaKelas) parts.push(item.namaKelas);
+    if (item.jenisUjian) parts.push(item.jenisUjian);
+    return parts.join(' \u00b7 ');
+  }
+
+  function formatFullCourseIdentifier(item) {
+    const parts = [];
+    if (item.kodeMatkul) parts.push(item.kodeMatkul);
+    if (item.namaMatkul) parts.push(item.namaMatkul);
+    if (item.namaKelas) parts.push(item.namaKelas);
+    if (item.jenisUjian) parts.push(item.jenisUjian);
+    return parts.join(' \u00b7 ');
   }
 
   function buildAuthHeaders() {
@@ -218,6 +237,9 @@
 
   function closeModal(modal) {
     if (!modal || !modal.classList.contains('active')) return;
+    if (modal === modalPindah) {
+      closeAllCustomSelects();
+    }
     modal.classList.remove('active');
     if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
       lastFocusedElement.focus();
@@ -225,12 +247,13 @@
     lastFocusedElement = null;
   }
 
-  function dateBlock(iso) {
-    const p = dateParts(iso);
-    const block = el('div', 'jp-date-block');
+  function dateBlock(item) {
+    const p = dateParts(item.tanggal);
+    const hariLabel = (item.hari || p.hari || '-').toUpperCase();
+    const block = el('div', 'jp-date-block jm-date-block');
     block.appendChild(el('span', 'jp-date-month', p.month));
     block.appendChild(el('span', 'jp-date-day', p.day));
-    block.appendChild(el('span', 'jp-date-year', p.year));
+    block.appendChild(el('span', 'jp-date-year jm-date-weekday', hariLabel));
     return block;
   }
 
@@ -273,25 +296,37 @@
         return currentNidn ? p.nidn !== currentNidn : false;
       });
       if (coProctors.length > 0) {
-        const names = coProctors.map(function (p) { return p.nama; }).join(', ');
         row.appendChild(el('span', 'jm-proctors-label', 'Rekan Pengawas:'));
-        row.appendChild(el('span', 'jm-proctors-names', names));
+        row.appendChild(el('span', 'jm-proctors-names', coProctors.map(function (p) { return p.nama; }).join(', ')));
       } else {
-        row.appendChild(el('span', 'jm-proctors-names', 'Pengawas: ' + proctors.map(function (p) { return p.nama; }).join(', ')));
+        row.appendChild(el('span', 'jm-proctors-label', 'Pengawas:'));
+        row.appendChild(el('span', 'jm-proctors-names', proctors.map(function (p) { return p.nama; }).join(', ')));
       }
       return row;
     }
 
-    row.appendChild(el('span', 'jm-proctors-label', 'Pengawas:'));
+    row.appendChild(el('span', 'jm-proctors-label', 'Pengawas (' + proctors.length + '):'));
     row.appendChild(el('span', 'jm-proctors-names', proctors.map(function (p) { return p.nama; }).join(', ')));
     return row;
   }
 
-  function buildProctorCountBadge(count) {
-    if (count === 0) {
-      return el('span', 'jm-badge jm-badge-unassigned', '0 Pengawas');
+  function buildCardStatusPill(statusType) {
+    if (statusType === 'CONFLICT') {
+      const pill = el('span', 'jm-status-pill jm-status-danger');
+      pill.appendChild(icon('warning'));
+      pill.appendChild(el('span', null, 'Bentrok'));
+      return pill;
     }
-    return el('span', 'jm-badge jm-badge-proctors', count + ' Pengawas');
+    if (statusType === 'SCHEDULED') {
+      const pill = el('span', 'jm-status-pill jm-status-success');
+      pill.appendChild(icon('check'));
+      pill.appendChild(el('span', null, 'Terjadwal'));
+      return pill;
+    }
+    if (statusType === 'NEED_PROCTOR') {
+      return el('span', 'jm-status-pill jm-status-warning', 'Butuh Pengawas');
+    }
+    return null;
   }
 
   function updateSummaryAndCounts() {
@@ -319,7 +354,7 @@
     const items = state.myProctoringList;
     if (!items.length) {
       listMengawasSayaEl.appendChild(
-        el('div', 'jp-empty', 'Anda belum memilih jadwal mengawas pada semester ini. Silakan pilih dari daftar ujian di bawah.')
+        el('div', 'jp-empty jm-empty-state', 'Anda belum memilih jadwal mengawas pada semester ini. Silakan pilih dari daftar ujian di bawah.')
       );
       return;
     }
@@ -327,31 +362,29 @@
     items.forEach(function (item) {
       const isUas = item.jenisUjian === 'UAS';
       const card = el('article', 'jp-event-card jm-exam-card ' + (isUas ? 'jp-accent-uas' : 'jp-accent-uts'));
-      card.appendChild(dateBlock(item.tanggal));
+      card.appendChild(dateBlock(item));
 
-      const content = el('div', 'jp-event-content');
-      const badges = el('div', 'jp-event-badges');
-      badges.appendChild(el(
-        'span',
-        'jp-badge ' + (isUas ? 'jp-badge-red' : 'jp-badge-amber'),
-        'Mengawas ' + item.jenisUjian
-      ));
-      badges.appendChild(el('span', 'jp-pill-code-sm', item.kodeMatkul));
-      if (item.namaKelas) {
-        badges.appendChild(el('span', 'jp-pill-class', item.namaKelas));
-      }
-      badges.appendChild(buildProctorCountBadge(item.jumlahPengawas));
-      if (item.hasConflict) {
-        badges.appendChild(el('span', 'jm-badge jm-badge-conflict', 'Bentrok Jadwal'));
-      }
-      content.appendChild(badges);
-
-      content.appendChild(el('h3', 'jp-card-title', item.namaMatkul));
+      const content = el('div', 'jp-event-content jm-card-content');
+      content.appendChild(el('div', 'jm-eyebrow', formatAcademicEyebrow(item)));
+      content.appendChild(el('h3', 'jp-card-title jm-card-title', item.namaMatkul));
       content.appendChild(buildExamMetaLine(item));
       content.appendChild(buildProctorsRow(item, true));
+
+      if (item.hasConflict && item.conflictDetails && item.conflictDetails.length > 0) {
+        const conflictNote = el('div', 'jm-conflict-note');
+        conflictNote.appendChild(icon('warning'));
+        conflictNote.appendChild(el('span', null, 'Beririsan dengan: ' + item.conflictDetails.join('; ')));
+        content.appendChild(conflictNote);
+      }
       card.appendChild(content);
 
-      const actionZone = el('div', 'jp-event-action jm-action-group');
+      const rightCol = el('div', 'jm-card-right');
+      const statusPill = buildCardStatusPill(item.hasConflict ? 'CONFLICT' : 'SCHEDULED');
+      if (statusPill) {
+        rightCol.appendChild(statusPill);
+      }
+
+      const actionZone = el('div', 'jm-action-group');
       const btnMove = el('button', 'jm-btn-move');
       btnMove.type = 'button';
       btnMove.appendChild(icon('swap'));
@@ -370,7 +403,8 @@
 
       actionZone.appendChild(btnMove);
       actionZone.appendChild(btnCancel);
-      card.appendChild(actionZone);
+      rightCol.appendChild(actionZone);
+      card.appendChild(rightCol);
 
       listMengawasSayaEl.appendChild(card);
     });
@@ -406,7 +440,7 @@
 
     if (!filtered.length) {
       listUjianSemesterEl.appendChild(
-        el('div', 'jp-empty', 'Tidak ada jadwal ujian yang sesuai dengan filter atau kata kunci pencarian.')
+        el('div', 'jp-empty jm-empty-state', 'Tidak ada jadwal ujian yang sesuai dengan filter atau kata kunci pencarian.')
       );
       return;
     }
@@ -414,29 +448,11 @@
     filtered.forEach(function (item) {
       const isUas = item.jenisUjian === 'UAS';
       const card = el('article', 'jp-event-card jm-exam-card ' + (isUas ? 'jp-accent-uas' : 'jp-accent-uts'));
-      card.appendChild(dateBlock(item.tanggal));
+      card.appendChild(dateBlock(item));
 
-      const content = el('div', 'jp-event-content');
-      const badges = el('div', 'jp-event-badges');
-      badges.appendChild(el(
-        'span',
-        'jp-badge ' + (isUas ? 'jp-badge-red' : 'jp-badge-amber'),
-        item.jenisUjian
-      ));
-      badges.appendChild(el('span', 'jp-pill-code-sm', item.kodeMatkul));
-      if (item.namaKelas) {
-        badges.appendChild(el('span', 'jp-pill-class', item.namaKelas));
-      }
-      badges.appendChild(buildProctorCountBadge(item.jumlahPengawas));
-      if (item.hasConflict) {
-        const conflictBadge = el('span', 'jm-badge jm-badge-conflict');
-        conflictBadge.appendChild(icon('warning'));
-        conflictBadge.appendChild(el('span', null, 'Bentrok Jadwal'));
-        badges.appendChild(conflictBadge);
-      }
-      content.appendChild(badges);
-
-      content.appendChild(el('h3', 'jp-card-title', item.namaMatkul));
+      const content = el('div', 'jp-event-content jm-card-content');
+      content.appendChild(el('div', 'jm-eyebrow', formatAcademicEyebrow(item)));
+      content.appendChild(el('h3', 'jp-card-title jm-card-title', item.namaMatkul));
       content.appendChild(buildExamMetaLine(item));
       content.appendChild(buildProctorsRow(item, false));
 
@@ -449,7 +465,21 @@
 
       card.appendChild(content);
 
-      const actionZone = el('div', 'jp-event-action');
+      const rightCol = el('div', 'jm-card-right');
+      let statusType = null;
+      if (item.hasConflict) {
+        statusType = 'CONFLICT';
+      } else if (item.isAssignedToMe) {
+        statusType = 'SCHEDULED';
+      } else if (item.jumlahPengawas === 0) {
+        statusType = 'NEED_PROCTOR';
+      }
+      const statusPill = statusType ? buildCardStatusPill(statusType) : null;
+      if (statusPill) {
+        rightCol.appendChild(statusPill);
+      }
+
+      const actionZone = el('div', 'jm-action-group');
       if (item.isAssignedToMe) {
         const badgeBtn = el('button', 'jm-btn-selected');
         badgeBtn.type = 'button';
@@ -468,7 +498,8 @@
         actionZone.appendChild(selectBtn);
       }
 
-      card.appendChild(actionZone);
+      rightCol.appendChild(actionZone);
+      card.appendChild(rightCol);
       listUjianSemesterEl.appendChild(card);
     });
   }
@@ -494,9 +525,356 @@
     });
   }
 
+  // ---------------------------------------------------------------------
+  // Custom Modern Dropdown Pickers (.jm-custom-select)
+  // ---------------------------------------------------------------------
+  const customSelects = {};
+
+  function initCustomSelect(config) {
+    const container = document.getElementById(config.containerId);
+    const trigger = document.getElementById(config.triggerId);
+    const triggerContent = document.getElementById(config.triggerContentId);
+    const menu = document.getElementById(config.menuId);
+    const hiddenInput = document.getElementById(config.inputId);
+
+    if (!container || !trigger || !triggerContent || !menu || !hiddenInput) {
+      return null;
+    }
+
+    const instance = {
+      key: config.key,
+      container: container,
+      trigger: trigger,
+      triggerContent: triggerContent,
+      menu: menu,
+      hiddenInput: hiddenInput,
+      placeholder: config.placeholder || 'Pilih...',
+      options: []
+    };
+
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const willOpen = !container.classList.contains('is-open');
+      closeAllCustomSelects();
+      if (willOpen) {
+        container.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+
+    trigger.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!container.classList.contains('is-open')) {
+          closeAllCustomSelects();
+          container.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+        const optButtons = menu.querySelectorAll('.jm-select-option');
+        if (optButtons.length > 0) {
+          optButtons[0].focus();
+        }
+      }
+    });
+
+    menu.addEventListener('keydown', function (e) {
+      const optButtons = Array.prototype.slice.call(menu.querySelectorAll('.jm-select-option'));
+      if (!optButtons.length) return;
+      const currentIndex = optButtons.indexOf(document.activeElement);
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const nextIdx = currentIndex < optButtons.length - 1 ? currentIndex + 1 : 0;
+        optButtons[nextIdx].focus();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prevIdx = currentIndex > 0 ? currentIndex - 1 : optButtons.length - 1;
+        optButtons[prevIdx].focus();
+      } else if (e.key === 'Tab') {
+        closeAllCustomSelects();
+      }
+    });
+
+    customSelects[config.key] = instance;
+    return instance;
+  }
+
+  function closeAllCustomSelects() {
+    Object.keys(customSelects).forEach(function (key) {
+      const inst = customSelects[key];
+      if (!inst) return;
+      inst.container.classList.remove('is-open');
+      inst.trigger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function hasOpenCustomSelect() {
+    return Object.keys(customSelects).some(function (key) {
+      const inst = customSelects[key];
+      return inst && inst.container.classList.contains('is-open');
+    });
+  }
+
+  function renderTriggerContent(instance, selectedOption) {
+    clear(instance.triggerContent);
+    if (!selectedOption) {
+      instance.triggerContent.appendChild(el('span', 'jm-select-placeholder', instance.placeholder));
+      return;
+    }
+
+    const wrap = el('span', 'jm-select-value');
+    wrap.appendChild(el('span', 'jm-select-trigger-title', selectedOption.primaryTitle));
+    if (selectedOption.courseLine) {
+      wrap.appendChild(el('span', 'jm-select-trigger-course', selectedOption.courseLine));
+    }
+    if (selectedOption.metaText) {
+      wrap.appendChild(el('span', 'jm-select-value-meta', selectedOption.metaText));
+    }
+    instance.triggerContent.appendChild(wrap);
+  }
+
+  function setCustomSelectValue(key, value) {
+    const inst = customSelects[key];
+    if (!inst) return;
+
+    const strVal = value !== undefined && value !== null ? String(value) : '';
+    inst.hiddenInput.value = strVal;
+
+    let selectedOption = null;
+    inst.options.forEach(function (opt) {
+      if (opt.value === strVal && !opt.isPlaceholderOnly) {
+        selectedOption = opt;
+      }
+    });
+
+    const optionButtons = inst.menu.querySelectorAll('.jm-select-option');
+    optionButtons.forEach(function (btn) {
+      const isSelected = btn.getAttribute('data-value') === strVal;
+      btn.classList.toggle('is-selected', isSelected);
+      btn.setAttribute('aria-selected', String(isSelected));
+    });
+
+    renderTriggerContent(inst, selectedOption);
+  }
+
+  function getSelectedCustomOption(key) {
+    const inst = customSelects[key];
+    if (!inst) return null;
+    const val = inst.hiddenInput.value;
+    for (let i = 0; i < inst.options.length; i += 1) {
+      if (inst.options[i].value === val) {
+        return inst.options[i];
+      }
+    }
+    return null;
+  }
+
+  function populateCustomSelect(key, options, defaultValue, emptyMessage) {
+    const inst = customSelects[key];
+    if (!inst) return;
+
+    inst.options = options || [];
+    clear(inst.menu);
+
+    if (!inst.options.length) {
+      inst.menu.appendChild(el('div', 'jm-select-empty', emptyMessage || 'Tidak ada opsi tersedia.'));
+      setCustomSelectValue(key, '');
+      return;
+    }
+
+    inst.options.forEach(function (opt) {
+      const btn = el('button', 'jm-select-option');
+      btn.type = 'button';
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('data-value', opt.value);
+      btn.setAttribute('aria-selected', 'false');
+
+      const topRow = el('span', 'jm-option-top');
+      const titleBlock = el('span', 'jm-option-title-block');
+      titleBlock.appendChild(el('span', 'jm-option-title', opt.primaryTitle));
+      topRow.appendChild(titleBlock);
+
+      const rightCol = el('span', 'jm-option-right');
+      if (opt.statusPill) {
+        rightCol.appendChild(el('span', 'jm-option-pill ' + opt.statusPill.toneClass, opt.statusPill.text));
+      }
+      const checkWrap = el('span', 'jm-option-check');
+      checkWrap.appendChild(icon('check'));
+      rightCol.appendChild(checkWrap);
+      topRow.appendChild(rightCol);
+
+      btn.appendChild(topRow);
+
+      if (opt.courseLine) {
+        btn.appendChild(el('span', 'jm-option-course', opt.courseLine));
+      }
+      if (opt.metaText) {
+        btn.appendChild(el('span', 'jm-option-meta', opt.metaText));
+      }
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setCustomSelectValue(key, opt.value);
+        hidePindahModalError();
+        closeAllCustomSelects();
+        updateTransferModalState();
+        inst.trigger.focus();
+      });
+
+      inst.menu.appendChild(btn);
+    });
+
+    setCustomSelectValue(key, defaultValue !== undefined ? defaultValue : '');
+  }
+
+  initCustomSelect({
+    key: 'targetMove',
+    containerId: 'custom-select-target-ujian-move',
+    triggerId: 'btn-select-target-ujian-move',
+    triggerContentId: 'trigger-content-target-ujian-move',
+    menuId: 'menu-target-ujian-move',
+    inputId: 'input-target-ujian-move',
+    placeholder: 'Pilih ujian tujuan...'
+  });
+
+  initCustomSelect({
+    key: 'replacementDosen',
+    containerId: 'custom-select-replacement-dosen',
+    triggerId: 'btn-select-replacement-dosen',
+    triggerContentId: 'trigger-content-replacement-dosen',
+    menuId: 'menu-replacement-dosen',
+    inputId: 'input-replacement-dosen',
+    placeholder: 'Tanpa Dosen Pengganti (Lepas Slot Asal)'
+  });
+
+  initCustomSelect({
+    key: 'targetSwap',
+    containerId: 'custom-select-target-swap',
+    triggerId: 'btn-select-target-swap',
+    triggerContentId: 'trigger-content-target-swap',
+    menuId: 'menu-target-swap',
+    inputId: 'input-target-swap',
+    placeholder: 'Pilih dosen dan ujian tujuan tukar...'
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!e.target || !e.target.closest || !e.target.closest('.jm-custom-select')) {
+      closeAllCustomSelects();
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // Dynamic Transfer Impact Summary & Submit Guard
+  // ---------------------------------------------------------------------
+  function buildImpactRow(label, valueText) {
+    const row = el('div', 'jm-impact-row');
+    row.appendChild(el('span', 'jm-impact-row-label', label));
+    row.appendChild(el('span', 'jm-impact-row-value', valueText));
+    return row;
+  }
+
+  function updateSubmitButtonState() {
+    if (!btnSubmitPindah || !btnSubmitPindahLabel) return;
+    if (state.isSubmittingPindah) {
+      btnSubmitPindah.disabled = true;
+      btnSubmitPindahLabel.textContent = 'Menyimpan...';
+      return;
+    }
+
+    btnSubmitPindahLabel.textContent = 'Simpan Perubahan';
+    let hasValidSelection = false;
+    if (state.activePindahMode === 'MOVE') {
+      const moveOpt = getSelectedCustomOption('targetMove');
+      hasValidSelection = Boolean(moveOpt && moveOpt.value);
+    } else {
+      const swapOpt = getSelectedCustomOption('targetSwap');
+      hasValidSelection = Boolean(swapOpt && swapOpt.value && swapOpt.value.indexOf(':') !== -1);
+    }
+    btnSubmitPindah.disabled = !hasValidSelection;
+  }
+
+  function updateConflictCallout(exam) {
+    if (!modalConflictCallout || !modalConflictText) return;
+    if (!exam || !exam.hasConflict) {
+      modalConflictCallout.classList.add('is-hidden');
+      clear(modalConflictText);
+      return;
+    }
+
+    clear(modalConflictText);
+    const title = el('strong', 'jm-modal-conflict-heading', 'Terdeteksi bentrok jadwal pada ujian tujuan');
+    const details = (exam.conflictDetails && exam.conflictDetails.length > 0)
+      ? ' (' + exam.conflictDetails.join('; ') + ')'
+      : '';
+    const desc = el(
+      'p',
+      'jm-modal-conflict-desc',
+      'Jadwal ujian ini beririsan dengan agenda Anda' + details + '. Anda akan diminta konfirmasi override saat menekan Simpan Perubahan.'
+    );
+    modalConflictText.appendChild(title);
+    modalConflictText.appendChild(desc);
+    modalConflictCallout.classList.remove('is-hidden');
+  }
+
+  function updateTransferModalState() {
+    updateSubmitButtonState();
+    if (!transferSummaryBody || !state.activePindahSource) return;
+
+    clear(transferSummaryBody);
+    const source = state.activePindahSource;
+    const sourceDesc = formatFullCourseIdentifier(source) + ' (' + formatFullDateLabel(source) + ', ' + formatTimeRange(source.jamMulai, source.jamSelesai) + ')';
+
+    if (state.activePindahMode === 'MOVE') {
+      const moveOpt = getSelectedCustomOption('targetMove');
+      const repOpt = getSelectedCustomOption('replacementDosen');
+
+      if (!moveOpt || !moveOpt.examData) {
+        transferSummaryBody.appendChild(
+          el('p', 'jm-impact-placeholder', 'Pilih ujian tujuan untuk melihat ringkasan perpindahan dan status pengawas ujian asal.')
+        );
+        updateConflictCallout(null);
+        return;
+      }
+
+      const targetExam = moveOpt.examData;
+      const targetDesc = formatFullCourseIdentifier(targetExam) + ' (' + formatFullDateLabel(targetExam) + ', ' + formatTimeRange(targetExam.jamMulai, targetExam.jamSelesai) + ')';
+      const replacementDesc = (repOpt && repOpt.value)
+        ? 'Digantikan oleh ' + repOpt.primaryTitle + ' (' + repOpt.value + ')'
+        : 'Tanpa pengganti (slot Anda pada ujian asal dilepas)';
+
+      transferSummaryBody.appendChild(buildImpactRow('Ujian asal dilepas', sourceDesc));
+      transferSummaryBody.appendChild(buildImpactRow('Pengganti ujian asal', replacementDesc));
+      transferSummaryBody.appendChild(buildImpactRow('Anda ditugaskan ke', targetDesc));
+      updateConflictCallout(targetExam);
+      return;
+    }
+
+    const swapOpt = getSelectedCustomOption('targetSwap');
+    if (!swapOpt || !swapOpt.examData || !swapOpt.proctorData) {
+      transferSummaryBody.appendChild(
+        el('p', 'jm-impact-placeholder', 'Pilih jadwal dosen lain untuk meninjau pertukaran penugasan dua arah.')
+      );
+      updateConflictCallout(null);
+      return;
+    }
+
+    const swapExam = swapOpt.examData;
+    const swapLecturer = swapOpt.proctorData;
+    const targetDesc = formatFullCourseIdentifier(swapExam) + ' (' + formatFullDateLabel(swapExam) + ', ' + formatTimeRange(swapExam.jamMulai, swapExam.jamSelesai) + ')';
+
+    transferSummaryBody.appendChild(buildImpactRow('Anda pindah ke', targetDesc));
+    transferSummaryBody.appendChild(buildImpactRow(swapLecturer.nama + ' pindah ke', sourceDesc));
+    updateConflictCallout(swapExam);
+  }
+
+  // ---------------------------------------------------------------------
+  // Mode Switcher & Modal Handlers
+  // ---------------------------------------------------------------------
   function setPindahMode(mode) {
     state.activePindahMode = mode;
     const isMove = mode === 'MOVE';
+
+    closeAllCustomSelects();
 
     if (tabModeMove) {
       tabModeMove.classList.toggle('active', isMove);
@@ -507,12 +885,13 @@
       tabModeSwap.setAttribute('aria-selected', String(!isMove));
     }
     if (panelModeMove) {
-      panelModeMove.classList.toggle('hidden', !isMove);
+      panelModeMove.classList.toggle('is-hidden', !isMove);
     }
     if (panelModeSwap) {
-      panelModeSwap.classList.toggle('hidden', isMove);
+      panelModeSwap.classList.toggle('is-hidden', isMove);
     }
     hidePindahModalError();
+    updateTransferModalState();
   }
 
   if (tabModeMove) {
@@ -525,85 +904,131 @@
   function showPindahModalError(msg) {
     if (!pindahModalError || !pindahModalErrorText) return;
     pindahModalErrorText.textContent = msg;
-    pindahModalError.classList.remove('hidden');
+    pindahModalError.classList.remove('is-hidden');
   }
 
   function hidePindahModalError() {
     if (!pindahModalError) return;
-    pindahModalError.classList.add('hidden');
+    pindahModalError.classList.add('is-hidden');
   }
 
   function openPindahModal(sourceExam) {
     state.activePindahSource = sourceExam;
+    state.isSubmittingPindah = false;
     hidePindahModalError();
+    closeAllCustomSelects();
 
-    const isUas = sourceExam.jenisUjian === 'UAS';
-    if (pindahSourceJenis) {
-      pindahSourceJenis.textContent = sourceExam.jenisUjian;
-      pindahSourceJenis.className = 'jp-badge ' + (isUas ? 'jp-badge-red' : 'jp-badge-amber');
+    if (pindahSourceEyebrow) {
+      pindahSourceEyebrow.textContent = formatAcademicEyebrow(sourceExam);
     }
-    if (pindahSourceCode) pindahSourceCode.textContent = sourceExam.kodeMatkul;
-    if (pindahSourceClass) pindahSourceClass.textContent = sourceExam.namaKelas || 'Kelas A';
-    if (pindahSourceTitle) pindahSourceTitle.textContent = sourceExam.namaMatkul;
+    if (pindahSourceTitle) {
+      pindahSourceTitle.textContent = sourceExam.namaMatkul;
+    }
     if (pindahSourceMeta) {
-      pindahSourceMeta.textContent = formatFullDateLabel(sourceExam) + ' | '
-        + formatTimeRange(sourceExam.jamMulai, sourceExam.jamSelesai) + ' | ' + sourceExam.ruangan;
+      clear(pindahSourceMeta);
+      pindahSourceMeta.appendChild(buildExamMetaLine(sourceExam));
     }
 
     const sourceProctorNidns = (sourceExam.pengawasList || []).map(function (p) { return p.nidn; });
     const currentNidn = getCurrentLecturerNidn();
 
-    clear(selectTargetUjianMove);
-    selectTargetUjianMove.appendChild(el('option', null, '-- Pilih Ujian Tujuan --')).value = '';
+    const moveOptions = [];
     state.semesterExams.forEach(function (exam) {
       if (exam.isAssignedToMe || exam.idUjian === sourceExam.idUjian) return;
-      const opt = document.createElement('option');
-      opt.value = String(exam.idUjian);
-      const conflictSuffix = exam.hasConflict ? ' [Beririsan Jadwal]' : '';
-      opt.textContent = exam.kodeMatkul + ' - ' + exam.namaMatkul + ' (' + exam.jenisUjian + ', '
-        + formatFullDateLabel(exam) + ', ' + exam.jamMulai + '-' + exam.jamSelesai + ', '
-        + exam.ruangan + ' - ' + exam.jumlahPengawas + ' Pengawas)' + conflictSuffix;
-      selectTargetUjianMove.appendChild(opt);
+
+      let statusPill = null;
+      if (exam.hasConflict) {
+        statusPill = { text: 'Bentrok', toneClass: 'jm-option-pill-danger' };
+      } else if (exam.jumlahPengawas === 0) {
+        statusPill = { text: 'Butuh Pengawas', toneClass: 'jm-option-pill-amber' };
+      }
+
+      const proctorCountNote = exam.jumlahPengawas > 0 ? (' \u00b7 ' + exam.jumlahPengawas + ' Pengawas') : '';
+      moveOptions.push({
+        value: String(exam.idUjian),
+        primaryTitle: exam.namaMatkul,
+        courseLine: formatAcademicEyebrow(exam),
+        metaText: formatFullDateLabel(exam) + ' \u00b7 ' + formatTimeRange(exam.jamMulai, exam.jamSelesai) + ' \u00b7 ' + exam.ruangan + proctorCountNote,
+        statusPill: statusPill,
+        examData: exam
+      });
     });
 
-    clear(selectReplacementDosen);
-    selectReplacementDosen.appendChild(el('option', null, '-- Tanpa Dosen Pengganti (Lepas Slot Asal) --')).value = '';
+    populateCustomSelect(
+      'targetMove',
+      moveOptions,
+      '',
+      'Tidak ada ujian tujuan lain yang tersedia pada semester ini.'
+    );
+
+    const replacementOptions = [
+      {
+        value: '',
+        primaryTitle: 'Tanpa Dosen Pengganti',
+        courseLine: '',
+        metaText: 'Slot Anda pada ujian asal dilepas tanpa menunjuk pengganti',
+        statusPill: { text: 'Opsional', toneClass: 'jm-option-pill-neutral' }
+      }
+    ];
     state.availableLecturers.forEach(function (lect) {
       if ((currentNidn && lect.nidn === currentNidn) || sourceProctorNidns.indexOf(lect.nidn) !== -1) {
         return;
       }
-      const opt = document.createElement('option');
-      opt.value = lect.nidn;
-      opt.textContent = lect.nama + ' (' + lect.nidn + ')';
-      selectReplacementDosen.appendChild(opt);
+      replacementOptions.push({
+        value: lect.nidn,
+        primaryTitle: lect.nama,
+        courseLine: '',
+        metaText: 'NIDN ' + lect.nidn,
+        statusPill: null
+      });
     });
 
-    clear(selectTargetSwap);
-    selectTargetSwap.appendChild(el('option', null, '-- Pilih Dosen dan Ujian Tujuan Tukar --')).value = '';
+    populateCustomSelect(
+      'replacementDosen',
+      replacementOptions,
+      '',
+      'Tidak ada dosen pengganti tersedia.'
+    );
+
+    const swapOptions = [];
     state.semesterExams.forEach(function (exam) {
       if (exam.isAssignedToMe || exam.idUjian === sourceExam.idUjian) return;
       (exam.pengawasList || []).forEach(function (proctor) {
         if ((currentNidn && proctor.nidn === currentNidn) || sourceProctorNidns.indexOf(proctor.nidn) !== -1) {
           return;
         }
-        const opt = document.createElement('option');
-        opt.value = exam.idUjian + ':' + proctor.nidn;
-        opt.textContent = proctor.nama + ' - ' + exam.kodeMatkul + ' ' + exam.namaMatkul
-          + ' (' + exam.jenisUjian + ', ' + formatFullDateLabel(exam) + ', '
-          + exam.jamMulai + '-' + exam.jamSelesai + ')';
-        selectTargetSwap.appendChild(opt);
+        const statusPill = exam.hasConflict
+          ? { text: 'Bentrok', toneClass: 'jm-option-pill-danger' }
+          : null;
+
+        swapOptions.push({
+          value: exam.idUjian + ':' + proctor.nidn,
+          primaryTitle: proctor.nama,
+          courseLine: formatFullCourseIdentifier(exam),
+          metaText: formatFullDateLabel(exam) + ' \u00b7 ' + formatTimeRange(exam.jamMulai, exam.jamSelesai) + ' \u00b7 ' + exam.ruangan,
+          statusPill: statusPill,
+          examData: exam,
+          proctorData: proctor
+        });
       });
     });
 
+    populateCustomSelect(
+      'targetSwap',
+      swapOptions,
+      '',
+      'Belum ada jadwal dosen lain yang tersedia untuk ditukar.'
+    );
+
     setPindahMode('MOVE');
-    openModal(modalPindah, selectTargetUjianMove);
+    const moveTrigger = document.getElementById('btn-select-target-ujian-move');
+    openModal(modalPindah, moveTrigger);
   }
 
   function openBatalkanModal(exam) {
     state.pendingCancelExam = exam;
     if (batalExamNameEl) {
-      batalExamNameEl.textContent = exam.jenisUjian + ' ' + exam.kodeMatkul + ' - ' + exam.namaMatkul
-        + ' (' + formatFullDateLabel(exam) + ')';
+      batalExamNameEl.textContent = formatFullCourseIdentifier(exam) + ' (' + formatFullDateLabel(exam) + ')';
     }
     openModal(modalBatalkan, btnCancelBatal);
   }
@@ -654,6 +1079,10 @@
   }
 
   async function submitPindahMengawas(payload, override) {
+    if (state.isSubmittingPindah) return;
+    state.isSubmittingPindah = true;
+    updateSubmitButtonState();
+
     const requestBody = {
       sourceUjianId: payload.sourceUjianId,
       targetUjianId: payload.targetUjianId,
@@ -694,6 +1123,9 @@
     } catch (err) {
       console.error('Error moving/swapping proctoring schedule:', err);
       showPindahModalError('Terjadi kesalahan jaringan saat memproses perpindahan jadwal.');
+    } finally {
+      state.isSubmittingPindah = false;
+      updateSubmitButtonState();
     }
   }
 
@@ -728,18 +1160,22 @@
   if (formPindah) {
     formPindah.addEventListener('submit', function (e) {
       e.preventDefault();
+      if (state.isSubmittingPindah) return;
       hidePindahModalError();
+      closeAllCustomSelects();
 
       if (!state.activePindahSource) return;
       const sourceUjianId = state.activePindahSource.idUjian;
 
       if (state.activePindahMode === 'MOVE') {
-        const targetIdStr = selectTargetUjianMove ? selectTargetUjianMove.value : '';
+        const inputMove = document.getElementById('input-target-ujian-move');
+        const inputRep = document.getElementById('input-replacement-dosen');
+        const targetIdStr = inputMove ? inputMove.value : '';
         if (!targetIdStr) {
           showPindahModalError('Silakan pilih ujian tujuan terlebih dahulu.');
           return;
         }
-        const replacementDosenId = selectReplacementDosen ? selectReplacementDosen.value : '';
+        const replacementDosenId = inputRep ? inputRep.value : '';
         submitPindahMengawas({
           sourceUjianId: sourceUjianId,
           targetUjianId: parseInt(targetIdStr, 10),
@@ -748,7 +1184,8 @@
           targetDosenId: null
         }, false);
       } else {
-        const swapVal = selectTargetSwap ? selectTargetSwap.value : '';
+        const inputSwap = document.getElementById('input-target-swap');
+        const swapVal = inputSwap ? inputSwap.value : '';
         if (!swapVal || swapVal.indexOf(':') === -1) {
           showPindahModalError('Silakan pilih jadwal dosen tujuan untuk ditukar.');
           return;
@@ -803,10 +1240,14 @@
 
   wireModalClose(modalPindah, [btnCloseModalPindah, btnBatalModalPindah]);
   wireModalClose(modalBentrok, [btnCloseModalBentrok, btnBatalOverride]);
-  wireModalClose(modalBatalkan, [btnCancelBatal]);
+  wireModalClose(modalBatalkan, [btnCloseModalBatalkan, btnCancelBatal]);
 
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
+    if (hasOpenCustomSelect()) {
+      closeAllCustomSelects();
+      return;
+    }
     closeModal(modalBentrok);
     closeModal(modalPindah);
     closeModal(modalBatalkan);
@@ -841,8 +1282,8 @@
       showFeedback('Gagal memuat data jadwal mengawas ujian. Silakan muat ulang halaman.', true);
       clear(listMengawasSayaEl);
       clear(listUjianSemesterEl);
-      listMengawasSayaEl.appendChild(el('div', 'jp-empty', 'Jadwal mengawas tidak dapat ditampilkan.'));
-      listUjianSemesterEl.appendChild(el('div', 'jp-empty', 'Daftar ujian semester tidak dapat ditampilkan.'));
+      listMengawasSayaEl.appendChild(el('div', 'jp-empty jm-empty-state', 'Jadwal mengawas tidak dapat ditampilkan.'));
+      listUjianSemesterEl.appendChild(el('div', 'jp-empty jm-empty-state', 'Daftar ujian semester tidak dapat ditampilkan.'));
     }
   }
 
