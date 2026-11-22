@@ -95,4 +95,17 @@ public interface PresentasiRepository extends JpaRepository<Presentasi, Integer>
         ORDER BY p.tanggal ASC, p.jamMulai ASC
         """)
     List<Presentasi> findByKelasIdsWithDetails(@Param("kelasIds") Collection<Integer> kelasIds);
+
+    @Query("""
+        SELECT p FROM Presentasi p
+        JOIN FETCH p.kelompok kel
+        JOIN FETCH kel.kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        LEFT JOIN FETCH mkb.koordinator koord
+        WHERE mkb.semesterAkademik = :semester
+        ORDER BY p.tanggal ASC, p.jamMulai ASC
+        """)
+    List<Presentasi> findBySemesterWithDetails(@Param("semester") String semester);
 }

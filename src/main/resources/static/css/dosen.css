@@ -4110,3 +4110,351 @@ td.cell-state-tersedia-sebagian:hover {
     width: 100%;
   }
 }
+
+/* ====
+   Jadwal Mengawas Ujian (jadwal-mengawas.html)
+   ==== */
+
+.jm-feedback-banner {
+  max-width: 100%;
+  margin: 0 0 1.5rem 0;
+}
+
+.jm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.jm-filter-pills {
+  flex-wrap: wrap;
+}
+
+.jm-search-field {
+  min-width: 280px;
+  flex: 1;
+  max-width: 380px;
+}
+
+.jm-exam-card {
+  align-items: flex-start;
+}
+
+.jm-exam-card .jp-date-block {
+  margin-top: 2px;
+}
+
+.jm-exam-card .jp-event-action {
+  align-self: center;
+}
+
+.jm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border-radius: 9999px;
+}
+
+.jm-badge svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.jm-badge-proctors {
+  color: #1d4ed8;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.jm-badge-unassigned {
+  color: #b45309;
+  background-color: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+
+.jm-badge-conflict {
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.jm-proctors-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.jm-proctors-row svg {
+  width: 15px;
+  height: 15px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.jm-proctors-label {
+  font-weight: 600;
+  color: #475569;
+}
+
+.jm-proctors-names {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.jm-proctors-empty-text {
+  font-style: italic;
+  color: #b45309;
+  font-weight: 500;
+}
+
+.jm-conflict-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #991b1b;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+}
+
+.jm-conflict-note svg {
+  width: 14px;
+  height: 14px;
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.jm-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jm-btn-select,
+.jm-btn-selected,
+.jm-btn-move,
+.jm-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  white-space: nowrap;
+}
+
+.jm-btn-select svg,
+.jm-btn-selected svg,
+.jm-btn-move svg,
+.jm-btn-cancel svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.jm-btn-select {
+  color: #ffffff;
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.jm-btn-select:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.jm-btn-selected {
+  color: #15803d;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  cursor: not-allowed;
+}
+
+.jm-btn-move {
+  color: #1d4ed8;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.jm-btn-move:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.jm-btn-cancel {
+  color: #dc2626;
+  background-color: #ffffff;
+  border: 1px solid #fecaca;
+}
+
+.jm-btn-cancel:hover {
+  background-color: #fef2f2;
+  border-color: #f87171;
+}
+
+.jm-btn-select:focus-visible,
+.jm-btn-move:focus-visible,
+.jm-btn-cancel:focus-visible,
+.jm-mode-tab:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Modal 1: Pindah / Tukar Jadwal Mengawas */
+.modal-dialog.jp-modal-dialog.jm-modal-pindah {
+  max-width: 580px;
+  background-color: #ffffff;
+}
+
+.jm-modal-body {
+  gap: 18px;
+}
+
+.jm-source-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.jm-source-box-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.jm-source-box-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.jm-source-box-title {
+  font-size: 0.975rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.jm-source-box-meta {
+  font-size: 0.8125rem;
+  color: #475569;
+}
+
+.jm-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.jm-mode-tab {
+  padding: 9px 12px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.jm-mode-tab:hover {
+  color: #0f172a;
+}
+
+.jm-mode-tab.active {
+  color: #ffffff;
+  background-color: #2563eb;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.25);
+}
+
+.jm-mode-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.jm-inline-error {
+  margin: 0;
+  max-width: 100%;
+}
+
+.jm-modal-footer {
+  gap: 10px;
+}
+
+/* Modal 2: Peringatan Bentrok Jadwal Mengawas */
+.modal-dialog.modal-bentrok-dialog.jm-modal-bentrok {
+  max-width: 520px;
+  width: 92%;
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid #f59e0b;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.16);
+}
+
+.jm-conflict-detail-box {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .jm-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .jm-search-field {
+    max-width: 100%;
+  }
+
+  .jm-mode-tabs {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .jm-action-group {
+    width: 100%;
+  }
+
+  .jm-btn-select,
+  .jm-btn-selected,
+  .jm-btn-move,
+  .jm-btn-cancel {
+    flex: 1;
+  }
+}

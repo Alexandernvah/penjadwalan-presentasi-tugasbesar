@@ -7,6 +7,8 @@
 INSERT INTO akun (email, password, role, aktif)
 VALUES
     ('budi.santoso@unpar.ac.id', 'password123', 'DOSEN', TRUE),
+    ('widodo.pratama@unpar.ac.id', 'password123', 'DOSEN', TRUE),
+    ('yuni.kartika@unpar.ac.id', 'password123', 'DOSEN', TRUE),
     ('admin@unpar.ac.id', 'password123', 'ADMIN', TRUE),
     ('6182201001@student.unpar.ac.id', 'password123', 'MAHASISWA', TRUE),
     ('6182201002@student.unpar.ac.id', 'password123', 'MAHASISWA', TRUE),
@@ -18,6 +20,18 @@ INSERT INTO dosen (nomor_induk_dosen, nama, id_akun)
 SELECT '1975031501', 'Dr. Budi Santoso', id_akun
 FROM akun
 WHERE email = 'budi.santoso@unpar.ac.id'
+ON CONFLICT (nomor_induk_dosen) DO NOTHING;
+
+INSERT INTO dosen (nomor_induk_dosen, nama, id_akun)
+SELECT '1978042002', 'Ir. Widodo Pratama, M.T.', id_akun
+FROM akun
+WHERE email = 'widodo.pratama@unpar.ac.id'
+ON CONFLICT (nomor_induk_dosen) DO NOTHING;
+
+INSERT INTO dosen (nomor_induk_dosen, nama, id_akun)
+SELECT '1982091203', 'Dr. Yuni Kartika, S.T., M.Kom.', id_akun
+FROM akun
+WHERE email = 'yuni.kartika@unpar.ac.id'
 ON CONFLICT (nomor_induk_dosen) DO NOTHING;
 
 -- 3. Profil Mahasiswa
@@ -43,13 +57,17 @@ ON CONFLICT (npm) DO NOTHING;
 INSERT INTO mata_kuliah (id_matkul, nama, sks)
 VALUES
     ('IF2110', 'Algoritma dan Struktur Data', 4),
-    ('IF3130', 'Jaringan Komputer', 3)
+    ('IF3130', 'Jaringan Komputer', 3),
+    ('IF2210', 'Pemrograman Berorientasi Objek', 4),
+    ('IF3250', 'Rekayasa Perangkat Lunak', 3)
 ON CONFLICT (id_matkul) DO NOTHING;
 
 INSERT INTO mata_kuliah_buka (id_matkul, semester_akademik, nomor_induk_koordinator)
 VALUES
     ('IF2110', '26271', '1975031501'),
-    ('IF3130', '26271', '1975031501')
+    ('IF3130', '26271', '1975031501'),
+    ('IF2210', '26271', '1978042002'),
+    ('IF3250', '26271', '1982091203')
 ON CONFLICT (id_matkul, semester_akademik) DO NOTHING;
 
 -- 5. Kelas Kuliah
@@ -63,6 +81,18 @@ INSERT INTO kelas (id_matkul_buka, kode_kelas, nomor_induk_penanggung_jawab)
 SELECT mkb.id_matkul_buka, 'B', '1975031501'
 FROM mata_kuliah_buka mkb
 WHERE mkb.id_matkul = 'IF3130' AND mkb.semester_akademik = '26271'
+ON CONFLICT (id_matkul_buka, kode_kelas) DO NOTHING;
+
+INSERT INTO kelas (id_matkul_buka, kode_kelas, nomor_induk_penanggung_jawab)
+SELECT mkb.id_matkul_buka, 'A', '1978042002'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF2210' AND mkb.semester_akademik = '26271'
+ON CONFLICT (id_matkul_buka, kode_kelas) DO NOTHING;
+
+INSERT INTO kelas (id_matkul_buka, kode_kelas, nomor_induk_penanggung_jawab)
+SELECT mkb.id_matkul_buka, 'A', '1982091203'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF3250' AND mkb.semester_akademik = '26271'
 ON CONFLICT (id_matkul_buka, kode_kelas) DO NOTHING;
 
 -- 6. Jadwal Kuliah Rutin (Dr. Budi Santoso)
@@ -125,11 +155,77 @@ WHERE mkb.id_matkul = 'IF3130' AND mkb.semester_akademik = '26271'
       WHERE u.id_matkul_buka = mkb.id_matkul_buka AND u.jenis_ujian = 'UAS'
   );
 
+-- Ujian Lab Pemrograman dengan 2 Pengawas (Pak Widodo & Bu Yuni)
+INSERT INTO ujian (id_matkul_buka, jenis_ujian, tanggal, jam_mulai, jam_selesai, ruangan)
+SELECT mkb.id_matkul_buka, 'UAS', DATE '2026-12-10', TIME '13:00', TIME '15:00', 'Lab Komputer 1'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF2110' AND mkb.semester_akademik = '26271'
+  AND NOT EXISTS (
+      SELECT 1 FROM ujian u
+      WHERE u.id_matkul_buka = mkb.id_matkul_buka AND u.jenis_ujian = 'UAS'
+  );
+
+-- Ujian yang diawasi Pak Widodo (untuk skenario Tukar Jadwal)
+INSERT INTO ujian (id_matkul_buka, jenis_ujian, tanggal, jam_mulai, jam_selesai, ruangan)
+SELECT mkb.id_matkul_buka, 'UTS', DATE '2026-10-21', TIME '08:00', TIME '10:00', 'Ruang 9013'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF3130' AND mkb.semester_akademik = '26271'
+  AND NOT EXISTS (
+      SELECT 1 FROM ujian u
+      WHERE u.id_matkul_buka = mkb.id_matkul_buka AND u.jenis_ujian = 'UTS'
+  );
+
+-- Ujian yang sengaja bentrok dengan jadwal mengajar Dr. Budi Santoso (Selasa 08:00 - 10:00)
+INSERT INTO ujian (id_matkul_buka, jenis_ujian, tanggal, jam_mulai, jam_selesai, ruangan)
+SELECT mkb.id_matkul_buka, 'UTS', DATE '2026-10-20', TIME '08:00', TIME '10:00', 'Lab Komputer 2'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF2210' AND mkb.semester_akademik = '26271'
+  AND NOT EXISTS (
+      SELECT 1 FROM ujian u
+      WHERE u.id_matkul_buka = mkb.id_matkul_buka AND u.jenis_ujian = 'UTS'
+  );
+
+-- Ujian tanpa pengawas (0 Pengawas) dan tidak bentrok
+INSERT INTO ujian (id_matkul_buka, jenis_ujian, tanggal, jam_mulai, jam_selesai, ruangan)
+SELECT mkb.id_matkul_buka, 'UAS', DATE '2026-12-11', TIME '08:00', TIME '10:00', 'Ruang 9122'
+FROM mata_kuliah_buka mkb
+WHERE mkb.id_matkul = 'IF3250' AND mkb.semester_akademik = '26271'
+  AND NOT EXISTS (
+      SELECT 1 FROM ujian u
+      WHERE u.id_matkul_buka = mkb.id_matkul_buka AND u.jenis_ujian = 'UAS'
+  );
+
+-- Penugasan Pengawas Dr. Budi Santoso (UTS IF2110 & UAS IF3130)
 INSERT INTO pengawas_ujian (id_ujian, nomor_induk_pengawas)
 SELECT u.id_ujian, '1975031501'
 FROM ujian u
 JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = u.id_matkul_buka
 WHERE mkb.semester_akademik = '26271'
+  AND (
+      (mkb.id_matkul = 'IF2110' AND u.jenis_ujian = 'UTS')
+      OR (mkb.id_matkul = 'IF3130' AND u.jenis_ujian = 'UAS')
+  )
+ON CONFLICT (id_ujian, nomor_induk_pengawas) DO NOTHING;
+
+-- Penugasan Multi-Pengawas Lab (UAS IF2110: Pak Widodo & Bu Yuni)
+INSERT INTO pengawas_ujian (id_ujian, nomor_induk_pengawas)
+SELECT u.id_ujian, d.nidn
+FROM ujian u
+JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = u.id_matkul_buka
+CROSS JOIN (VALUES ('1978042002'), ('1982091203')) AS d(nidn)
+WHERE mkb.semester_akademik = '26271'
+  AND mkb.id_matkul = 'IF2110'
+  AND u.jenis_ujian = 'UAS'
+ON CONFLICT (id_ujian, nomor_induk_pengawas) DO NOTHING;
+
+-- Penugasan Pak Widodo pada UTS IF3130 (untuk skenario Tukar Jadwal)
+INSERT INTO pengawas_ujian (id_ujian, nomor_induk_pengawas)
+SELECT u.id_ujian, '1978042002'
+FROM ujian u
+JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = u.id_matkul_buka
+WHERE mkb.semester_akademik = '26271'
+  AND mkb.id_matkul = 'IF3130'
+  AND u.jenis_ujian = 'UTS'
 ON CONFLICT (id_ujian, nomor_induk_pengawas) DO NOTHING;
 
 -- 8. Peserta Kelas
@@ -140,6 +236,7 @@ CROSS JOIN kelas k
 JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = k.id_matkul_buka
 WHERE m.npm IN ('6182201001', '6182201002', '6182201003')
   AND mkb.semester_akademik = '26271'
+  AND mkb.id_matkul IN ('IF2110', 'IF3130')
 ON CONFLICT (npm, id_kelas) DO NOTHING;
 
 -- 9. Kelompok Tugas Besar
