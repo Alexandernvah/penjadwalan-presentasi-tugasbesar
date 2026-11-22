@@ -57,4 +57,24 @@ public interface PengawasUjianRepository extends JpaRepository<PengawasUjian, Pe
         @Param("nidn") String nidn,
         @Param("semester") String semester
     );
+
+    @Query("""
+        SELECT pu FROM PengawasUjian pu
+        JOIN FETCH pu.dosen d
+        JOIN FETCH pu.ujian u
+        JOIN FETCH u.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        WHERE mkb.semesterAkademik = :semester
+        ORDER BY u.tanggal ASC, u.jamMulai ASC, d.nama ASC
+        """)
+    List<PengawasUjian> findBySemesterWithDetails(@Param("semester") String semester);
+
+    @Query("""
+        SELECT pu FROM PengawasUjian pu
+        JOIN FETCH pu.dosen d
+        JOIN FETCH pu.ujian u
+        WHERE u.idUjian = :idUjian
+        ORDER BY d.nama ASC
+        """)
+    List<PengawasUjian> findByUjianIdWithDosen(@Param("idUjian") Integer idUjian);
 }

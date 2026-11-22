@@ -9,9 +9,27 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UjianRepository extends JpaRepository<Ujian, Integer> {
+
+    @Query("""
+        SELECT u FROM Ujian u
+        JOIN FETCH u.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        WHERE mkb.semesterAkademik = :semester
+        ORDER BY u.tanggal ASC, u.jamMulai ASC, u.idUjian ASC
+        """)
+    List<Ujian> findBySemesterWithDetails(@Param("semester") String semester);
+
+    @Query("""
+        SELECT u FROM Ujian u
+        JOIN FETCH u.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        WHERE u.idUjian = :idUjian
+        """)
+    Optional<Ujian> findByIdWithDetails(@Param("idUjian") Integer idUjian);
 
     @Query("""
         SELECT u FROM Ujian u

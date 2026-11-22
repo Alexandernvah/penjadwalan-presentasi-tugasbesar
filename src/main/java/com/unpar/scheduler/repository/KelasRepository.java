@@ -34,4 +34,12 @@ public interface KelasRepository extends JpaRepository<Kelas, Integer> {
 
     @Query("SELECT MAX(mkb.semesterAkademik) FROM MataKuliahBuka mkb")
     Optional<String> findLatestSemesterOverall();
+
+    @Query("""
+        SELECT k FROM Kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        WHERE mkb.semesterAkademik = :semester
+        ORDER BY k.kodeKelas ASC
+        """)
+    List<Kelas> findBySemester(@Param("semester") String semester);
 }

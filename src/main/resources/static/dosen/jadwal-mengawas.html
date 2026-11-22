@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kelola Jadwal Mengawas Ujian - Tubes Scheduler UNPAR">
+  <title>Jadwal Mengawas Ujian - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+</head>
+<body data-required-role="DOSEN">
+  <div class="dosen-layout">
+    <aside class="dosen-sidebar" aria-label="Sidebar Navigasi Dosen">
+      <div class="dosen-sidebar-header">
+        <div class="dosen-brand-badge">
+          <img src="../images/logo-unpar.png" alt="Logo UNPAR" class="dosen-brand-logo-img" width="40" height="40">
+          <img src="../images/LogoInformatika2.jpg" alt="Logo Informatika UNPAR" class="dosen-brand-logo-img" width="40" height="40">
+        </div>
+      </div>
+
+      <nav aria-label="Navigasi Utama">
+        <ul class="dosen-nav-list">
+          <li class="dosen-nav-item">
+            <a href="dashboard.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+              </span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="jadwal-pribadi.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <span>Jadwal Pribadi</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="jadwal-mengawas.html" class="dosen-nav-link active" aria-current="page">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M9 14l2 2 4-4"></path>
+                </svg>
+              </span>
+              <span>Jadwal Mengawas</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="kelola-kelompok.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </span>
+              <span>Kelola Kelompok</span>
+            </a>
+          </li>
+          <li class="dosen-nav-item">
+            <a href="penjadwalan.html" class="dosen-nav-link">
+              <span class="dosen-nav-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                  <polyline points="9 16 11 18 15 14"></polyline>
+                </svg>
+              </span>
+              <span>Penjadwalan</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="dosen-main-container dosen-main">
+      <header class="dosen-topbar">
+        <div class="dosen-topbar-spacer"></div>
+
+        <div class="dosen-profile-menu">
+          <button type="button" id="btn-lecturer-profile-menu" class="dosen-profile-btn" aria-haspopup="true" aria-expanded="false">
+            <svg class="dosen-profile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
+            <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div id="lecturer-dropdown-panel" class="dosen-dropdown-menu" role="menu">
+            <div class="dosen-dropdown-header">
+              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Dr. Budi Santoso</div>
+              <div id="dropdown-lecturer-email" class="dosen-dropdown-email">budi.santoso@unpar.ac.id</div>
+            </div>
+            <a href="jadwal-pribadi.html" class="dosen-dropdown-item" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Agenda Saya</span>
+            </a>
+            <button type="button" id="btn-lecturer-logout" class="dosen-dropdown-item text-danger" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Keluar</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="dosen-content jp-main jm-main">
+        <section class="jp-page-header jm-page-header" aria-labelledby="heading-jadwal-mengawas">
+          <div class="jp-page-header-text">
+            <div class="jp-title-row">
+              <h1 id="heading-jadwal-mengawas" class="dosen-welcome-title">Jadwal Mengawas Ujian</h1>
+              <span class="jp-semester-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span id="jmSemesterLabel">Semester Ganjil 2026/2027</span>
+              </span>
+            </div>
+            <p class="dosen-welcome-subtitle">
+              Pilih jadwal pengawasan ujian semester berjalan, tinjau potensi bentrok jadwal, atau lakukan pindah dan tukar jadwal mengawas.
+            </p>
+          </div>
+        </section>
+
+        <section class="jp-summary-grid" aria-label="Ringkasan Pengawasan Ujian">
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                <path d="M9 14l2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Jadwal Mengawas Saya</span>
+              <span id="summary-my-count" class="jp-summary-value">0 Ujian Dipilih</span>
+            </div>
+          </article>
+
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-emerald" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Total Ujian Semester</span>
+              <span id="summary-total-count" class="jp-summary-value">0 Jadwal Ujian</span>
+            </div>
+          </article>
+
+          <article class="jp-summary-card">
+            <div class="jp-summary-icon jp-icon-amber" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+            </div>
+            <div class="jp-summary-body">
+              <span class="jp-summary-label">Butuh Pengawas</span>
+              <span id="summary-unassigned-count" class="jp-summary-value">0 Ujian (0 Pengawas)</span>
+            </div>
+          </article>
+        </section>
+
+        <div id="jm-feedback-banner" class="dosen-feedback-banner jm-feedback-banner banner-success hidden" role="status" aria-live="polite">
+          <div class="dosen-feedback-banner-content">
+            <svg id="jm-feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            <span id="jm-feedback-text">Jadwal Berhasil Disimpan</span>
+          </div>
+          <button type="button" id="btn-close-jm-banner" class="dosen-feedback-close" aria-label="Tutup pemberitahuan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <section id="section-mengawas-saya" class="jp-section" aria-labelledby="title-mengawas-saya">
+          <div class="jp-section-header">
+            <div class="jp-section-heading">
+              <span class="jp-section-icon jp-icon-blue" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M9 14l2 2 4-4"></path>
+                </svg>
+              </span>
+              <h2 id="title-mengawas-saya" class="jp-section-title">Jadwal Mengawas Saya</h2>
+            </div>
+            <span id="count-mengawas-saya" class="jp-section-count">0 Ujian</span>
+          </div>
+
+          <div id="list-mengawas-saya" class="jp-stack">
+            <div class="jp-empty">Memuat jadwal mengawas Anda...</div>
+          </div>
+        </section>
+
+        <section id="section-ujian-semester" class="jp-section" aria-labelledby="title-ujian-semester">
+          <div class="jp-section-header">
+            <div class="jp-section-heading">
+              <span class="jp-section-icon jp-icon-amber" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+              </span>
+              <h2 id="title-ujian-semester" class="jp-section-title">Daftar Ujian Semester Berjalan</h2>
+            </div>
+            <span id="count-ujian-semester" class="jp-section-count">0 Ujian</span>
+          </div>
+
+          <div class="jm-toolbar">
+            <div class="jp-segmented jm-filter-pills" role="group" aria-label="Filter daftar ujian semester">
+              <button type="button" class="jp-segmented-btn active is-active" data-filter="ALL" aria-pressed="true">
+                <span>Semua Ujian</span>
+                <span id="pill-count-all" class="jp-segmented-count">(0)</span>
+              </button>
+              <button type="button" class="jp-segmented-btn" data-filter="AVAILABLE" aria-pressed="false">
+                <span>Tersedia</span>
+                <span id="pill-count-available" class="jp-segmented-count">(0)</span>
+              </button>
+              <button type="button" class="jp-segmented-btn" data-filter="MINE" aria-pressed="false">
+                <span>Sudah Saya Awasi</span>
+                <span id="pill-count-mine" class="jp-segmented-count">(0)</span>
+              </button>
+              <button type="button" class="jp-segmented-btn" data-filter="NEED_PROCTOR" aria-pressed="false">
+                <span>Butuh Pengawas (0)</span>
+                <span id="pill-count-need" class="jp-segmented-count">(0)</span>
+              </button>
+            </div>
+
+            <div class="jp-search-field jm-search-field">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <label for="input-cari-ujian" class="jp-visually-hidden">Cari ujian berdasarkan mata kuliah, kode, atau ruangan</label>
+              <input type="search" id="input-cari-ujian" class="jp-search-input" placeholder="Cari mata kuliah, kode, atau ruangan..." autocomplete="off">
+            </div>
+          </div>
+
+          <div id="list-ujian-semester" class="jp-stack">
+            <div class="jp-empty">Memuat daftar ujian semester...</div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL 1: PINDAH / TUKAR JADWAL MENGAWAS -->
+  <div id="modal-pindah-mengawas" class="modal-overlay jp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-pindah-title">
+    <div class="modal-dialog jp-modal-dialog jm-modal-pindah">
+      <div class="jp-modal-header">
+        <div class="jp-modal-header-left">
+          <span class="jp-modal-icon-badge jp-icon-blue" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+          </span>
+          <div class="jp-modal-title-group">
+            <h3 id="modal-pindah-title" class="jp-modal-title">Pindah / Tukar Jadwal Mengawas</h3>
+            <p class="jp-modal-subtitle">Pindahkan penugasan mengawas ke ujian lain atau tukar dengan dosen pengawas lain</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-modal-pindah" class="jp-modal-close" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="form-pindah-mengawas" class="dosen-modal-form">
+        <div class="jp-modal-body jm-modal-body">
+          <div class="jm-source-box">
+            <span class="jm-source-box-label">JADWAL ASAL YANG DILEPAS</span>
+            <div class="jm-source-box-header">
+              <span id="pindah-source-jenis" class="jp-badge jp-badge-amber">UTS</span>
+              <span id="pindah-source-code" class="jp-pill-code">IF2110</span>
+              <span id="pindah-source-class" class="jp-pill-class">Kelas A</span>
+            </div>
+            <div id="pindah-source-title" class="jm-source-box-title">Algoritma dan Struktur Data</div>
+            <div id="pindah-source-meta" class="jm-source-box-meta">Senin, 19 Okt 2026 | 08:00 - 10:00 WIB | Ruang 9012</div>
+          </div>
+
+          <div class="jm-mode-tabs" role="tablist" aria-label="Pilih Mode Perpindahan">
+            <button type="button" id="tab-mode-move" class="jm-mode-tab active" data-mode="MOVE" role="tab" aria-selected="true">
+              Pindah ke Ujian Lain
+            </button>
+            <button type="button" id="tab-mode-swap" class="jm-mode-tab" data-mode="SWAP" role="tab" aria-selected="false">
+              Tukar dengan Dosen Lain
+            </button>
+          </div>
+
+          <div id="panel-mode-move" class="jm-mode-panel" role="tabpanel" aria-labelledby="tab-mode-move">
+            <div class="dosen-form-group">
+              <label for="select-target-ujian-move" class="dosen-form-label">Pilih Ujian Tujuan</label>
+              <select id="select-target-ujian-move" class="dosen-form-input">
+                <option value="">-- Pilih Ujian Tujuan --</option>
+              </select>
+            </div>
+
+            <div class="dosen-form-group">
+              <label for="select-replacement-dosen" class="dosen-form-label">Tunjuk Dosen Pengganti (Opsional)</label>
+              <select id="select-replacement-dosen" class="dosen-form-input">
+                <option value="">-- Tanpa Dosen Pengganti (Lepas Slot Asal) --</option>
+              </select>
+              <div class="form-note-box">
+                <span class="note-badge">Info:</span>
+                <span class="note-text">Jika dikosongkan, Anda cukup berpindah ke ujian tujuan tanpa menunjuk pengganti pada ujian asal.</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="panel-mode-swap" class="jm-mode-panel hidden" role="tabpanel" aria-labelledby="tab-mode-swap">
+            <div class="dosen-form-group">
+              <label for="select-target-swap" class="dosen-form-label">Pilih Jadwal Dosen Lain untuk Ditukar</label>
+              <select id="select-target-swap" class="dosen-form-input">
+                <option value="">-- Pilih Dosen dan Ujian Tujuan Tukar --</option>
+              </select>
+              <div class="form-note-box">
+                <span class="note-badge">Info:</span>
+                <span class="note-text">Anda akan berpindah ke ujian yang dipilih, dan dosen tersebut otomatis menggantikan Anda pada ujian asal.</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="pindah-modal-error" class="dosen-feedback-banner banner-danger jm-inline-error hidden" role="alert">
+            <div class="dosen-feedback-banner-content">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span id="pindah-modal-error-text">Pilih ujian tujuan terlebih dahulu.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="jp-modal-footer jm-modal-footer">
+          <button type="button" id="btn-batal-modal-pindah" class="dosen-btn-secondary">Batal</button>
+          <button type="submit" id="btn-submit-pindah" class="dosen-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>Simpan Perubahan</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PERINGATAN BENTROK JADWAL (UC-05 Alternative Flow A1 & A2) -->
+  <div id="modal-peringatan-bentrok-mengawas" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-bentrok-mengawas-title">
+    <div class="modal-dialog modal-bentrok-dialog jm-modal-bentrok">
+      <div class="modal-amber-warning-header">
+        <div class="modal-amber-title-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <h3 id="modal-bentrok-mengawas-title" class="modal-amber-title">Peringatan Bentrok Jadwal</h3>
+        </div>
+        <button type="button" id="btn-close-modal-bentrok-mengawas" class="modal-amber-close-btn" aria-label="Tutup modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-bentrok-body">
+        <p id="bentrok-mengawas-message" class="slot-confirm-copy">
+          Jadwal mengawas yang dipilih beririsan dengan jadwal kegiatan lain. Tinjau rincian bentrok berikut sebelum memutuskan:
+        </p>
+
+        <div class="conflict-detail-box jm-conflict-detail-box">
+          <h5>Rincian Jadwal yang Bentrok</h5>
+          <ul id="list-konflik-mengawas" class="conflict-list"></ul>
+        </div>
+      </div>
+
+      <div class="modal-bentrok-footer">
+        <button type="button" id="btn-batal-override-mengawas" class="dosen-btn-secondary">Pilih Ujian Lain</button>
+        <button type="button" id="btn-konfirmasi-override-mengawas" class="dosen-btn-danger-solid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Tetap Simpan (Override)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: KONFIRMASI BATALKAN MENGAWAS -->
+  <div id="modal-batalkan-mengawas" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="batal-mengawas-title">
+    <div class="modal-card modal-delete-card">
+      <div class="modal-delete-icon-wrapper">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+
+      <div class="modal-delete-content">
+        <h3 id="batal-mengawas-title" class="modal-delete-title">Batalkan Jadwal Mengawas</h3>
+        <p class="modal-delete-desc">
+          Apakah Anda yakin ingin melepas penugasan mengawas pada <strong id="batal-mengawas-exam-name">Ujian</strong>?
+        </p>
+        <p class="modal-delete-subdesc">
+          Slot pengawas Anda pada ujian ini akan dilepas dan Anda dapat memilih jadwal ujian lain kapan saja.
+        </p>
+      </div>
+
+      <div class="modal-delete-actions">
+        <button type="button" id="btn-cancel-batal-mengawas" class="btn-delete-cancel">Kembali</button>
+        <button type="button" id="btn-confirm-batal-mengawas" class="btn-delete-confirm">Batalkan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth-guard.js" data-required-role="DOSEN"></script>
+  <script src="../js/dosen-jadwal-mengawas.js"></script>
+</body>
+</html>
