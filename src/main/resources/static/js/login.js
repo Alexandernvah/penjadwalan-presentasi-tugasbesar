@@ -179,8 +179,39 @@
     });
   }
 
+  function wirePasswordToggles() {
+    const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+    toggleButtons.forEach(function (btn) {
+      const group = btn.closest('.input-group');
+      const input = group ? group.querySelector('input[name="password"]') : null;
+      const iconEye = btn.querySelector('.icon-eye');
+      const iconEyeOff = btn.querySelector('.icon-eye-off');
+      if (!input) return;
+
+      function syncVisibilityState() {
+        const isVisible = input.type === 'text';
+        btn.setAttribute('aria-pressed', String(isVisible));
+        btn.setAttribute('aria-label', isVisible ? 'Sembunyikan password' : 'Tampilkan password');
+        if (iconEye) {
+          iconEye.classList.toggle('is-hidden', isVisible);
+        }
+        if (iconEyeOff) {
+          iconEyeOff.classList.toggle('is-hidden', !isVisible);
+        }
+      }
+
+      btn.addEventListener('click', function () {
+        input.type = input.type === 'password' ? 'text' : 'password';
+        syncVisibilityState();
+      });
+
+      syncVisibilityState();
+    });
+  }
+
   function init() {
     redirectIfAlreadyAuthenticated();
+    wirePasswordToggles();
 
     wireLoginForm({
       formId: 'dosen-login-form',

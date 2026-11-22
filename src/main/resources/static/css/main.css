@@ -819,6 +819,8 @@ input[type=email]:focus {
 .input-group input[type="text"],
 .input-group input[type="password"],
 .input-group input[type="email"] {
+  flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   padding: 0.75rem 0.95rem;
@@ -828,6 +830,39 @@ input[type=email]:focus {
   background: transparent;
   border-radius: 0;
   box-shadow: none;
+}
+
+.password-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #0056b3;
+  cursor: pointer;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.password-toggle-btn:hover {
+  color: #004494;
+  background-color: rgba(0, 86, 179, 0.08);
+}
+
+.password-toggle-btn:focus-visible {
+  outline: 2px solid #0056b3;
+  outline-offset: -2px;
+  color: #004494;
+  background-color: rgba(0, 86, 179, 0.08);
+}
+
+.password-toggle-btn svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .input-group .form-control:focus,
@@ -980,7 +1015,8 @@ input[type=email]:focus {
 .align-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .gap-2 { gap: 0.5rem; }
-.hidden { display: none !important; }
+.hidden,
+.is-hidden { display: none !important; }
 
 /* Additional Utility Classes to Guarantee Zero Inline CSS */
 .text-xs { font-size: 0.75rem; }
