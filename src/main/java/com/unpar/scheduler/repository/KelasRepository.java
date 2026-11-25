@@ -42,4 +42,14 @@ public interface KelasRepository extends JpaRepository<Kelas, Integer> {
         ORDER BY k.kodeKelas ASC
         """)
     List<Kelas> findBySemester(@Param("semester") String semester);
+
+    @Query("""
+        SELECT k FROM Kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        WHERE mkb.semesterAkademik = :semester
+        ORDER BY mk.nama ASC, k.kodeKelas ASC
+        """)
+    List<Kelas> findBySemesterWithDetails(@Param("semester") String semester);
 }

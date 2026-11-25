@@ -99,7 +99,7 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            <span id="topbar-lecturer-name">Dr. Budi Santoso</span>
+            <span id="topbar-lecturer-name">Memuat...</span>
             <svg class="dosen-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -107,8 +107,8 @@
 
           <div id="lecturer-dropdown-panel" class="dosen-dropdown-menu" role="menu">
             <div class="dosen-dropdown-header">
-              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Dr. Budi Santoso</div>
-              <div id="dropdown-lecturer-email" class="dosen-dropdown-email">budi.santoso@unpar.ac.id</div>
+              <div id="dropdown-lecturer-name" class="dosen-dropdown-name">Memuat...</div>
+              <div id="dropdown-lecturer-email" class="dosen-dropdown-email"></div>
             </div>
             <button type="button" id="btn-lecturer-logout" class="dosen-dropdown-item text-danger" role="menuitem">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="dosen-menu-svg" aria-hidden="true">
@@ -134,7 +134,7 @@
                   <line x1="8" y1="2" x2="8" y2="6"></line>
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                <span id="jmSemesterLabel">Semester Ganjil 2026/2027</span>
+                <span id="jmSemesterLabel">Semester berjalan</span>
               </span>
             </div>
             <p class="dosen-welcome-subtitle">
@@ -247,7 +247,7 @@
                 <span id="pill-count-all" class="jp-segmented-count">(0)</span>
               </button>
               <button type="button" class="jp-segmented-btn" data-filter="AVAILABLE" aria-pressed="false">
-                <span>Tersedia</span>
+                <span>Belum Saya Pilih</span>
                 <span id="pill-count-available" class="jp-segmented-count">(0)</span>
               </button>
               <button type="button" class="jp-segmented-btn" data-filter="MINE" aria-pressed="false">
@@ -255,7 +255,7 @@
                 <span id="pill-count-mine" class="jp-segmented-count">(0)</span>
               </button>
               <button type="button" class="jp-segmented-btn" data-filter="NEED_PROCTOR" aria-pressed="false">
-                <span>Butuh Pengawas (0)</span>
+                <span>Butuh Pengawas</span>
                 <span id="pill-count-need" class="jp-segmented-count">(0)</span>
               </button>
             </div>
@@ -292,7 +292,7 @@
             </svg>
           </span>
           <div class="jm-modal-title-group">
-            <h3 id="modal-pindah-title" class="jm-modal-title">Pindah / Tukar Jadwal Mengawas</h3>
+            <h3 id="modal-pindah-title" class="jm-modal-title">Ubah Jadwal Mengawas</h3>
             <p class="jm-modal-subtitle">Pindahkan penugasan mengawas ke ujian lain atau tukar dengan dosen pengawas lain</p>
           </div>
         </div>
@@ -347,7 +347,7 @@
             </div>
 
             <div class="jm-field-group">
-              <label id="label-replacement-dosen" for="btn-select-replacement-dosen" class="jm-field-label">Tunjuk Dosen Pengganti (Opsional)</label>
+              <label id="label-replacement-dosen" for="btn-select-replacement-dosen" class="jm-field-label">Siapa yang menggantikan Anda di ujian lama? (Opsional)</label>
               <input type="hidden" id="input-replacement-dosen" value="">
               <div class="jm-custom-select" id="custom-select-replacement-dosen">
                 <button
@@ -459,7 +459,7 @@
           </span>
           <div class="jm-modal-title-group">
             <h3 id="modal-bentrok-mengawas-title" class="jm-modal-title">Peringatan Bentrok Jadwal</h3>
-            <p class="jm-modal-subtitle">Terdapat irisan waktu dengan agenda lain pada jadwal Anda</p>
+            <p class="jm-modal-subtitle">Ada bentrok waktu dengan agenda lain pada jadwal Anda</p>
           </div>
         </div>
         <button type="button" id="btn-close-modal-bentrok-mengawas" class="jm-modal-close" aria-label="Tutup modal">
@@ -472,7 +472,7 @@
 
       <div class="jm-modal-body">
         <p id="bentrok-mengawas-message" class="jm-modal-copy">
-          Jadwal mengawas yang dipilih beririsan dengan jadwal kegiatan lain. Tinjau rincian bentrok berikut sebelum memutuskan:
+          Jadwal mengawas yang dipilih bentrok dengan kegiatan lain. Tinjau rincian berikut sebelum memutuskan:
         </p>
 
         <div class="conflict-detail-box jm-conflict-detail-box">
@@ -483,11 +483,11 @@
 
       <div class="jm-modal-footer">
         <button type="button" id="btn-batal-override-mengawas" class="jm-modal-btn-secondary">Pilih Ujian Lain</button>
-        <button type="button" id="btn-konfirmasi-override-mengawas" class="jm-modal-btn-danger">
+        <button type="button" id="btn-konfirmasi-override-mengawas" class="jm-modal-btn-warning">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          <span>Tetap Simpan (Override)</span>
+          <span>Tetap Simpan</span>
         </button>
       </div>
     </div>

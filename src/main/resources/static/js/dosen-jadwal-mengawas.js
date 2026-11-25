@@ -110,7 +110,8 @@
     activePindahMode: 'MOVE',
     isSubmittingPindah: false,
     pendingCancelExam: null,
-    pendingOverrideAction: null
+    pendingOverrideAction: null,
+    modalConflictKnown: false
   };
 
   let lastFocusedElement = null;
@@ -339,7 +340,7 @@
 
     if (summaryMyCountEl) summaryMyCountEl.textContent = myCount + ' Ujian Dipilih';
     if (summaryTotalCountEl) summaryTotalCountEl.textContent = totalCount + ' Jadwal Ujian';
-    if (summaryUnassignedCountEl) summaryUnassignedCountEl.textContent = unassignedCount + ' Ujian (0 Pengawas)';
+    if (summaryUnassignedCountEl) summaryUnassignedCountEl.textContent = unassignedCount + ' Ujian Belum Ada Pengawas';
 
     if (countMengawasSayaEl) countMengawasSayaEl.textContent = myCount + ' Ujian';
 
@@ -373,7 +374,7 @@
       if (item.hasConflict && item.conflictDetails && item.conflictDetails.length > 0) {
         const conflictNote = el('div', 'jm-conflict-note');
         conflictNote.appendChild(icon('warning'));
-        conflictNote.appendChild(el('span', null, 'Beririsan dengan: ' + item.conflictDetails.join('; ')));
+        conflictNote.appendChild(el('span', null, 'Bentrok dengan: ' + item.conflictDetails.join('; ')));
         content.appendChild(conflictNote);
       }
       card.appendChild(content);
@@ -388,7 +389,7 @@
       const btnMove = el('button', 'jm-btn-move');
       btnMove.type = 'button';
       btnMove.appendChild(icon('swap'));
-      btnMove.appendChild(el('span', null, 'Pindah / Ganti'));
+      btnMove.appendChild(el('span', null, 'Ubah Jadwal'));
       btnMove.addEventListener('click', function () {
         openPindahModal(item);
       });
@@ -459,7 +460,7 @@
       if (item.hasConflict && item.conflictDetails && item.conflictDetails.length > 0) {
         const conflictNote = el('div', 'jm-conflict-note');
         conflictNote.appendChild(icon('warning'));
-        conflictNote.appendChild(el('span', null, 'Beririsan dengan: ' + item.conflictDetails.join('; ')));
+        conflictNote.appendChild(el('span', null, 'Bentrok dengan: ' + item.conflictDetails.join('; ')));
         content.appendChild(conflictNote);
       }
 
@@ -469,8 +470,6 @@
       let statusType = null;
       if (item.hasConflict) {
         statusType = 'CONFLICT';
-      } else if (item.isAssignedToMe) {
-        statusType = 'SCHEDULED';
       } else if (item.jumlahPengawas === 0) {
         statusType = 'NEED_PROCTOR';
       }
@@ -781,7 +780,8 @@
       return;
     }
 
-    btnSubmitPindahLabel.textContent = 'Simpan Perubahan';
+    btnSubmitPindahLabel.textContent = state.modalConflictKnown ? 'Tetap Simpan' : 'Simpan Perubahan';
+    btnSubmitPindah.classList.toggle('is-warning', Boolean(state.modalConflictKnown));
     let hasValidSelection = false;
     if (state.activePindahMode === 'MOVE') {
       const moveOpt = getSelectedCustomOption('targetMove');
@@ -794,6 +794,8 @@
   }
 
   function updateConflictCallout(exam) {
+    state.modalConflictKnown = Boolean(exam && exam.hasConflict);
+    updateSubmitButtonState();
     if (!modalConflictCallout || !modalConflictText) return;
     if (!exam || !exam.hasConflict) {
       modalConflictCallout.classList.add('is-hidden');
@@ -809,7 +811,7 @@
     const desc = el(
       'p',
       'jm-modal-conflict-desc',
-      'Jadwal ujian ini beririsan dengan agenda Anda' + details + '. Anda akan diminta konfirmasi override saat menekan Simpan Perubahan.'
+      'Jadwal ujian ini bentrok dengan agenda Anda' + details + '. Tekan Tetap Simpan jika Anda tetap ingin melanjutkan.'
     );
     modalConflictText.appendChild(title);
     modalConflictText.appendChild(desc);
@@ -1103,7 +1105,6 @@
       const data = await response.json().catch(function () { return {}; });
 
       if (response.status === 409 && data && data.conflict) {
-        closeModal(modalPindah);
         openBentrokModal(data.message, data.conflicts, {
           type: 'PINDAH',
           payload: requestBody
@@ -1182,7 +1183,7 @@
           mode: 'MOVE',
           replacementDosenId: replacementDosenId || null,
           targetDosenId: null
-        }, false);
+        }, Boolean(state.modalConflictKnown));
       } else {
         const inputSwap = document.getElementById('input-target-swap');
         const swapVal = inputSwap ? inputSwap.value : '';
@@ -1197,7 +1198,7 @@
           mode: 'SWAP',
           targetDosenId: parts[1],
           replacementDosenId: null
-        }, false);
+        }, Boolean(state.modalConflictKnown));
       }
     });
   }
@@ -1248,7 +1249,10 @@
       closeAllCustomSelects();
       return;
     }
-    closeModal(modalBentrok);
+    if (modalBentrok && modalBentrok.classList.contains('active')) {
+      closeModal(modalBentrok);
+      return;
+    }
     closeModal(modalPindah);
     closeModal(modalBatalkan);
   });

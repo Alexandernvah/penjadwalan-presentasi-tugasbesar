@@ -23,6 +23,20 @@ public class AuthenticatedUserHelper {
         return requestedDosenId;
     }
 
+    public static String resolveMahasiswaNpm() {
+        AuthenticatedUserPrincipal principal = getCurrentPrincipal();
+        if (principal == null) {
+            return null;
+        }
+        if (principal.id() != null && !principal.id().isBlank()) {
+            return principal.id().trim();
+        }
+        if (principal.nidn() != null && !principal.nidn().isBlank()) {
+            return principal.nidn().trim();
+        }
+        return null;
+    }
+
     public static AuthenticatedUserPrincipal getCurrentPrincipal() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof AuthenticatedUserPrincipal principal) {

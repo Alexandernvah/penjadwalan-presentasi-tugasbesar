@@ -176,3 +176,64 @@
   background-color: #fecaca;
   color: #7f1d1d;
 }
+
+
+/* ==========================================================================
+   Pilih Mata Kuliah & Kelas (jadwal dari admin)
+   ========================================================================== */
+
+.schedule-preview {
+  background-color: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.schedule-preview-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.schedule-slot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.schedule-slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.schedule-slot .day-badge {
+  min-width: 4.5rem;
+  text-align: center;
+}
+
+.schedule-slot-time {
+  font-weight: 600;
+}
+
+.schedule-slot-room {
+  color: var(--text-muted);
+}
+
+.course-name {
+  font-weight: 600;
+}
+
+.course-meta {
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+}

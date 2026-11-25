@@ -39,7 +39,7 @@
     <div class="page-header">
       <div>
         <h1 class="page-title">Input Jadwal Kuliah Reguler</h1>
-        <p class="page-subtitle">Daftarkan jadwal mata kuliah rutin mingguan Anda untuk mencegah bentrokan jadwal presentasi.</p>
+        <p class="page-subtitle">Pilih mata kuliah dan kelas yang Anda ambil. Hari, jam, dan ruangan diambil otomatis dari jadwal yang sudah ditetapkan admin, sehingga dapat dipakai untuk mencegah bentrokan jadwal presentasi.</p>
       </div>
     </div>
 
@@ -53,77 +53,37 @@
     <!-- Schedule Input Form Card -->
     <section class="card schedule-input-card">
       <div class="card-header">
-        <h2 class="card-title">Form Entri Jadwal Mata Kuliah</h2>
+        <div>
+          <h2 class="card-title">Pilih Mata Kuliah &amp; Kelas</h2>
+          <p class="card-subtitle">Semester: <span id="semester-label" class="badge badge-neutral">-</span></p>
+        </div>
       </div>
 
       <form id="form-input-jadwal" novalidate>
         <div class="form-row">
           <div class="form-group flex-1">
-            <label for="input-mata-kuliah" class="form-label required">Nama Mata Kuliah</label>
-            <input 
-              type="text" 
-              id="input-mata-kuliah" 
-              name="namaMataKuliah" 
-              class="form-control" 
-              placeholder="Contoh: Rekayasa Perangkat Lunak" 
-              required
-            >
+            <label for="select-mata-kuliah" class="form-label required">Mata Kuliah</label>
+            <select id="select-mata-kuliah" name="idMatkulBuka" class="form-control" required disabled>
+              <option value="">Memuat daftar mata kuliah...</option>
+            </select>
           </div>
           <div class="form-group flex-1">
-            <label for="select-hari-kuliah" class="form-label required">Hari Perkuliahan</label>
-            <select id="select-hari-kuliah" name="hari" class="form-control" required>
-              <option value="">-- Pilih Hari --</option>
-              <option value="SENIN">Senin</option>
-              <option value="SELASA">Selasa</option>
-              <option value="RABU">Rabu</option>
-              <option value="KAMIS">Kamis</option>
-              <option value="JUMAT">Jumat</option>
-              <option value="SABTU">Sabtu</option>
+            <label for="select-kelas" class="form-label required">Kelas</label>
+            <select id="select-kelas" name="idKelas" class="form-control" required disabled>
+              <option value="">-- Pilih mata kuliah terlebih dahulu --</option>
             </select>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label for="input-jam-mulai" class="form-label required">Jam Mulai</label>
-            <input 
-              type="time" 
-              id="input-jam-mulai" 
-              name="jamMulai" 
-              class="form-control" 
-              min="07:00" 
-              max="18:00" 
-              required
-            >
-          </div>
-          <div class="form-group flex-1">
-            <label for="input-jam-selesai" class="form-label required">Jam Selesai</label>
-            <input 
-              type="time" 
-              id="input-jam-selesai" 
-              name="jamSelesai" 
-              class="form-control" 
-              min="07:00" 
-              max="18:00" 
-              required
-            >
-          </div>
-          <div class="form-group flex-1">
-            <label for="input-ruang-kelas" class="form-label required">Ruangan Kelas</label>
-            <input 
-              type="text" 
-              id="input-ruang-kelas" 
-              name="ruangan" 
-              class="form-control" 
-              placeholder="Contoh: A302 / Lab Komputer" 
-              required
-            >
-          </div>
+        <div id="preview-jadwal-kelas" class="schedule-preview hidden" aria-live="polite">
+          <div class="schedule-preview-title">Jadwal kelas ini</div>
+          <ul id="preview-jadwal-list" class="schedule-slot-list"></ul>
+          <p id="preview-hint" class="form-hint hidden"></p>
         </div>
 
         <div class="card-footer">
-          <button type="reset" id="btn-reset-jadwal" class="btn btn-secondary">Reset Formulir</button>
-          <button type="submit" id="btn-save-jadwal" class="btn btn-primary">+ Tambah ke Jadwal Saya</button>
+          <button type="reset" id="btn-reset-jadwal" class="btn btn-secondary">Reset Pilihan</button>
+          <button type="submit" id="btn-save-jadwal" class="btn btn-primary" disabled>+ Tambah ke Jadwal Saya</button>
         </div>
       </form>
     </section>
@@ -133,7 +93,7 @@
       <div class="card-header">
         <div>
           <h2 class="card-title">Jadwal Kuliah Terdaftar</h2>
-          <p class="card-subtitle">Jadwal aktif yang menjadi dasar deteksi waktu bentrok.</p>
+          <p class="card-subtitle">Kelas yang Anda ambil semester ini; jadwalnya menjadi dasar deteksi waktu bentrok.</p>
         </div>
       </div>
 
@@ -143,15 +103,14 @@
             <tr>
               <th scope="col">No</th>
               <th scope="col">Mata Kuliah</th>
-              <th scope="col">Hari</th>
-              <th scope="col">Waktu Perkuliahan</th>
-              <th scope="col">Ruangan</th>
+              <th scope="col">Kelas</th>
+              <th scope="col">Jadwal Perkuliahan</th>
               <th scope="col" class="text-right">Aksi</th>
             </tr>
           </thead>
           <tbody id="tbody-jadwal-mahasiswa">
             <tr>
-              <td colspan="6" class="text-center text-muted">Belum ada jadwal kuliah yang dimasukkan.</td>
+              <td colspan="5" class="text-center text-muted">Belum ada kelas yang Anda ambil.</td>
             </tr>
           </tbody>
         </table>

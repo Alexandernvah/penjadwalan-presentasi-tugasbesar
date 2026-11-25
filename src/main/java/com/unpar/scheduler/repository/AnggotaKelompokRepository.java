@@ -15,6 +15,8 @@ public interface AnggotaKelompokRepository extends JpaRepository<AnggotaKelompok
     List<AnggotaKelompok> findByKelas_IdKelas(Integer idKelas);
     void deleteByKelompok_IdKelompok(Integer idKelompok);
 
+    boolean existsByMahasiswa_NpmAndKelas_IdKelas(String npm, Integer idKelas);
+
     @Query("""
         SELECT ak FROM AnggotaKelompok ak
         JOIN FETCH ak.mahasiswa m
