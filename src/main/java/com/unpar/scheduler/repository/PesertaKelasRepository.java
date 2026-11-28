@@ -30,4 +30,15 @@ public interface PesertaKelasRepository extends JpaRepository<PesertaKelas, Inte
         ORDER BY m.npm ASC
         """)
     List<PesertaKelas> findByKelasIdsWithMahasiswa(@Param("kelasIds") Collection<Integer> kelasIds);
+
+    @Query("""
+        SELECT pk FROM PesertaKelas pk
+        JOIN FETCH pk.kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        LEFT JOIN FETCH mkb.koordinator koord
+        WHERE pk.mahasiswa.npm = :npm AND mkb.semesterAkademik = :semester
+        """)
+    List<PesertaKelas> findByNpmAndSemesterWithDetails(@Param("npm") String npm, @Param("semester") String semester);
 }

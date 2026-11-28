@@ -17,6 +17,17 @@ public interface PresentasiRepository extends JpaRepository<Presentasi, Integer>
 
     Optional<Presentasi> findByKelompok_IdKelompok(Integer idKelompok);
 
+    @Query("""
+        SELECT p FROM Presentasi p
+        JOIN FETCH p.kelompok kel
+        JOIN FETCH kel.kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        WHERE mkb.semesterAkademik = :semester
+          AND kel.idKelompok IN (SELECT ak.kelompok.idKelompok FROM AnggotaKelompok ak WHERE ak.mahasiswa.npm = :npm)
+        """)
+    List<Presentasi> findByMahasiswaNpmAndSemester(@Param("npm") String npm, @Param("semester") String semester);
+
     @Modifying
     @Query("DELETE FROM Presentasi p WHERE p.kelompok.idKelompok = :idKelompok")
     void deleteByKelompokId(@Param("idKelompok") Integer idKelompok);

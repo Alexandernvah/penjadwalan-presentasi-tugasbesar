@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +39,21 @@ public interface KelasRepository extends JpaRepository<Kelas, Integer> {
     @Query("""
         SELECT k FROM Kelas k
         JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        LEFT JOIN FETCH mkb.koordinator koord
         WHERE mkb.semesterAkademik = :semester
         ORDER BY k.kodeKelas ASC
         """)
     List<Kelas> findBySemester(@Param("semester") String semester);
+
+    @Query("""
+        SELECT k FROM Kelas k
+        JOIN FETCH k.mataKuliahBuka mkb
+        JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        LEFT JOIN FETCH mkb.koordinator koord
+        WHERE k.idKelas IN :idKelas
+        """)
+    List<Kelas> findByIdsWithDetails(@Param("idKelas") Collection<Integer> idKelas);
 }

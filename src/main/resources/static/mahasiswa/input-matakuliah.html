@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Input Mata Kuliah Mahasiswa - Sistem Penjadwalan Presentasi Tugas Besar UNPAR">
+  <title>Input Mata Kuliah - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+  <link rel="stylesheet" href="../css/mahasiswa.css">
+</head>
+<body data-required-role="MAHASISWA" data-active-nav="input-matakuliah">
+  <main class="dosen-content" id="main-content">
+    <h1 class="mhs-page-title">Input Mata Kuliah</h1>
+    <div id="page-banner" class="mhs-banner"></div>
+
+    <section class="mhs-card mhs-table-card" aria-label="Daftar mata kuliah yang dibuka">
+      <div class="table-responsive">
+        <table class="mhs-table">
+          <caption class="mhs-sr-only">Pilih mata kuliah dan kelas yang Anda ambil pada semester ini</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="mhs-col-pick">Pilih</th>
+              <th scope="col">Kode &amp; Mata Kuliah</th>
+              <th scope="col">Dosen Pengajar</th>
+              <th scope="col" class="mhs-col-class">Kelas</th>
+            </tr>
+          </thead>
+          <tbody id="course-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="mhs-form-actions">
+      <button type="button" id="btn-simpan-matakuliah" class="dosen-btn-primary" disabled>Simpan Mata Kuliah</button>
+    </div>
+  </main>
+
+  <div id="modal-konfirmasi" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-konfirmasi-title">
+    <div class="modal-dialog mhs-modal-dialog">
+      <div class="mhs-modal-header">
+        <div class="mhs-modal-heading">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2 id="modal-konfirmasi-title" class="mhs-modal-title">Konfirmasi Input Mata Kuliah</h2>
+        </div>
+        <button type="button" id="btn-konfirmasi-tutup" class="mhs-modal-close" aria-label="Tutup konfirmasi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mhs-modal-body">
+        <div class="mhs-modal-panel">
+          <h3 class="mhs-modal-panel-title">Data Mahasiswa</h3>
+          <div class="mhs-identity-row"><span class="mhs-identity-label">Nama</span><span>:</span><span id="konfirmasi-nama"></span></div>
+          <div class="mhs-identity-row"><span class="mhs-identity-label">NPM</span><span>:</span><span id="konfirmasi-npm"></span></div>
+        </div>
+
+        <div>
+          <h3 class="mhs-modal-subtitle">Daftar Mata Kuliah Pilihan:</h3>
+          <div class="table-responsive">
+            <table class="mhs-table">
+              <thead>
+                <tr>
+                  <th scope="col">Kode &amp; Mata Kuliah</th>
+                  <th scope="col">Dosen</th>
+                  <th scope="col">Kelas</th>
+                </tr>
+              </thead>
+              <tbody id="konfirmasi-daftar"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="mhs-modal-footer">
+        <button type="button" id="btn-konfirmasi-batal" class="mhs-btn-neutral">Batal</button>
+        <button type="button" id="btn-konfirmasi-simpan" class="mhs-btn-confirm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Konfirmasi &amp; Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/mahasiswa-common.js"></script>
+  <script src="../js/mahasiswa-input-matakuliah.js"></script>
+</body>
+</html>

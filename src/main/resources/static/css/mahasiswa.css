@@ -1,143 +1,595 @@
 /* ==========================================================================
-   Mahasiswa Stylesheet (mahasiswa.css)
-   Scoped styling for Student portal, class schedule input & dashboard cards
+   Mahasiswa portal (mahasiswa.css)
+   Layout shell (sidebar, topbar, profile menu) reuses the .dosen-* classes from dosen.css
+   so both portals share one look. shortcut: the shell lives in dosen.css, extract it to a
+   portal.css when a third portal needs it.
    ========================================================================== */
 
-/* Presentation Schedule Highlight Card */
-.presentation-hero-card {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-  color: #ffffff;
-  border-radius: var(--radius-lg);
-  padding: 2rem;
-  box-shadow: var(--shadow-lg);
-  margin-bottom: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.presentation-hero-card::after {
-  content: "";
+/* Accessibility helpers */
+.mhs-sr-only {
   position: absolute;
-  top: -30%;
-  right: -10%;
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.hero-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
+.mhs-skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -4rem;
+  z-index: 200;
+  padding: 0.625rem 1rem;
+  background-color: #1d4ed8;
   color: #ffffff;
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
 }
 
-.hero-course-title {
-  font-size: 1.5rem;
+.mhs-skip-link:focus {
+  top: 0.75rem;
+}
+
+.dosen-nav-link:focus-visible,
+.dosen-dropdown-item:focus-visible,
+.mhs-btn-cta:focus-visible,
+.mhs-btn-outline:focus-visible,
+.mhs-btn-neutral:focus-visible,
+.mhs-btn-confirm:focus-visible,
+.mhs-modal-close:focus-visible,
+.mhs-banner-action:focus-visible,
+.mhs-select:focus-visible,
+.mhs-checkbox:focus-visible,
+.dosen-btn-primary:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* Page frame */
+.mhs-page-title {
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  line-height: 1.25;
+  margin-bottom: 1.5rem;
 }
 
-.hero-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+.mhs-banner:empty {
+  display: none;
 }
 
-.hero-meta-item {
-  display: flex;
-  flex-direction: column;
+.mhs-banner {
+  margin-bottom: 1.25rem;
 }
 
-.hero-meta-label {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.mhs-banner .alert {
+  align-items: flex-start;
+  margin-bottom: 0;
 }
 
-.hero-meta-value {
-  font-size: 1.1rem;
+.mhs-banner .alert-icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.mhs-banner-action {
+  background: none;
+  border: 1px solid currentColor;
+  color: inherit;
+  font: inherit;
   font-weight: 600;
-  margin-top: 0.2rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-/* Group Members Details Card */
-.member-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.mhs-banner-action:hover {
+  background-color: rgba(15, 23, 42, 0.06);
 }
 
-.member-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  background-color: var(--bg-muted);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-}
-
-.member-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background-color: #dbeafe;
-  color: #1e40af;
-  font-weight: 700;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.member-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.member-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.member-npm {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-/* Dynamic Schedule Entry Form */
-.schedule-input-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
+/* Cards */
+.mhs-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
   box-shadow: var(--shadow-sm);
 }
 
-.day-badge {
+.mhs-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+}
+
+.mhs-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mhs-card-footer {
+  margin-top: 1.25rem;
+}
+
+.mhs-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.mhs-status svg {
+  width: 18px;
+  height: 18px;
+}
+
+.mhs-status-pending {
+  color: #b91c1c;
+}
+
+.mhs-status-done {
+  color: #15803d;
+}
+
+.mhs-loading,
+.mhs-empty {
+  padding: 1.5rem 0;
+  text-align: center;
+  color: #475569;
+  font-size: 0.9375rem;
+}
+
+/* Gray panels inside cards */
+.mhs-callout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.mhs-callout-icon {
+  color: #dc2626;
+}
+
+.mhs-callout-icon svg {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+
+.mhs-callout-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.mhs-info-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.mhs-info-bar svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: #1d4ed8;
+}
+
+/* Buttons and badges */
+.mhs-btn-cta,
+.mhs-btn-outline,
+.mhs-btn-neutral,
+.mhs-btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.625rem 1.25rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.mhs-btn-cta {
+  background-color: #fbbf24;
+  color: #0f172a;
+}
+
+.mhs-btn-cta:hover {
+  background-color: #f59e0b;
+}
+
+.mhs-btn-outline {
+  background-color: #ffffff;
+  color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.mhs-btn-outline:hover {
+  background-color: #eff6ff;
+}
+
+.mhs-btn-outline svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mhs-btn-neutral {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.mhs-btn-neutral:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.mhs-btn-confirm {
+  background-color: #15803d;
+  color: #ffffff;
+}
+
+.mhs-btn-confirm:hover:not(:disabled) {
+  background-color: #166534;
+}
+
+.mhs-btn-confirm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mhs-btn-neutral:disabled,
+.mhs-btn-confirm:disabled,
+.dosen-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dosen-btn-primary {
+  min-height: 44px;
+}
+
+.mhs-class-badge {
+  flex-shrink: 0;
+  padding: 4px 14px;
+  background-color: #1d4ed8;
+  color: #ffffff;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: var(--radius-sm);
-  background-color: var(--bg-muted);
-  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.mhs-status-badge {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mhs-status-badge-upcoming {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.mhs-status-badge-finished {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Presentation schedule */
+.mhs-schedule-card {
+  padding: 1.25rem;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+}
+
+.mhs-schedule-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mhs-schedule-title {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.mhs-meta-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.mhs-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.9375rem;
+  color: #334155;
+}
+
+.mhs-meta-item svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: #475569;
+}
+
+/* Input Mata Kuliah table */
+.mhs-table-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.mhs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.mhs-table th {
+  padding: 0.875rem 1.25rem;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mhs-table td {
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #0f172a;
+  vertical-align: middle;
+}
+
+.mhs-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.mhs-row-selected td {
+  background-color: #f8fafc;
+}
+
+.mhs-col-pick {
+  width: 72px;
+  text-align: center;
+}
+
+.mhs-col-class {
+  width: 220px;
+}
+
+.mhs-checkbox {
+  width: 22px;
+  height: 22px;
+  accent-color: #1d4ed8;
+  cursor: pointer;
+}
+
+.mhs-checkbox:disabled,
+.mhs-select:disabled {
+  cursor: not-allowed;
+}
+
+.mhs-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-size: 0.875rem;
+  color: #0f172a;
+  background-color: #ffffff;
+  border: 1px solid #94a3b8;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.mhs-select:disabled {
+  background-color: #f1f5f9;
+  color: #334155;
+}
+
+.mhs-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+/* Confirmation modal */
+.mhs-modal-dialog {
+  max-width: 640px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.mhs-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.mhs-modal-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.mhs-modal-heading svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mhs-modal-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.mhs-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.mhs-modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+.mhs-modal-close:focus-visible {
+  outline-color: #ffffff;
+}
+
+.mhs-modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mhs-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+}
+
+.mhs-modal-panel {
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.mhs-modal-panel-title {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.mhs-identity-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  color: #0f172a;
+}
+
+.mhs-identity-label {
+  flex-shrink: 0;
+  width: 56px;
+  color: #475569;
+}
+
+.mhs-modal-subtitle {
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.mhs-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Pages that are not built yet */
+.mhs-coming-soon {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.mhs-coming-soon p {
+  margin-bottom: 1.25rem;
+  color: #334155;
+}
+
+@media (max-width: 640px) {
+  .dosen-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .mhs-card {
+    padding: 16px;
+  }
+
+  .mhs-schedule-head {
+    flex-direction: column;
+  }
+
+  .mhs-col-class {
+    width: 170px;
+  }
+
+  .mhs-table th,
+  .mhs-table td {
+    padding: 0.75rem;
+  }
+
+  .mhs-modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .mhs-modal-footer > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mhs-btn-cta,
+  .mhs-btn-outline,
+  .mhs-btn-neutral,
+  .mhs-btn-confirm {
+    transition: none;
+  }
 }
