@@ -25,8 +25,11 @@ public interface PresentasiRepository extends JpaRepository<Presentasi, Integer>
         JOIN FETCH kel.kelas k
         JOIN FETCH k.mataKuliahBuka mkb
         JOIN FETCH mkb.matakuliah mk
+        LEFT JOIN FETCH k.penanggungJawab pj
+        LEFT JOIN FETCH mkb.koordinator koord
         WHERE mkb.semesterAkademik = :semester
           AND kel.idKelompok IN (SELECT ak.kelompok.idKelompok FROM AnggotaKelompok ak WHERE ak.mahasiswa.npm = :npm)
+        ORDER BY p.tanggal ASC, p.jamMulai ASC, p.idPresentasi ASC
         """)
     List<Presentasi> findByMahasiswaNpmAndSemester(@Param("npm") String npm, @Param("semester") String semester);
 

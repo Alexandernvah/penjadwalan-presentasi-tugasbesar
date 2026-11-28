@@ -287,23 +287,12 @@
 }
 
 .mhs-info-bar {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
   margin-top: 1rem;
   padding: 0.875rem 1rem;
   background-color: #f1f5f9;
   border-radius: 8px;
   font-size: 0.875rem;
   color: #334155;
-}
-
-.mhs-info-bar svg {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  margin-top: 1px;
-  color: #1d4ed8;
 }
 
 /* Buttons and badges */
@@ -1112,6 +1101,433 @@
   color: #1e293b;
 }
 
+.mhs-empty-panel-title {
+  margin: 0;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mhs-empty-panel-desc {
+  max-width: 500px;
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+/* Lihat Jadwal Presentasi */
+.mhs-jadwal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.mhs-jadwal-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.35rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.mhs-jadwal-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+}
+
+.mhs-jadwal-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.95rem;
+  margin-bottom: 0.95rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mhs-jadwal-date-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.mhs-jadwal-day-num {
+  font-size: 1.875rem;
+  font-weight: 800;
+  line-height: 1.05;
+  color: #1d4ed8;
+  font-variant-numeric: tabular-nums;
+}
+
+.mhs-jadwal-month-year {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.mhs-jadwal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mhs-jadwal-pill-today {
+  background-color: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.mhs-jadwal-pill-upcoming {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.mhs-jadwal-pill-done {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.mhs-jadwal-tag {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.mhs-jadwal-course-title {
+  margin: 0.3rem 0 0.9rem 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #0f172a;
+}
+
+.mhs-jadwal-meta {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mhs-jadwal-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.mhs-jadwal-meta-row svg {
+  width: 17px;
+  height: 17px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.mhs-jadwal-meta-muted {
+  font-style: italic;
+  color: #64748b;
+}
+
+.mhs-jadwal-card-footer {
+  margin-top: auto;
+  padding-top: 1.15rem;
+}
+
+.mhs-unscheduled-card {
+  margin-top: 1.5rem;
+}
+
+.mhs-unscheduled-sub {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.mhs-unscheduled-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.mhs-unscheduled-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mhs-unscheduled-link:hover {
+  background-color: #fef3c7;
+}
+
+.mhs-unscheduled-link:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* Slide-Over Detail Drawer */
+.mhs-drawer-open {
+  overflow: hidden;
+}
+
+.mhs-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: flex-end;
+  background-color: rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.mhs-drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mhs-drawer-panel {
+  display: flex;
+  flex-direction: column;
+  width: 440px;
+  max-width: 100vw;
+  height: 100%;
+  background-color: #ffffff;
+  border: 0;
+  box-shadow: -8px 0 30px rgba(15, 23, 42, 0.14);
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+}
+
+.mhs-drawer-overlay.active .mhs-drawer-panel {
+  transform: translateX(0);
+}
+
+.mhs-drawer-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 18px 24px;
+  background-color: #1d4ed8;
+  color: #ffffff;
+  border: 0;
+}
+
+.mhs-drawer-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #ffffff;
+}
+
+.mhs-drawer-fields {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.mhs-drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mhs-drawer-field:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.mhs-drawer-field dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.mhs-drawer-field dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #0f172a;
+}
+
+.mhs-drawer-field dd.mhs-drawer-field-muted {
+  font-weight: 500;
+  font-style: italic;
+  color: #64748b;
+}
+
+.mhs-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.mhs-drawer-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #0f172a;
+}
+
+.mhs-drawer-section-head svg {
+  width: 18px;
+  height: 18px;
+  color: #1d4ed8;
+  flex-shrink: 0;
+}
+
+.mhs-drawer-section-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mhs-drawer-member-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mhs-drawer-member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.95rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+}
+
+.mhs-drawer-member-row:last-child {
+  border-bottom: 0;
+}
+
+.mhs-drawer-member-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  color: #1e293b;
+}
+
+.mhs-drawer-member-left svg {
+  width: 16px;
+  height: 16px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.mhs-drawer-member-self {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.mhs-drawer-self-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.mhs-drawer-member-npm {
+  font-size: 0.8125rem;
+  color: #475569;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.mhs-drawer-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.875rem 1rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 10px;
+  color: #92400e;
+}
+
+.mhs-drawer-note-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #d97706;
+}
+
+.mhs-drawer-note-icon svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.mhs-drawer-note-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.mhs-drawer-note-label {
+  font-weight: 700;
+  color: #92400e;
+}
+
+.mhs-drawer-note-text {
+  margin: 0;
+  color: #78350f;
+}
+
 @media (max-width: 1100px) {
   .mhs-group-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1179,6 +1595,9 @@
   .dosen-dropdown-arrow,
   .dosen-dropdown-item,
   .mhs-group-card,
+  .mhs-jadwal-card,
+  .mhs-drawer-overlay,
+  .mhs-drawer-panel,
   .mhs-btn-leave,
   .mhs-btn-danger,
   .mhs-btn-cta,

@@ -16,13 +16,14 @@
     user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>',
     chevronDown: '<polyline points="6 9 12 15 18 9"></polyline>',
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>',
-    info: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>',
     warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
     checkCircle: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>',
     check: '<polyline points="20 6 9 17 4 12"></polyline>',
     arrowRight: '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
     clock: '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
     mapPin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+    eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>',
+    infoCircle: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>',
     lock: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
     close: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'
   };
@@ -87,9 +88,11 @@
     const banner = el('div', 'alert alert-' + type);
     banner.setAttribute('role', type === 'danger' ? 'alert' : 'status');
 
-    const iconHolder = el('span', 'alert-icon');
-    iconHolder.appendChild(icon(type === 'success' ? 'checkCircle' : type === 'info' ? 'info' : 'warning'));
-    banner.appendChild(iconHolder);
+    if (type !== 'info') {
+      const iconHolder = el('span', 'alert-icon');
+      iconHolder.appendChild(icon(type === 'success' ? 'checkCircle' : 'warning'));
+      banner.appendChild(iconHolder);
+    }
     banner.appendChild(el('div', 'flex-1', message));
 
     if (action) {
@@ -263,22 +266,8 @@
     }
   }
 
-  async function fetchPortalContext() {
-    try {
-      const context = await API.get('/api/mahasiswa/context');
-      if (context) {
-        showIdentity(context);
-      }
-    } catch (ignored) {
-      showSemester('Semester tidak tersedia');
-    }
-  }
-
   buildShell();
   hydrateCachedIdentity();
-  if (document.body.dataset.activeNav === 'lihat-jadwal') {
-    fetchPortalContext();
-  }
 
   window.MahasiswaPortal = {
     LOCK_MESSAGE: LOCK_MESSAGE,

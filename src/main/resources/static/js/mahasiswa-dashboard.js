@@ -9,11 +9,14 @@
 
   function iconHeading(iconName, headingId, title) {
     const heading = el('div', 'mhs-card-heading');
-    const iconNode = portal.icon(iconName);
-    iconNode.classList.add('dosen-section-icon');
+    if (iconName) {
+      const iconNode = portal.icon(iconName);
+      iconNode.classList.add('dosen-section-icon');
+      heading.appendChild(iconNode);
+    }
     const titleNode = el('h2', 'dosen-courses-card-title', title);
     titleNode.id = headingId;
-    heading.append(iconNode, titleNode);
+    heading.appendChild(titleNode);
     return heading;
   }
 
@@ -27,7 +30,7 @@
     const card = buildCard('heading-status-matkul');
     const header = el('div', 'mhs-card-header');
     header.append(
-      iconHeading('info', 'heading-status-matkul', 'Status Mata Kuliah'),
+      iconHeading(null, 'heading-status-matkul', 'Status Mata Kuliah'),
       el('span', 'mhs-status mhs-status-pending', 'Belum Diinput')
     );
 
@@ -59,13 +62,13 @@
     const done = el('span', 'mhs-status mhs-status-done');
     done.append(portal.icon('checkCircle'), document.createTextNode('Sudah Diinput'));
     const header = el('div', 'mhs-card-header');
-    header.append(iconHeading('info', 'heading-status-matkul', 'Status Mata Kuliah'), done);
+    header.append(iconHeading(null, 'heading-status-matkul', 'Status Mata Kuliah'), done);
 
     const list = el('div', 'dosen-course-list');
     courses.forEach(function (course) { list.appendChild(buildCourseRow(course)); });
 
     const lockInfo = el('div', 'mhs-info-bar');
-    lockInfo.append(portal.icon('info'), el('span', null, portal.LOCK_MESSAGE));
+    lockInfo.appendChild(el('span', null, portal.LOCK_MESSAGE));
 
     card.append(header, list, lockInfo);
     return card;

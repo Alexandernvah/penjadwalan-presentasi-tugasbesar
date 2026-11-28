@@ -15,7 +15,8 @@ import java.util.Map;
 @RestControllerAdvice(assignableTypes = {
     MahasiswaMatkulController.class,
     MahasiswaDashboardController.class,
-    MahasiswaKelompokController.class
+    MahasiswaKelompokController.class,
+    MahasiswaJadwalController.class
 })
 public class MahasiswaExceptionHandler {
 
