@@ -30,7 +30,7 @@
   // ---------------------------------------------------------------------
   function courseLabel(course) {
     const label = el('div');
-    label.append(el('strong', null, course.kodeMatkul), document.createTextNode(' - ' + course.namaMatkul));
+    label.append(el('strong', 'mhs-course-code', course.kodeMatkul), document.createTextNode(' - ' + course.namaMatkul));
     return label;
   }
 
@@ -133,10 +133,10 @@
   }
 
   function validateSelection(selection) {
-    if (selection.length === 0) return 'Pilih minimal satu mata kuliah beserta kelasnya.';
+    if (selection.length === 0) return 'Silakan pilih minimal satu mata kuliah beserta kelasnya terlebih dahulu.';
     const withoutClass = selection.filter(function (item) { return !item.kelas; });
     if (withoutClass.length > 0) {
-      return 'Pilih kelas untuk: ' + withoutClass.map(function (item) { return item.course.kodeMatkul; }).join(', ') + '.';
+      return 'Mohon pilih kelas terlebih dahulu untuk mata kuliah yang ditempuh';
     }
     return null;
   }
@@ -149,7 +149,11 @@
       const tr = el('tr');
       const courseCell = el('td');
       courseCell.appendChild(courseLabel(item.course));
-      tr.append(courseCell, el('td', null, item.kelas.namaDosenPengajar), el('td', null, 'Kelas ' + item.kelas.kodeKelas));
+      tr.append(
+        courseCell,
+        el('td', null, item.kelas.namaDosenPengajar),
+        el('td', 'mhs-col-kelas-summary', 'Kelas ' + item.kelas.kodeKelas)
+      );
       modalList.appendChild(tr);
     });
   }

@@ -18,6 +18,8 @@
   const modalWarning = document.getElementById('modal-kelompok-warning');
   const modalWarningText = document.getElementById('modal-kelompok-warning-text');
   const modalSummary = document.getElementById('modal-kelompok-summary');
+  const modalMembersBlock = document.getElementById('modal-kelompok-members-block');
+  const joinModalMemberList = document.getElementById('joinModalMemberList');
   const closeButton = document.getElementById('btn-kelompok-tutup');
   const cancelButton = document.getElementById('btn-kelompok-batal');
   const actionButton = document.getElementById('btn-kelompok-aksi');
@@ -134,11 +136,7 @@
     }
 
     if (classData.idKelompokTerdaftar !== null && classData.idKelompokTerdaftar !== undefined) {
-      const alreadyBtn = el(
-        'button',
-        'mhs-btn-muted mhs-btn-full',
-        'Sudah Terdaftar di Kelompok ' + classData.noKelompokTerdaftar
-      );
+      const alreadyBtn = el('button', 'mhs-btn-muted mhs-btn-full', 'Sudah Terdaftar Pada Kelompok');
       alreadyBtn.type = 'button';
       alreadyBtn.disabled = true;
       return alreadyBtn;
@@ -198,17 +196,29 @@
     modalHeader.classList.toggle('mhs-modal-header-danger', isLeave);
     modalTitle.textContent = isLeave ? 'Konfirmasi Keluar Kelompok' : 'Konfirmasi Gabung Kelompok';
     modalWarning.classList.toggle('hidden', !isLeave);
-    modalWarningText.textContent = isLeave
-      ? 'Anda akan keluar dari kelompok ini dan kursi Anda akan terbuka untuk mahasiswa lain.'
-      : '';
+    modalWarningText.textContent = isLeave ? 'Anda yakin ingin keluar dari kelompok ini?' : '';
 
     portal.clear(modalSummary);
     addSummaryRow('Mata Kuliah', classData.kodeMatkul + ' - ' + classData.namaMatkul);
     addSummaryRow('Kelas', 'Kelas ' + classData.kodeKelas);
     addSummaryRow('Kelompok', 'Kelompok ' + group.noKelompok);
     addSummaryRow('Topik', topikLabel);
+    modalMembersBlock.classList.toggle('hidden', isLeave);
+    portal.clear(joinModalMemberList);
     if (!isLeave) {
       addSummaryRow('Kapasitas', group.jumlahAnggota + '/' + group.kapasitas + ' Terisi');
+      if (group.daftarAnggota && group.daftarAnggota.length > 0) {
+        group.daftarAnggota.forEach(function (member) {
+          const item = el('li', 'modal-member-item');
+          item.append(
+            el('span', 'modal-member-name', member.nama),
+            el('span', 'modal-member-npm', member.npm)
+          );
+          joinModalMemberList.appendChild(item);
+        });
+      } else {
+        joinModalMemberList.appendChild(el('li', 'modal-member-empty', 'Belum ada anggota terdaftar'));
+      }
     }
 
     actionButton.className = isLeave ? 'mhs-btn-danger' : 'dosen-btn-primary';
