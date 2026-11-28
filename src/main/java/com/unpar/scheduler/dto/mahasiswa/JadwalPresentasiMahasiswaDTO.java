@@ -19,7 +19,6 @@ public record JadwalPresentasiMahasiswaDTO(
     String waktuSelesai,
     String rentangWaktuLabel,
     String ruangan,
-    String catatan,
     String statusKode,
     String statusLabel,
     List<AnggotaKelompokItemDTO> daftarAnggota

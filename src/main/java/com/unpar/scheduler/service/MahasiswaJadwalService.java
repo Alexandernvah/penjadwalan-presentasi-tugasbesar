@@ -2,14 +2,12 @@ package com.unpar.scheduler.service;
 
 import com.unpar.scheduler.dto.mahasiswa.AnggotaKelompokItemDTO;
 import com.unpar.scheduler.dto.mahasiswa.JadwalPresentasiMahasiswaDTO;
-import com.unpar.scheduler.dto.mahasiswa.KelasBelumTerjadwalDTO;
 import com.unpar.scheduler.dto.mahasiswa.MahasiswaJadwalResponseDTO;
 import com.unpar.scheduler.model.entity.AnggotaKelompok;
 import com.unpar.scheduler.model.entity.Kelas;
 import com.unpar.scheduler.model.entity.Kelompok;
 import com.unpar.scheduler.model.entity.Mahasiswa;
 import com.unpar.scheduler.model.entity.MataKuliah;
-import com.unpar.scheduler.model.entity.PesertaKelas;
 import com.unpar.scheduler.model.entity.Presentasi;
 import com.unpar.scheduler.repository.AnggotaKelompokRepository;
 import com.unpar.scheduler.repository.PesertaKelasRepository;
@@ -21,13 +19,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 // Menyusun daftar lengkap jadwal presentasi mahasiswa pada semester aktif beserta status dan anggota kelompoknya.
@@ -82,13 +77,12 @@ public class MahasiswaJadwalService {
         Optional<String> semesterOpt = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(npmBersih);
         String semesterLabel = SemesterAkademikResolver.formatSemesterLabel(semesterOpt.orElse(null));
         if (semesterOpt.isEmpty()) {
-            return new MahasiswaJadwalResponseDTO(mahasiswa.getNama(), npmBersih, semesterLabel, List.of(), List.of());
+            return new MahasiswaJadwalResponseDTO(mahasiswa.getNama(), npmBersih, semesterLabel, List.of());
         }
 
         String semester = semesterOpt.get();
-        List<PesertaKelas> pesertaList = pesertaKelasRepository.findByNpmAndSemesterWithDetails(mahasiswa.getNpm(), semester);
-        if (pesertaList.isEmpty()) {
-            return new MahasiswaJadwalResponseDTO(mahasiswa.getNama(), npmBersih, semesterLabel, List.of(), List.of());
+        if (pesertaKelasRepository.findByNpmAndSemesterWithDetails(mahasiswa.getNpm(), semester).isEmpty()) {
+            return new MahasiswaJadwalResponseDTO(mahasiswa.getNama(), npmBersih, semesterLabel, List.of());
         }
 
         List<Presentasi> presentasiTerurut = presentasiRepository
@@ -97,12 +91,9 @@ public class MahasiswaJadwalService {
             .toList();
 
         List<JadwalPresentasiMahasiswaDTO> daftarJadwal = susunDaftarJadwal(presentasiTerurut, npmBersih, hariIni);
-        List<KelasBelumTerjadwalDTO> belumTerjadwal = susunKelasBelumTerjadwal(
-            pesertaList, presentasiTerurut, mahasiswa.getNpm(), semester
-        );
 
         return new MahasiswaJadwalResponseDTO(
-            mahasiswa.getNama(), npmBersih, semesterLabel, daftarJadwal, belumTerjadwal
+            mahasiswa.getNama(), npmBersih, semesterLabel, daftarJadwal
         );
     }
 
@@ -177,50 +168,10 @@ public class MahasiswaJadwalService {
             waktuSelesai,
             waktuMulai + " - " + waktuSelesai + " WIB",
             bersihkanNullable(presentasi.getRuangan()),
-            bersihkanNullable(presentasi.getCatatan()),
             statusKode,
             tentukanStatusLabel(statusKode),
             daftarAnggota
         );
-    }
-
-    private List<KelasBelumTerjadwalDTO> susunKelasBelumTerjadwal(
-        List<PesertaKelas> pesertaList,
-        List<Presentasi> presentasiList,
-        String npmRaw,
-        String semester
-    ) {
-        Set<Integer> idKelasTerjadwal = new HashSet<>();
-        for (Presentasi p : presentasiList) {
-            idKelasTerjadwal.add(p.getKelompok().getKelas().getIdKelas());
-        }
-
-        Map<Integer, Kelompok> kelompokByKelas = new HashMap<>();
-        for (AnggotaKelompok ak : anggotaKelompokRepository.findByMahasiswaNpmInWithDetails(List.of(npmRaw))) {
-            if (semester.equals(ak.getKelas().getMataKuliahBuka().getSemesterAkademik().trim())) {
-                kelompokByKelas.put(ak.getKelas().getIdKelas(), ak.getKelompok());
-            }
-        }
-
-        return pesertaList.stream()
-            .map(PesertaKelas::getKelas)
-            .filter(kelas -> !idKelasTerjadwal.contains(kelas.getIdKelas()))
-            .sorted(Comparator
-                .comparing((Kelas k) -> k.getMataKuliahBuka().getMatakuliah().getIdMatkul())
-                .thenComparing(Kelas::getKodeKelas))
-            .map(kelas -> {
-                MataKuliah mk = kelas.getMataKuliahBuka().getMatakuliah();
-                Kelompok kel = kelompokByKelas.get(kelas.getIdKelas());
-                return new KelasBelumTerjadwalDTO(
-                    kelas.getIdKelas(),
-                    mk.getIdMatkul(),
-                    mk.getNama(),
-                    kelas.getKodeKelas(),
-                    kel != null,
-                    kel != null ? kel.getNoKelompok() : null
-                );
-            })
-            .toList();
     }
 
     static String formatHariTanggal(LocalDate tanggal) {

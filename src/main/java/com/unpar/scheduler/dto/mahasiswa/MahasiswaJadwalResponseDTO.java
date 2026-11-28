@@ -6,7 +6,6 @@ public record MahasiswaJadwalResponseDTO(
     String namaMahasiswa,
     String npm,
     String semesterAkademikLabel,
-    List<JadwalPresentasiMahasiswaDTO> daftarJadwal,
-    List<KelasBelumTerjadwalDTO> daftarKelasBelumTerjadwal
+    List<JadwalPresentasiMahasiswaDTO> daftarJadwal
 ) {
 }

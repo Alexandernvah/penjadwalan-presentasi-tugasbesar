@@ -1,4 +1,4 @@
-// mahasiswa-lihat-jadwal.js - Lihat Jadwal Presentasi: schedule cards grid, unscheduled courses notice, and slide-over detail drawer
+// mahasiswa-lihat-jadwal.js - Lihat Jadwal Presentasi: schedule cards grid and slide-over detail drawer
 (function () {
   'use strict';
 
@@ -13,8 +13,6 @@
   const closeDrawerButton = document.getElementById('btn-tutup-drawer');
   const drawerFields = document.getElementById('drawer-detail-fields');
   const drawerMemberList = document.getElementById('drawer-anggota-list');
-  const drawerCatatanBox = document.getElementById('drawer-catatan-box');
-  const drawerCatatanText = document.getElementById('drawer-catatan-text');
 
   let drawerOpener = null;
 
@@ -57,7 +55,7 @@
   }
 
   // ---------------------------------------------------------------------
-  // Schedule cards & unscheduled courses card
+  // Schedule cards
   // ---------------------------------------------------------------------
   function buildMetaRow(iconName, text, isMuted) {
     const row = el('li', 'mhs-jadwal-meta-row');
@@ -104,53 +102,6 @@
     return card;
   }
 
-  function buildUnscheduledCard(unscheduledList) {
-    const card = el('section', 'mhs-card mhs-unscheduled-card');
-    card.setAttribute('aria-labelledby', 'heading-menunggu-penjadwalan');
-
-    const header = el('div', 'mhs-card-header');
-    const headingWrap = el('div', 'mhs-card-heading');
-    const title = el('h2', 'dosen-courses-card-title', 'Menunggu Penjadwalan Dosen');
-    title.id = 'heading-menunggu-penjadwalan';
-    headingWrap.appendChild(title);
-    header.appendChild(headingWrap);
-
-    const subtitle = el(
-      'p',
-      'mhs-unscheduled-sub',
-      'Mata kuliah berikut belum memiliki jadwal presentasi yang ditetapkan.'
-    );
-
-    const list = el('div', 'dosen-course-list');
-    unscheduledList.forEach(function (course) {
-      const row = el('div', 'dosen-course-row');
-      const info = el('div', 'dosen-course-info');
-      info.append(
-        el('strong', 'dosen-course-code', course.kodeMatkul),
-        el('span', 'dosen-course-separator', '-'),
-        el('span', 'dosen-course-name', course.namaMatkul + ' (Kelas ' + course.kodeKelas + ')')
-      );
-
-      let statusControl;
-      if (course.sudahPunyaKelompok) {
-        statusControl = el(
-          'span',
-          'mhs-unscheduled-badge',
-          'Kelompok ' + course.noKelompok + ' \u00B7 Menunggu Jadwal'
-        );
-      } else {
-        statusControl = el('a', 'mhs-unscheduled-link', 'Belum Pilih Kelompok');
-        statusControl.href = 'pendaftaran-kelompok.html';
-      }
-
-      row.append(info, statusControl);
-      list.appendChild(row);
-    });
-
-    card.append(header, subtitle, list);
-    return card;
-  }
-
   function renderSchedulePage(data) {
     if (!data.daftarJadwal || data.daftarJadwal.length === 0) {
       renderEmptySchedule();
@@ -164,10 +115,6 @@
       grid.appendChild(buildScheduleCard(item));
     });
     contentRoot.appendChild(grid);
-
-    if (data.daftarKelasBelumTerjadwal && data.daftarKelasBelumTerjadwal.length > 0) {
-      contentRoot.appendChild(buildUnscheduledCard(data.daftarKelasBelumTerjadwal));
-    }
   }
 
   // ---------------------------------------------------------------------
@@ -210,10 +157,6 @@
       li.append(left, el('span', 'mhs-drawer-member-npm', member.npm));
       drawerMemberList.appendChild(li);
     });
-
-    const hasCatatan = Boolean(item.catatan && item.catatan.trim());
-    drawerCatatanBox.classList.toggle('hidden', !hasCatatan);
-    drawerCatatanText.textContent = hasCatatan ? item.catatan : '';
   }
 
   function openDrawer(item, triggerEl) {

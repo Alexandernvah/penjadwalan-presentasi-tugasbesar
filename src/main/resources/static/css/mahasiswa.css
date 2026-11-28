@@ -509,13 +509,20 @@
 .mhs-select {
   width: 100%;
   min-height: 44px;
-  padding: 0.5rem 0.75rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
   font: inherit;
   font-size: 0.875rem;
   color: #0f172a;
   background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 16px;
   border: 1px solid #94a3b8;
   border-radius: 8px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   cursor: pointer;
 }
 
@@ -1144,7 +1151,7 @@
 
 .mhs-jadwal-card-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   padding-bottom: 0.95rem;
@@ -1153,24 +1160,25 @@
 }
 
 .mhs-jadwal-date-block {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .mhs-jadwal-day-num {
-  font-size: 1.875rem;
-  font-weight: 800;
+  font-size: 1.5625rem;
+  font-weight: 700;
   line-height: 1.05;
   color: #1d4ed8;
   font-variant-numeric: tabular-nums;
 }
 
 .mhs-jadwal-month-year {
-  margin-top: 0.2rem;
-  font-size: 0.72rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  color: #64748b;
+  letter-spacing: 0.04em;
+  color: #475569;
   text-transform: uppercase;
 }
 
@@ -1249,52 +1257,6 @@
 .mhs-jadwal-card-footer {
   margin-top: auto;
   padding-top: 1.15rem;
-}
-
-.mhs-unscheduled-card {
-  margin-top: 1.5rem;
-}
-
-.mhs-unscheduled-sub {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.875rem;
-  color: #475569;
-}
-
-.mhs-unscheduled-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background-color: #f1f5f9;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  white-space: nowrap;
-}
-
-.mhs-unscheduled-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background-color: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.mhs-unscheduled-link:hover {
-  background-color: #fef3c7;
-}
-
-.mhs-unscheduled-link:focus-visible {
-  outline: 2px solid #1d4ed8;
-  outline-offset: 2px;
 }
 
 /* Slide-Over Detail Drawer */
@@ -1485,47 +1447,6 @@
   color: #475569;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
-}
-
-.mhs-drawer-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
-  padding: 0.875rem 1rem;
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  border-radius: 10px;
-  color: #92400e;
-}
-
-.mhs-drawer-note-icon {
-  flex-shrink: 0;
-  margin-top: 1px;
-  color: #d97706;
-}
-
-.mhs-drawer-note-icon svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-}
-
-.mhs-drawer-note-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  font-size: 0.875rem;
-  line-height: 1.45;
-}
-
-.mhs-drawer-note-label {
-  font-weight: 700;
-  color: #92400e;
-}
-
-.mhs-drawer-note-text {
-  margin: 0;
-  color: #78350f;
 }
 
 @media (max-width: 1100px) {
