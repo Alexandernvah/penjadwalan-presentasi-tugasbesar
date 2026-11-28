@@ -135,6 +135,7 @@
       render(dashboard);
     } catch (err) {
       portal.clear(root);
+      portal.showSemester('Semester tidak tersedia');
       portal.showBanner(banner, 'danger', portal.errorMessage(err), { label: 'Muat Ulang', onClick: load });
     }
   }

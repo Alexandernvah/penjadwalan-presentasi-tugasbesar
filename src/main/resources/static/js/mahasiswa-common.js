@@ -226,6 +226,14 @@
     document.body.prepend(skipLink);
   }
 
+  // Shows the active academic semester label in the page header badge.
+  function showSemester(label) {
+    const semesterNode = document.getElementById('mhs-semester-label');
+    if (semesterNode) {
+      semesterNode.textContent = label || 'Semester Belum Tersedia';
+    }
+  }
+
   // Shows the authenticated student in the top bar and profile menu.
   function showIdentity(identity) {
     if (!identity) return;
@@ -235,6 +243,9 @@
     }
     if (identity.npm) {
       document.getElementById('dropdown-user-detail').textContent = 'NPM ' + identity.npm;
+    }
+    if (identity.semesterAkademikLabel) {
+      showSemester(identity.semesterAkademikLabel);
     }
   }
 
@@ -251,28 +262,21 @@
     }
   }
 
-  async function fetchSessionIdentity() {
+  async function fetchPortalContext() {
     try {
-      const res = await fetch('/api/auth/me', {
-        method: 'GET',
-        credentials: 'include',
-        cache: 'no-store',
-        headers: { 'Accept': 'application/json' }
-      });
-      if (!res.ok) return;
-      const me = await res.json();
-      if (me && me.authenticated) {
-        showIdentity({ namaMahasiswa: me.nama, npm: me.id });
+      const context = await API.get('/api/mahasiswa/context');
+      if (context) {
+        showIdentity(context);
       }
     } catch (ignored) {
-      // auth-guard.js handles unauthenticated redirects.
+      showSemester('Semester tidak tersedia');
     }
   }
 
   buildShell();
   hydrateCachedIdentity();
   if (document.body.dataset.activeNav === 'pendaftaran-kelompok' || document.body.dataset.activeNav === 'lihat-jadwal') {
-    fetchSessionIdentity();
+    fetchPortalContext();
   }
 
   window.MahasiswaPortal = {
@@ -285,6 +289,7 @@
     errorMessage: errorMessage,
     showBanner: showBanner,
     clearBanner: clearBanner,
+    showSemester: showSemester,
     showIdentity: showIdentity
   };
 })();

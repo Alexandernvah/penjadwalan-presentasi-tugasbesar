@@ -250,6 +250,7 @@
       applyState(data);
     } catch (err) {
       renderMessageRow('Daftar mata kuliah tidak dapat ditampilkan.');
+      portal.showSemester('Semester tidak tersedia');
       portal.showBanner(banner, 'danger', portal.errorMessage(err), { label: 'Muat Ulang', onClick: load });
     }
   }

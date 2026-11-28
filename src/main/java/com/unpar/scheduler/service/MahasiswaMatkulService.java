@@ -33,31 +33,40 @@ public class MahasiswaMatkulService {
     private final PesertaKelasRepository pesertaKelasRepository;
     private final MahasiswaRepository mahasiswaRepository;
     private final NamaDosenPengajarResolver namaDosenPengajarResolver;
+    private final SemesterAkademikResolver semesterAkademikResolver;
 
     public MahasiswaMatkulService(
         KelasRepository kelasRepository,
         PesertaKelasRepository pesertaKelasRepository,
         MahasiswaRepository mahasiswaRepository,
-        NamaDosenPengajarResolver namaDosenPengajarResolver
+        NamaDosenPengajarResolver namaDosenPengajarResolver,
+        SemesterAkademikResolver semesterAkademikResolver
     ) {
         this.kelasRepository = kelasRepository;
         this.pesertaKelasRepository = pesertaKelasRepository;
         this.mahasiswaRepository = mahasiswaRepository;
         this.namaDosenPengajarResolver = namaDosenPengajarResolver;
+        this.semesterAkademikResolver = semesterAkademikResolver;
     }
 
     @Transactional(readOnly = true)
     public MatkulMahasiswaResponseDTO getMatkulTersedia(Mahasiswa mahasiswa) {
-        Optional<String> semester = cariSemesterAktif();
+        Optional<String> semester = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(mahasiswa.getNpm());
         if (semester.isEmpty()) {
-            return new MatkulMahasiswaResponseDTO(mahasiswa.getNama(), mahasiswa.getNpm().trim(), false, List.of());
+            return new MatkulMahasiswaResponseDTO(
+                mahasiswa.getNama(),
+                mahasiswa.getNpm().trim(),
+                SemesterAkademikResolver.formatSemesterLabel(null),
+                false,
+                List.of()
+            );
         }
         return susunResponse(mahasiswa, semester.get());
     }
 
     @Transactional
     public MatkulMahasiswaResponseDTO simpanMatkul(Mahasiswa mahasiswa, List<Integer> idKelasDipilih) {
-        String semester = cariSemesterAktif()
+        String semester = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(mahasiswa.getNpm())
             .orElseThrow(() -> new MahasiswaException(HttpStatus.NOT_FOUND, "Belum ada semester aktif."));
 
         // Kunci baris mahasiswa dulu: submit ganda menunggu di sini, lalu ditolak oleh pengecekan kunci di bawah.
@@ -135,12 +144,12 @@ public class MahasiswaMatkulService {
         }).toList();
 
         return new MatkulMahasiswaResponseDTO(
-            mahasiswa.getNama(), mahasiswa.getNpm().trim(), !kelasTerpilih.isEmpty(), daftarMataKuliah
+            mahasiswa.getNama(),
+            mahasiswa.getNpm().trim(),
+            SemesterAkademikResolver.formatSemesterLabel(semester),
+            !kelasTerpilih.isEmpty(),
+            daftarMataKuliah
         );
-    }
-
-    private Optional<String> cariSemesterAktif() {
-        return kelasRepository.findLatestSemesterOverall().map(String::trim).filter(kode -> !kode.isEmpty());
     }
 
     private static MahasiswaException badRequest(String pesan) {

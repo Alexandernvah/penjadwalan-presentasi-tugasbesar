@@ -62,8 +62,13 @@ class MahasiswaMatkulServiceTest {
 
     @BeforeEach
     void setUp() {
+        SemesterAkademikResolver semesterResolver = new SemesterAkademikResolver(kelasRepository, pesertaKelasRepository);
         service = new MahasiswaMatkulService(
-            kelasRepository, pesertaKelasRepository, mahasiswaRepository, new NamaDosenPengajarResolver(kuliahRepository)
+            kelasRepository,
+            pesertaKelasRepository,
+            mahasiswaRepository,
+            new NamaDosenPengajarResolver(kuliahRepository),
+            semesterResolver
         );
         mahasiswa = new Mahasiswa(NPM, "Andi Pratama", new Akun());
         penanggungJawab = new Dosen("1975031501", "Dr. Budi Santoso", new Akun());
@@ -86,6 +91,7 @@ class MahasiswaMatkulServiceTest {
         MatkulMahasiswaResponseDTO response = service.getMatkulTersedia(mahasiswa);
 
         assertEquals("Andi Pratama", response.namaMahasiswa());
+        assertEquals("Semester Ganjil 2026/2027", response.semesterAkademikLabel());
         assertFalse(response.sudahTerkunci());
         assertEquals(List.of("IF2110", "IF3130"), response.daftarMataKuliah().stream().map(m -> m.kodeMatkul()).toList());
         assertEquals(2, response.daftarMataKuliah().get(0).daftarKelas().size());
@@ -184,6 +190,21 @@ class MahasiswaMatkulServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, assertThrows(MahasiswaException.class, () -> service.simpanMatkul(mahasiswa, List.of(101, 101))).getStatus());
         assertEquals(HttpStatus.BAD_REQUEST, assertThrows(MahasiswaException.class, () -> service.simpanMatkul(mahasiswa, List.of(101, 999))).getStatus());
         verify(pesertaKelasRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void getMatkulTersediaFormatsDynamicAcademicSemesterAndHandlesEmptyTable() {
+        when(kelasRepository.findLatestSemesterOverall()).thenReturn(Optional.of("20272"));
+        when(kelasRepository.findBySemester("20272")).thenReturn(List.of());
+        when(pesertaKelasRepository.findByNpmAndSemesterWithDetails(NPM, "20272")).thenReturn(List.of());
+
+        MatkulMahasiswaResponseDTO activeResponse = service.getMatkulTersedia(mahasiswa);
+        assertEquals("Semester Genap 2027/2028", activeResponse.semesterAkademikLabel());
+
+        when(kelasRepository.findLatestSemesterOverall()).thenReturn(Optional.empty());
+        MatkulMahasiswaResponseDTO emptyResponse = service.getMatkulTersedia(mahasiswa);
+        assertEquals("Semester Belum Tersedia", emptyResponse.semesterAkademikLabel());
+        assertTrue(emptyResponse.daftarMataKuliah().isEmpty());
     }
 
     private void stubSimpanPreconditions() {

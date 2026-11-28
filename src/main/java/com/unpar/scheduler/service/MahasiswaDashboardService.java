@@ -1,6 +1,7 @@
 package com.unpar.scheduler.service;
 
 import com.unpar.scheduler.dto.mahasiswa.JadwalPresentasiTerdekatDTO;
+import com.unpar.scheduler.dto.mahasiswa.MahasiswaContextDTO;
 import com.unpar.scheduler.dto.mahasiswa.MahasiswaDashboardDTO;
 import com.unpar.scheduler.dto.mahasiswa.MatkulDiambilDTO;
 import com.unpar.scheduler.model.entity.Kelas;
@@ -8,7 +9,6 @@ import com.unpar.scheduler.model.entity.Mahasiswa;
 import com.unpar.scheduler.model.entity.MataKuliah;
 import com.unpar.scheduler.model.entity.PesertaKelas;
 import com.unpar.scheduler.model.entity.Presentasi;
-import com.unpar.scheduler.repository.KelasRepository;
 import com.unpar.scheduler.repository.PesertaKelasRepository;
 import com.unpar.scheduler.repository.PresentasiRepository;
 import org.springframework.stereotype.Service;
@@ -32,33 +32,42 @@ public class MahasiswaDashboardService {
         .comparing((Presentasi presentasi) -> LocalDateTime.of(presentasi.getTanggal(), presentasi.getJamMulai()))
         .thenComparing(Presentasi::getIdPresentasi, Comparator.nullsLast(Comparator.naturalOrder()));
 
-    private final KelasRepository kelasRepository;
+    private final SemesterAkademikResolver semesterAkademikResolver;
     private final PesertaKelasRepository pesertaKelasRepository;
     private final PresentasiRepository presentasiRepository;
     private final NamaDosenPengajarResolver namaDosenPengajarResolver;
 
     public MahasiswaDashboardService(
-        KelasRepository kelasRepository,
+        SemesterAkademikResolver semesterAkademikResolver,
         PesertaKelasRepository pesertaKelasRepository,
         PresentasiRepository presentasiRepository,
         NamaDosenPengajarResolver namaDosenPengajarResolver
     ) {
-        this.kelasRepository = kelasRepository;
+        this.semesterAkademikResolver = semesterAkademikResolver;
         this.pesertaKelasRepository = pesertaKelasRepository;
         this.presentasiRepository = presentasiRepository;
         this.namaDosenPengajarResolver = namaDosenPengajarResolver;
     }
 
+    public MahasiswaContextDTO getContext(Mahasiswa mahasiswa) {
+        String npmBersih = mahasiswa.getNpm().trim();
+        String labelSemester = SemesterAkademikResolver.formatSemesterLabel(
+            semesterAkademikResolver.resolveActiveSemesterForMahasiswa(npmBersih).orElse(null)
+        );
+        return new MahasiswaContextDTO(mahasiswa.getNama(), npmBersih, labelSemester);
+    }
+
     public MahasiswaDashboardDTO getDashboard(Mahasiswa mahasiswa, LocalDateTime sekarang) {
         String npmBersih = mahasiswa.getNpm().trim();
-        Optional<String> semester = kelasRepository.findLatestSemesterOverall().map(String::trim).filter(kode -> !kode.isEmpty());
+        Optional<String> semester = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(npmBersih);
+        String labelSemester = SemesterAkademikResolver.formatSemesterLabel(semester.orElse(null));
         if (semester.isEmpty()) {
-            return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, false, List.of(), null);
+            return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, labelSemester, false, List.of(), null);
         }
 
         List<PesertaKelas> peserta = pesertaKelasRepository.findByNpmAndSemesterWithDetails(mahasiswa.getNpm(), semester.get());
         if (peserta.isEmpty()) {
-            return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, false, List.of(), null);
+            return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, labelSemester, false, List.of(), null);
         }
 
         List<Kelas> daftarKelas = peserta.stream().map(PesertaKelas::getKelas).toList();
@@ -80,7 +89,7 @@ public class MahasiswaDashboardService {
         JadwalPresentasiTerdekatDTO jadwal = pilihJadwalTerdekat(
             presentasiRepository.findByMahasiswaNpmAndSemester(mahasiswa.getNpm(), semester.get()), sekarang
         );
-        return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, true, matkulDiambil, jadwal);
+        return new MahasiswaDashboardDTO(mahasiswa.getNama(), npmBersih, labelSemester, true, matkulDiambil, jadwal);
     }
 
     // Presentasi yang belum berakhir dan paling awal diutamakan; bila semuanya sudah lewat, tampilkan yang terakhir.

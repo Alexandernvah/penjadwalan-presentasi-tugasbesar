@@ -1,5 +1,6 @@
 package com.unpar.scheduler.controller;
 
+import com.unpar.scheduler.dto.mahasiswa.MahasiswaContextDTO;
 import com.unpar.scheduler.dto.mahasiswa.MahasiswaDashboardDTO;
 import com.unpar.scheduler.service.MahasiswaDashboardService;
 import com.unpar.scheduler.service.MahasiswaResolver;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/mahasiswa/dashboard")
+@RequestMapping("/api/mahasiswa")
 public class MahasiswaDashboardController {
 
     private final MahasiswaDashboardService mahasiswaDashboardService;
@@ -26,7 +27,13 @@ public class MahasiswaDashboardController {
         this.mahasiswaResolver = mahasiswaResolver;
     }
 
-    @GetMapping
+    @GetMapping("/context")
+    public ResponseEntity<MahasiswaContextDTO> getContext(Authentication authentication) {
+        var mahasiswa = mahasiswaResolver.resolve(authentication);
+        return ResponseEntity.ok(mahasiswaDashboardService.getContext(mahasiswa));
+    }
+
+    @GetMapping("/dashboard")
     public ResponseEntity<MahasiswaDashboardDTO> getDashboard(Authentication authentication) {
         var mahasiswa = mahasiswaResolver.resolve(authentication);
         return ResponseEntity.ok(mahasiswaDashboardService.getDashboard(mahasiswa, LocalDateTime.now()));

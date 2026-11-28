@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PesertaKelasRepository extends JpaRepository<PesertaKelas, Integer> {
@@ -41,4 +42,12 @@ public interface PesertaKelasRepository extends JpaRepository<PesertaKelas, Inte
         WHERE pk.mahasiswa.npm = :npm AND mkb.semesterAkademik = :semester
         """)
     List<PesertaKelas> findByNpmAndSemesterWithDetails(@Param("npm") String npm, @Param("semester") String semester);
+
+    @Query("""
+        SELECT MAX(mkb.semesterAkademik) FROM PesertaKelas pk
+        JOIN pk.kelas k
+        JOIN k.mataKuliahBuka mkb
+        WHERE pk.mahasiswa.npm = :npm
+        """)
+    Optional<String> findLatestSemesterByMahasiswaNpm(@Param("npm") String npm);
 }

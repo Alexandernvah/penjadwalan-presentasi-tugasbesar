@@ -71,8 +71,9 @@ class MahasiswaDashboardServiceTest {
 
     @BeforeEach
     void setUp() {
+        SemesterAkademikResolver semesterResolver = new SemesterAkademikResolver(kelasRepository, pesertaKelasRepository);
         service = new MahasiswaDashboardService(
-            kelasRepository, pesertaKelasRepository, presentasiRepository, new NamaDosenPengajarResolver(kuliahRepository)
+            semesterResolver, pesertaKelasRepository, presentasiRepository, new NamaDosenPengajarResolver(kuliahRepository)
         );
         resolver = new MahasiswaResolver(akunRepository, mahasiswaRepository);
         mahasiswa = new Mahasiswa(NPM, "Andi Pratama", new Akun());
@@ -92,6 +93,7 @@ class MahasiswaDashboardServiceTest {
         assertTrue(dashboard.daftarMatkulDiambil().isEmpty());
         assertNull(dashboard.jadwalPresentasiTerdekat());
         assertEquals("Andi Pratama", dashboard.namaMahasiswa());
+        assertEquals("Semester Ganjil 2026/2027", dashboard.semesterAkademikLabel());
         verify(presentasiRepository, never()).findByMahasiswaNpmAndSemester(NPM, SEMESTER);
     }
 
@@ -173,6 +175,23 @@ class MahasiswaDashboardServiceTest {
 
         when(mahasiswaRepository.findByAkun_IdAkun(7)).thenReturn(Optional.empty());
         assertEquals(HttpStatus.NOT_FOUND, assertThrows(MahasiswaException.class, () -> resolver.resolve(validAuth)).getStatus());
+    }
+
+    @Test
+    void semesterResolverFormatsAcademicCodesAndPrioritizesEnrolledSemester() {
+        assertEquals("Semester Ganjil 2026/2027", SemesterAkademikResolver.formatSemesterLabel("20261"));
+        assertEquals("Semester Genap 2026/2027", SemesterAkademikResolver.formatSemesterLabel("20262"));
+        assertEquals("Semester Genap 2027/2028", SemesterAkademikResolver.formatSemesterLabel("20272"));
+        assertEquals("Semester Ganjil 2026/2027", SemesterAkademikResolver.formatSemesterLabel("26271"));
+        assertEquals("Semester Pendek 2025/2026", SemesterAkademikResolver.formatSemesterLabel("25263"));
+        assertEquals("Semester Belum Tersedia", SemesterAkademikResolver.formatSemesterLabel(null));
+
+        when(pesertaKelasRepository.findLatestSemesterByMahasiswaNpm(NPM)).thenReturn(Optional.of("20272"));
+        assertEquals("Semester Genap 2027/2028", service.getContext(mahasiswa).semesterAkademikLabel());
+
+        when(pesertaKelasRepository.findLatestSemesterByMahasiswaNpm(NPM)).thenReturn(Optional.empty());
+        when(kelasRepository.findLatestSemesterOverall()).thenReturn(Optional.empty());
+        assertEquals("Semester Belum Tersedia", service.getDashboard(mahasiswa, SEKARANG).semesterAkademikLabel());
     }
 
     private void enroll(Kelas... daftarKelas) {

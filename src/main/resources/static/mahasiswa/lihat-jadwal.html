@@ -11,7 +11,18 @@
 </head>
 <body data-required-role="MAHASISWA" data-active-nav="lihat-jadwal">
   <main class="dosen-content" id="main-content">
-    <h1 class="mhs-page-title">Lihat Jadwal</h1>
+    <div class="mhs-page-header">
+      <h1 class="mhs-page-title">Lihat Jadwal</h1>
+      <span class="mhs-semester-badge" aria-live="polite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span id="mhs-semester-label">Memuat semester...</span>
+      </span>
+    </div>
     <section class="mhs-card mhs-coming-soon">
       <p>Halaman ini belum tersedia. Daftar lengkap jadwal presentasi sedang dikembangkan.</p>
       <a href="dashboard.html" class="mhs-btn-outline">Kembali ke Dashboard</a>
