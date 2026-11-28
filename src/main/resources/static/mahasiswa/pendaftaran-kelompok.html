@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Pendaftaran Kelompok Mahasiswa - Sistem Penjadwalan Presentasi Tugas Besar UNPAR">
+  <meta name="description" content="Pendaftaran Kelompok Tugas Besar Mahasiswa - UNPAR">
   <title>Pendaftaran Kelompok - Tubes Scheduler</title>
   <link rel="stylesheet" href="../css/main.css">
   <link rel="stylesheet" href="../css/dosen.css">
@@ -12,16 +12,67 @@
 <body data-required-role="MAHASISWA" data-active-nav="pendaftaran-kelompok">
   <main class="dosen-content" id="main-content">
     <div class="mhs-page-header">
-      <h1 class="mhs-page-title">Pendaftaran Kelompok</h1>
+      <h1 class="mhs-page-title">Pendaftaran Kelompok Tugas Besar</h1>
     </div>
-    <section class="mhs-card mhs-coming-soon">
-      <p>Halaman ini belum tersedia. Fitur pendaftaran kelompok sedang dikembangkan.</p>
-      <a href="dashboard.html" class="mhs-btn-outline">Kembali ke Dashboard</a>
+
+    <div id="page-banner" class="mhs-banner"></div>
+
+    <section id="course-selector-card" class="mhs-card hidden" aria-label="Filter mata kuliah">
+      <label for="select-matkul-kelompok" class="mhs-selector-label">Pilih Mata Kuliah</label>
+      <select id="select-matkul-kelompok" class="mhs-select mhs-selector-field"></select>
+      <p class="mhs-selector-help">Pilih mata kuliah untuk menampilkan daftar kelompok yang tersedia.</p>
     </section>
+
+    <div id="kelompok-content" aria-live="polite"></div>
   </main>
+
+  <div id="modal-konfirmasi-kelompok" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-kelompok-title">
+    <div class="modal-dialog mhs-modal-dialog">
+      <div id="modal-kelompok-header" class="mhs-modal-header">
+        <div class="mhs-modal-heading">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <h2 id="modal-kelompok-title" class="mhs-modal-title">Konfirmasi Kelompok</h2>
+        </div>
+        <button type="button" id="btn-kelompok-tutup" class="mhs-modal-close" aria-label="Tutup konfirmasi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mhs-modal-body">
+        <div id="modal-kelompok-warning" class="alert alert-warning hidden" role="status">
+          <span class="alert-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </span>
+          <span id="modal-kelompok-warning-text"></span>
+        </div>
+
+        <div class="mhs-modal-panel">
+          <dl id="modal-kelompok-summary" class="mhs-modal-summary"></dl>
+        </div>
+      </div>
+
+      <div class="mhs-modal-footer">
+        <button type="button" id="btn-kelompok-batal" class="mhs-btn-neutral">Batal</button>
+        <button type="button" id="btn-kelompok-aksi" class="dosen-btn-primary">Konfirmasi</button>
+      </div>
+    </div>
+  </div>
 
   <script src="../js/api.js"></script>
   <script src="../js/auth-guard.js"></script>
   <script src="../js/mahasiswa-common.js"></script>
+  <script src="../js/mahasiswa-pendaftaran-kelompok.js"></script>
 </body>
 </html>

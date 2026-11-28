@@ -50,4 +50,6 @@ public interface PesertaKelasRepository extends JpaRepository<PesertaKelas, Inte
         WHERE pk.mahasiswa.npm = :npm
         """)
     Optional<String> findLatestSemesterByMahasiswaNpm(@Param("npm") String npm);
+
+    boolean existsByMahasiswa_NpmAndKelas_IdKelas(String npm, Integer idKelas);
 }

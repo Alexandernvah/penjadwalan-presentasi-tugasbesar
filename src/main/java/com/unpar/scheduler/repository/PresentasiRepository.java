@@ -17,6 +17,8 @@ public interface PresentasiRepository extends JpaRepository<Presentasi, Integer>
 
     Optional<Presentasi> findByKelompok_IdKelompok(Integer idKelompok);
 
+    boolean existsByKelompok_IdKelompok(Integer idKelompok);
+
     @Query("""
         SELECT p FROM Presentasi p
         JOIN FETCH p.kelompok kel

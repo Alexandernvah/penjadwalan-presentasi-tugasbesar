@@ -23,6 +23,7 @@
     arrowRight: '<line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline>',
     clock: '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
     mapPin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+    lock: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
     close: '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>'
   };
 
@@ -275,7 +276,7 @@
 
   buildShell();
   hydrateCachedIdentity();
-  if (document.body.dataset.activeNav === 'pendaftaran-kelompok' || document.body.dataset.activeNav === 'lihat-jadwal') {
+  if (document.body.dataset.activeNav === 'lihat-jadwal') {
     fetchPortalContext();
   }
 
