@@ -1,6 +1,7 @@
-﻿-- ==============================================================================
--- Schema DDL: db_penjadwalan
--- Final Project Presentation Scheduling System (Sistem Penjadwalan Tugas Besar)
+-- ==============================================================================
+-- Master DDL Schema: db_penjadwalan
+-- Sistem Penjadwalan Presentasi Tugas Besar - Teknik Informatika UNPAR
+-- Jalankan file ini terlebih dahulu sebelum dummy_data.sql
 -- ==============================================================================
 
 DROP TABLE IF EXISTS presentasi CASCADE;
@@ -126,9 +127,9 @@ CREATE TABLE anggota_kelompok (
     id_kelompok INT NOT NULL,
     id_kelas INT NOT NULL,
     CONSTRAINT uq_anggota_kelas UNIQUE (npm, id_kelas),
-    CONSTRAINT fk_anggota_kelompok_composite FOREIGN KEY (id_kelompok, id_kelas) 
+    CONSTRAINT fk_anggota_kelompok_composite FOREIGN KEY (id_kelompok, id_kelas)
         REFERENCES kelompok(id_kelompok, id_kelas) ON DELETE CASCADE,
-    CONSTRAINT fk_anggota_peserta_composite FOREIGN KEY (npm, id_kelas) 
+    CONSTRAINT fk_anggota_peserta_composite FOREIGN KEY (npm, id_kelas)
         REFERENCES peserta_kelas(npm, id_kelas) ON DELETE CASCADE
 );
 

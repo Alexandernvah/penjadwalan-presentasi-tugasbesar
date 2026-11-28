@@ -59,6 +59,8 @@ rpl/
         │       └── service/                     # Business Logic & Algorithms
         └── resources/
             ├── application.yml                  # Konfigurasi Database & Profil Aplikasi
+            ├── master.sql                       # DDL Struktur Tabel PostgreSQL
+            ├── dummy_data.sql                   # Data Awal / Dummy PostgreSQL
             └── static/                          # Frontend Static Assets
                 ├── admin/
                 │   ├── dashboard.html           # Admin Dashboard & Data Controls
@@ -93,7 +95,17 @@ rpl/
 - **Apache Maven**: Versi 3.9+ (`mvn -version`).
 - **PostgreSQL Database Server**: Versi 15+ (`psql --version`).
 
-### 2. Menjalankan Aplikasi via Maven
+### 2. Setup Database PostgreSQL
+Jalankan kedua skrip SQL berikut secara berurutan pada database `db_penjadwalan` melalui `pgAdmin 4` atau `psql`:
+1. `src/main/resources/master.sql` — membuat seluruh struktur tabel dan relasi (*drop & recreate*).
+2. `src/main/resources/dummy_data.sql` — mengisi data awal akun, mata kuliah, jadwal, dan kelompok serta menyinkronkan *sequence*.
+
+```bash
+psql -U postgres -d db_penjadwalan -f src/main/resources/master.sql
+psql -U postgres -d db_penjadwalan -f src/main/resources/dummy_data.sql
+```
+
+### 3. Menjalankan Aplikasi via Maven
 ```bash
 # Bersihkan dan compile proyek
 mvn clean install -DskipTests
