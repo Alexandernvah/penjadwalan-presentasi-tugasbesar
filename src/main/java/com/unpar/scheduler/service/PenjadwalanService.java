@@ -242,7 +242,9 @@ public class PenjadwalanService {
             Presentasi pres = presentasiByKelompok.get(idKel);
 
             if (pres != null) {
-                int durasi = computeDurationMinutes(pres.getJamMulai(), pres.getJamSelesai(), 30);
+                int durasi = (kel.getDurasiPresentasi() != null && kel.getDurasiPresentasi() > 0)
+                    ? kel.getDurasiPresentasi().intValue()
+                    : computeDurationMinutes(pres.getJamMulai(), pres.getJamSelesai(), 30);
                 result.add(new KelompokPenjadwalanDTO(
                     idKel,
                     nomor,
@@ -267,7 +269,7 @@ public class PenjadwalanService {
                     nomor,
                     topik,
                     kapasitas,
-                    30,
+                    resolveKelompokDurasi(kel),
                     false,
                     null,
                     null,
@@ -395,10 +397,16 @@ public class PenjadwalanService {
             targetKelas, kelas, activeKelompokId, monday, friday, dosenId
         );
 
-        int durasiMenit = (requestedDurasiMenit != null && requestedDurasiMenit > 0) ? requestedDurasiMenit : 30;
         Presentasi existingKelompokPres = weeklyCtx.presentasiByKelompokId().get(activeKelompokId);
-        if (existingKelompokPres != null && (requestedDurasiMenit == null || requestedDurasiMenit <= 0)) {
+        int durasiMenit;
+        if (requestedDurasiMenit != null && requestedDurasiMenit > 0) {
+            durasiMenit = requestedDurasiMenit;
+        } else if (selectedKelompok != null && selectedKelompok.getDurasiPresentasi() != null && selectedKelompok.getDurasiPresentasi() > 0) {
+            durasiMenit = selectedKelompok.getDurasiPresentasi().intValue();
+        } else if (existingKelompokPres != null) {
             durasiMenit = computeDurationMinutes(existingKelompokPres.getJamMulai(), existingKelompokPres.getJamSelesai(), 30);
+        } else {
+            durasiMenit = 30;
         }
 
         String idMatkul = (kelas != null && kelas.getMataKuliahBuka() != null && kelas.getMataKuliahBuka().getMatakuliah() != null)
@@ -1364,11 +1372,14 @@ public class PenjadwalanService {
         String ruangan = (request.ruangan() != null && !request.ruangan().isBlank()) ? request.ruangan().trim() : DEFAULT_RUANGAN;
         LocalDate tanggal = parseDateOrDefault(request.tanggal(), LocalDate.now());
         LocalTime jamMulai = parseTimeOrDefault(request.jamMulai(), LocalTime.of(8, 0));
-        int durasi = (request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30;
-        LocalTime jamSelesai = jamMulai.plusMinutes(durasi);
 
         List<Kelompok> dbKelompok = kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(idKelas);
         Optional<Kelas> dbKelasOpt = kelasRepository.findByIdWithDetails(idKelas);
+        Kelompok selectedKelompok = findKelompokById(dbKelompok, idKelompok);
+        int durasi = (selectedKelompok != null && selectedKelompok.getDurasiPresentasi() != null && selectedKelompok.getDurasiPresentasi() > 0)
+            ? selectedKelompok.getDurasiPresentasi().intValue()
+            : ((request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30);
+        LocalTime jamSelesai = jamMulai.plusMinutes(durasi);
 
         if (dbKelasOpt.isEmpty() && dbKelompok.isEmpty()) {
             return cekBentrokFallback(idKelas, idKelompok, ruangan, tanggal, jamMulai, jamSelesai, durasi);
@@ -1424,15 +1435,23 @@ public class PenjadwalanService {
         LocalDate tanggal = parseDateOrDefault(request.tanggal(), DEFAULT_REGULER_MONDAY);
         LocalTime jamMulai = parseTimeOrDefault(request.jamMulai(), LocalTime.of(8, 0));
 
-        int durasi = (request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30;
-        LocalTime jamSelesai = (request.jamSelesai() != null && !request.jamSelesai().isBlank())
-            ? parseTimeOrDefault(request.jamSelesai(), jamMulai.plusMinutes(durasi))
-            : jamMulai.plusMinutes(durasi);
-
-        if (jamSelesai.isAfter(jamMulai)) {
-            durasi = computeDurationMinutes(jamMulai, jamSelesai, durasi);
-        } else {
+        Kelompok targetKelompok = kelompokOpt.orElse(null);
+        int durasi;
+        LocalTime jamSelesai;
+        if (targetKelompok != null && targetKelompok.getDurasiPresentasi() != null && targetKelompok.getDurasiPresentasi() > 0) {
+            durasi = targetKelompok.getDurasiPresentasi().intValue();
             jamSelesai = jamMulai.plusMinutes(durasi);
+        } else {
+            durasi = (request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30;
+            jamSelesai = (request.jamSelesai() != null && !request.jamSelesai().isBlank())
+                ? parseTimeOrDefault(request.jamSelesai(), jamMulai.plusMinutes(durasi))
+                : jamMulai.plusMinutes(durasi);
+
+            if (jamSelesai.isAfter(jamMulai)) {
+                durasi = computeDurationMinutes(jamMulai, jamSelesai, durasi);
+            } else {
+                jamSelesai = jamMulai.plusMinutes(durasi);
+            }
         }
 
         boolean forceOverride = Boolean.TRUE.equals(request.forceOverride());
@@ -1981,6 +2000,25 @@ public class PenjadwalanService {
             namaMatkul,
             anggota
         );
+    }
+
+    private int resolveKelompokDurasi(Kelompok kel) {
+        if (kel != null && kel.getDurasiPresentasi() != null && kel.getDurasiPresentasi() > 0) {
+            return kel.getDurasiPresentasi().intValue();
+        }
+        return 30;
+    }
+
+    private Kelompok findKelompokById(List<Kelompok> list, Integer idKelompok) {
+        if (list == null || idKelompok == null) {
+            return null;
+        }
+        for (Kelompok k : list) {
+            if (idKelompok.equals(k.getIdKelompok())) {
+                return k;
+            }
+        }
+        return null;
     }
 
     private int computeDurationMinutes(LocalTime start, LocalTime end, int defaultMinutes) {

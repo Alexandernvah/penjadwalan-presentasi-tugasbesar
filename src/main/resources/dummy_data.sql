@@ -81,10 +81,10 @@ INSERT INTO peserta_kelas (npm, id_kelas) VALUES
 ('6182301002', 102);
 
 -- KELOMPOK
-INSERT INTO kelompok (id_kelompok, id_kelas, no_kelompok, kapasitas, topik) VALUES
-(1, 101, 1, 3, 'Sistem Rekomendasi Buku'),
-(2, 101, 2, 3, 'Aplikasi Penjadwalan Presentasi'),
-(3, 102, 1, 2, 'Simulasi Routing OSPF');
+INSERT INTO kelompok (id_kelompok, id_kelas, no_kelompok, kapasitas, durasi_presentasi, topik) VALUES
+(1, 101, 1, 3, 30, 'Sistem Rekomendasi Buku'),
+(2, 101, 2, 3, 30, 'Aplikasi Penjadwalan Presentasi'),
+(3, 102, 1, 2, 30, 'Simulasi Routing OSPF');
 
 -- ANGGOTA KELOMPOK (npm harus sudah terdaftar sebagai peserta di kelas yang sama)
 INSERT INTO anggota_kelompok (npm, id_kelompok, id_kelas) VALUES

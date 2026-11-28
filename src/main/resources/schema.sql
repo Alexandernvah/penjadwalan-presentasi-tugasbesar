@@ -113,6 +113,7 @@ CREATE TABLE kelompok (
     id_kelas INT NOT NULL,
     no_kelompok SMALLINT NOT NULL CHECK (no_kelompok > 0),
     kapasitas SMALLINT NOT NULL CHECK (kapasitas > 0),
+    durasi_presentasi SMALLINT NOT NULL CHECK (durasi_presentasi >= 5),
     topik VARCHAR(200) NULL,
     CONSTRAINT uq_kelompok_kelas UNIQUE (id_kelas, no_kelompok),
     CONSTRAINT uq_kelompok_target_fk UNIQUE (id_kelompok, id_kelas),

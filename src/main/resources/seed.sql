@@ -240,22 +240,22 @@ WHERE m.npm IN ('6182201001', '6182201002', '6182201003')
 ON CONFLICT (npm, id_kelas) DO NOTHING;
 
 -- 9. Kelompok Tugas Besar
-INSERT INTO kelompok (id_kelas, no_kelompok, kapasitas, topik)
-SELECT k.id_kelas, v.no_kelompok, v.kapasitas, v.topik
+INSERT INTO kelompok (id_kelas, no_kelompok, kapasitas, durasi_presentasi, topik)
+SELECT k.id_kelas, v.no_kelompok, v.kapasitas, v.durasi_presentasi, v.topik
 FROM kelas k
 JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = k.id_matkul_buka
 CROSS JOIN (
     VALUES
-        (1::SMALLINT, 4::SMALLINT, 'Visualisasi Struktur Data Pohon Berimbang'),
-        (2::SMALLINT, 4::SMALLINT, 'Simulasi Algoritma Pencarian Jalur Terpendek')
-) AS v(no_kelompok, kapasitas, topik)
+        (1::SMALLINT, 4::SMALLINT, 30::SMALLINT, 'Visualisasi Struktur Data Pohon Berimbang'),
+        (2::SMALLINT, 4::SMALLINT, 30::SMALLINT, 'Simulasi Algoritma Pencarian Jalur Terpendek')
+) AS v(no_kelompok, kapasitas, durasi_presentasi, topik)
 WHERE mkb.id_matkul = 'IF2110'
   AND mkb.semester_akademik = '26271'
   AND k.kode_kelas = 'A'
 ON CONFLICT (id_kelas, no_kelompok) DO NOTHING;
 
-INSERT INTO kelompok (id_kelas, no_kelompok, kapasitas, topik)
-SELECT k.id_kelas, 1::SMALLINT, 4::SMALLINT, 'Perancangan Topologi Jaringan Kampus'
+INSERT INTO kelompok (id_kelas, no_kelompok, kapasitas, durasi_presentasi, topik)
+SELECT k.id_kelas, 1::SMALLINT, 4::SMALLINT, 30::SMALLINT, 'Perancangan Topologi Jaringan Kampus'
 FROM kelas k
 JOIN mata_kuliah_buka mkb ON mkb.id_matkul_buka = k.id_matkul_buka
 WHERE mkb.id_matkul = 'IF3130'

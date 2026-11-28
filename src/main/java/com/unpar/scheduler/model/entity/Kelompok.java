@@ -36,6 +36,9 @@ public class Kelompok {
     @Column(name = "kapasitas", nullable = false)
     private Short kapasitas;
 
+    @Column(name = "durasi_presentasi", nullable = false)
+    private Short durasiPresentasi;
+
     @Column(name = "topik", length = 200)
     private String topik;
 
@@ -43,11 +46,23 @@ public class Kelompok {
     }
 
     public Kelompok(Integer idKelompok, Kelas kelas, Short noKelompok, Short kapasitas, String topik) {
+        this(idKelompok, kelas, noKelompok, kapasitas, topik, null);
+    }
+
+    public Kelompok(
+        Integer idKelompok,
+        Kelas kelas,
+        Short noKelompok,
+        Short kapasitas,
+        String topik,
+        Short durasiPresentasi
+    ) {
         this.idKelompok = idKelompok;
         this.kelas = kelas;
         this.noKelompok = noKelompok;
         this.kapasitas = kapasitas;
         this.topik = topik;
+        this.durasiPresentasi = durasiPresentasi;
     }
 
     public Integer getIdKelompok() {
@@ -80,6 +95,14 @@ public class Kelompok {
 
     public void setKapasitas(Short kapasitas) {
         this.kapasitas = kapasitas;
+    }
+
+    public Short getDurasiPresentasi() {
+        return durasiPresentasi;
+    }
+
+    public void setDurasiPresentasi(Short durasiPresentasi) {
+        this.durasiPresentasi = durasiPresentasi;
     }
 
     public String getTopik() {

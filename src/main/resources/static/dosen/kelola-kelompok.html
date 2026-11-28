@@ -189,8 +189,22 @@
               <input type="number" id="input-kapasitas" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 5 Orang" min="1" max="20" required>
             </div>
             <div class="dosen-form-group">
-              <label for="input-durasi" class="dosen-form-label">Durasi Presentasi</label>
-              <input type="number" id="input-durasi" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30 Menit" min="5" max="180" step="5" required>
+              <label for="input-durasi" class="dosen-form-label">Durasi Presentasi (Menit)</label>
+              <input type="number" id="input-durasi" name="durasiMenit" list="durasi-presentasi-presets" class="dosen-form-input" placeholder="Contoh: 30" min="5" max="180" required>
+            </div>
+          </div>
+
+          <datalist id="durasi-presentasi-presets">
+            <option value="15"></option>
+            <option value="20"></option>
+            <option value="30"></option>
+            <option value="45"></option>
+            <option value="60"></option>
+          </datalist>
+
+          <div id="tambah-modal-error" class="dosen-feedback-banner banner-danger hidden" role="alert">
+            <div class="dosen-feedback-banner-content">
+              <span id="tambah-modal-error-text"></span>
             </div>
           </div>
 
@@ -244,8 +258,14 @@
               <input type="number" id="edit-kapasitas" name="batasKapasitas" class="dosen-form-input" placeholder="Contoh: 5 Orang" min="1" max="20" required>
             </div>
             <div class="dosen-form-group">
-              <label for="edit-durasi" class="dosen-form-label">Durasi Presentasi</label>
-              <input type="number" id="edit-durasi" name="durasiMenit" class="dosen-form-input" placeholder="Contoh: 30 Menit" min="5" max="180" step="5" required>
+              <label for="edit-durasi" class="dosen-form-label">Durasi Presentasi (Menit)</label>
+              <input type="number" id="edit-durasi" name="durasiMenit" list="durasi-presentasi-presets" class="dosen-form-input" placeholder="Contoh: 30" min="5" max="180" required>
+            </div>
+          </div>
+
+          <div id="edit-modal-error" class="dosen-feedback-banner banner-danger hidden" role="alert">
+            <div class="dosen-feedback-banner-content">
+              <span id="edit-modal-error-text"></span>
             </div>
           </div>
         </div>

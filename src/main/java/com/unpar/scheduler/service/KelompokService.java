@@ -54,30 +54,8 @@ public class KelompokService {
 
         List<KelompokDetailDTO> result = new ArrayList<>();
         for (Kelompok k : kelompokList) {
-            List<AnggotaKelompok> anggotaList = anggotaKelompokRepository.findByKelompok_IdKelompok(k.getIdKelompok());
-            List<AnggotaItemDTO> anggotaDTOs = new ArrayList<>();
-            for (AnggotaKelompok ak : anggotaList) {
-                if (ak.getMahasiswa() != null) {
-                    anggotaDTOs.add(new AnggotaItemDTO(
-                        ak.getMahasiswa().getNpm(),
-                        ak.getMahasiswa().getNama()
-                    ));
-                }
-            }
-
-            int currentCount = anggotaDTOs.size();
-            int maxCap = (k.getKapasitas() != null) ? k.getKapasitas().intValue() : 0;
-            String status = (currentCount >= maxCap && maxCap > 0) ? "Lengkap" : "Menunggu Mahasiswa";
-
-            result.add(new KelompokDetailDTO(
-                k.getIdKelompok(),
-                k.getNoKelompok() != null ? k.getNoKelompok().intValue() : 1,
-                k.getTopik() != null ? k.getTopik() : "-",
-                maxCap,
-                30,
-                status,
-                anggotaDTOs
-            ));
+            List<AnggotaItemDTO> anggotaDTOs = mapAnggota(anggotaKelompokRepository.findByKelompok_IdKelompok(k.getIdKelompok()));
+            result.add(toKelompokDetailDTO(k, anggotaDTOs));
         }
 
         return result;
@@ -87,6 +65,7 @@ public class KelompokService {
         if (request == null || request.idKelas() == null) {
             throw new IllegalArgumentException("Data kelas dan kelompok tidak valid");
         }
+        int durasi = validateDurasiMenit(request.durasiMenit());
 
         Kelas kelas = kelasRepository.findById(request.idKelas())
             .orElseThrow(() -> new IllegalArgumentException("Kelas dengan ID " + request.idKelas() + " tidak ditemukan"));
@@ -95,19 +74,11 @@ public class KelompokService {
         kelompok.setKelas(kelas);
         kelompok.setNoKelompok(request.nomorKelompok() != null ? request.nomorKelompok().shortValue() : (short) 1);
         kelompok.setKapasitas(request.batasKapasitas() != null ? request.batasKapasitas().shortValue() : (short) 4);
+        kelompok.setDurasiPresentasi((short) durasi);
         kelompok.setTopik(request.topik());
 
         Kelompok saved = kelompokRepository.save(kelompok);
-
-        return new KelompokDetailDTO(
-            saved.getIdKelompok(),
-            saved.getNoKelompok().intValue(),
-            saved.getTopik(),
-            saved.getKapasitas().intValue(),
-            request.durasiMenit() != null ? request.durasiMenit() : 30,
-            "Menunggu Mahasiswa",
-            new ArrayList<>()
-        );
+        return toKelompokDetailDTO(saved, new ArrayList<>());
     }
 
     public List<KelompokDetailDTO> batchCreateKelompok(BatchCreateKelompokRequestDTO request) {
@@ -117,7 +88,7 @@ public class KelompokService {
 
         int jumlah = (request.jumlahKelompok() != null && request.jumlahKelompok() > 0) ? request.jumlahKelompok() : 1;
         int kapasitas = (request.batasKapasitas() != null && request.batasKapasitas() > 0) ? request.batasKapasitas() : 5;
-        int durasi = (request.durasiMenit() != null && request.durasiMenit() > 0) ? request.durasiMenit() : 30;
+        int durasi = validateDurasiMenit(request.durasiMenit());
 
         Kelas kelas = kelasRepository.findById(request.idKelas())
             .orElseThrow(() -> new IllegalArgumentException("Kelas dengan ID " + request.idKelas() + " tidak ditemukan"));
@@ -140,6 +111,7 @@ public class KelompokService {
             kelompok.setKelas(kelas);
             kelompok.setNoKelompok((short) nomorBaru);
             kelompok.setKapasitas((short) kapasitas);
+            kelompok.setDurasiPresentasi((short) durasi);
             kelompok.setTopik(topik);
             newEntities.add(kelompok);
         }
@@ -164,11 +136,27 @@ public class KelompokService {
             if (request.batasKapasitas() != null && request.batasKapasitas() > 0) {
                 kelompok.setKapasitas(request.batasKapasitas().shortValue());
             }
+            if (request.durasiMenit() != null) {
+                kelompok.setDurasiPresentasi((short) validateDurasiMenit(request.durasiMenit()));
+            }
+        }
+        if (kelompok.getDurasiPresentasi() == null || kelompok.getDurasiPresentasi() < 5) {
+            throw new IllegalArgumentException("Durasi presentasi minimal 5 menit");
         }
 
         Kelompok saved = kelompokRepository.save(kelompok);
+        List<AnggotaItemDTO> anggotaDTOs = mapAnggota(anggotaKelompokRepository.findByKelompok_IdKelompok(saved.getIdKelompok()));
+        return toKelompokDetailDTO(saved, anggotaDTOs);
+    }
 
-        List<AnggotaKelompok> anggotaList = anggotaKelompokRepository.findByKelompok_IdKelompok(saved.getIdKelompok());
+    private int validateDurasiMenit(Integer durasiMenit) {
+        if (durasiMenit == null || durasiMenit < 5) {
+            throw new IllegalArgumentException("Durasi presentasi minimal 5 menit");
+        }
+        return durasiMenit;
+    }
+
+    private List<AnggotaItemDTO> mapAnggota(List<AnggotaKelompok> anggotaList) {
         List<AnggotaItemDTO> anggotaDTOs = new ArrayList<>();
         for (AnggotaKelompok ak : anggotaList) {
             if (ak.getMahasiswa() != null) {
@@ -178,18 +166,19 @@ public class KelompokService {
                 ));
             }
         }
+        return anggotaDTOs;
+    }
 
+    private KelompokDetailDTO toKelompokDetailDTO(Kelompok k, List<AnggotaItemDTO> anggotaDTOs) {
         int currentCount = anggotaDTOs.size();
-        int maxCap = (saved.getKapasitas() != null) ? saved.getKapasitas().intValue() : 0;
+        int maxCap = k.getKapasitas() != null ? k.getKapasitas().intValue() : 0;
         String status = (currentCount >= maxCap && maxCap > 0) ? "Lengkap" : "Menunggu Mahasiswa";
-        int durasi = (request != null && request.durasiMenit() != null && request.durasiMenit() > 0)
-            ? request.durasiMenit()
-            : 30;
+        Integer durasi = k.getDurasiPresentasi() != null ? k.getDurasiPresentasi().intValue() : null;
 
         return new KelompokDetailDTO(
-            saved.getIdKelompok(),
-            saved.getNoKelompok() != null ? saved.getNoKelompok().intValue() : 1,
-            saved.getTopik(),
+            k.getIdKelompok(),
+            k.getNoKelompok() != null ? k.getNoKelompok().intValue() : 1,
+            k.getTopik() != null ? k.getTopik() : "-",
             maxCap,
             durasi,
             status,

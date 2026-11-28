@@ -67,14 +67,28 @@
   let currentKelompokList = [];
 
   // Modal Control - Tambah
+  function showModalError(bannerId, textId, message) {
+    const banner = document.getElementById(bannerId);
+    const text = document.getElementById(textId);
+    if (text) text.textContent = message;
+    if (banner) banner.classList.remove('hidden');
+  }
+
+  function hideModalError(bannerId) {
+    const banner = document.getElementById(bannerId);
+    if (banner) banner.classList.add('hidden');
+  }
+
   function openModal() {
     if (modalTambahKelompok) {
+      hideModalError('tambah-modal-error');
       modalTambahKelompok.classList.add('active');
     }
   }
 
   function closeModal() {
     if (modalTambahKelompok) {
+      hideModalError('tambah-modal-error');
       modalTambahKelompok.classList.remove('active');
       if (formTambahKelompok) formTambahKelompok.reset();
     }
@@ -83,19 +97,21 @@
   // Modal Control - Edit
   function openEditModal(group) {
     if (!modalEditKelompok) return;
+    hideModalError('edit-modal-error');
     if (modalEditTitle) {
       modalEditTitle.textContent = `Edit Kelompok ${group.nomorKelompok || ''}`;
     }
     if (editIdKelompokInput) editIdKelompokInput.value = group.idKelompok;
     if (editTopikInput) editTopikInput.value = group.topik || '';
     if (editKapasitasInput) editKapasitasInput.value = group.batasKapasitas || 4;
-    if (editDurasiInput) editDurasiInput.value = group.durasiMenit || 30;
+    if (editDurasiInput) editDurasiInput.value = group.durasiMenit != null ? group.durasiMenit : '';
 
     modalEditKelompok.classList.add('active');
   }
 
   function closeEditModal() {
     if (modalEditKelompok) {
+      hideModalError('edit-modal-error');
       modalEditKelompok.classList.remove('active');
       if (formEditKelompok) formEditKelompok.reset();
     }
@@ -304,7 +320,7 @@
       const nomor = group.nomorKelompok || 1;
       const topikRaw = group.topik || '';
       const kapasitas = group.batasKapasitas || 4;
-      const durasi = group.durasiMenit || 30;
+      const durasi = (group.durasiMenit != null && group.durasiMenit > 0) ? `${group.durasiMenit} Menit` : '-';
       const anggota = group.anggota || [];
       const currentAnggota = anggota.length;
       const isLengkap = group.status === 'Lengkap' || currentAnggota >= kapasitas;
@@ -416,7 +432,7 @@
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            <span>Durasi: ${durasi} Menit</span>
+            <span>Durasi: ${durasi}</span>
           </span>
         </div>
 
@@ -485,19 +501,21 @@
       const currentClassId = selectKelas ? parseInt(selectKelas.value, 10) : 102;
 
       if (isNaN(jumlahKelompokVal) || jumlahKelompokVal <= 0) {
-        alert('Jumlah kelompok minimal 1.');
+        showModalError('tambah-modal-error', 'tambah-modal-error-text', 'Jumlah kelompok minimal 1.');
         return;
       }
 
       if (isNaN(kapasitasVal) || kapasitasVal <= 0) {
-        alert('Kapasitas kelompok minimal 1 orang.');
+        showModalError('tambah-modal-error', 'tambah-modal-error-text', 'Kapasitas kelompok minimal 1 orang.');
         return;
       }
 
-      if (isNaN(durasiVal) || durasiVal <= 0) {
-        alert('Durasi presentasi minimal 5 menit.');
+      if (isNaN(durasiVal) || durasiVal < 5) {
+        showModalError('tambah-modal-error', 'tambah-modal-error-text', 'Durasi presentasi minimal 5 menit.');
         return;
       }
+
+      hideModalError('tambah-modal-error');
 
       const payload = {
         idKelas: currentClassId,
@@ -516,6 +534,12 @@
           },
           body: JSON.stringify(payload)
         });
+
+        if (response.status === 400) {
+          const errBody = await response.json().catch(() => ({}));
+          showModalError('tambah-modal-error', 'tambah-modal-error-text', errBody.message || 'Data kelompok tidak valid.');
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(`Gagal membuat batch kelompok (${response.status})`);
@@ -580,24 +604,26 @@
       const durasiVal = parseInt(editDurasiInput.value, 10);
 
       if (!idVal) {
-        alert('ID kelompok tidak ditemukan.');
+        showModalError('edit-modal-error', 'edit-modal-error-text', 'ID kelompok tidak ditemukan.');
         return;
       }
 
       if (!topikVal) {
-        alert('Topik / Judul kelompok tidak boleh kosong.');
+        showModalError('edit-modal-error', 'edit-modal-error-text', 'Topik / Judul kelompok tidak boleh kosong.');
         return;
       }
 
       if (isNaN(kapasitasVal) || kapasitasVal <= 0) {
-        alert('Kapasitas kelompok minimal 1 orang.');
+        showModalError('edit-modal-error', 'edit-modal-error-text', 'Kapasitas kelompok minimal 1 orang.');
         return;
       }
 
-      if (isNaN(durasiVal) || durasiVal <= 0) {
-        alert('Durasi presentasi minimal 5 menit.');
+      if (isNaN(durasiVal) || durasiVal < 5) {
+        showModalError('edit-modal-error', 'edit-modal-error-text', 'Durasi presentasi minimal 5 menit.');
         return;
       }
+
+      hideModalError('edit-modal-error');
 
       const payload = {
         topik: topikVal,
@@ -616,6 +642,12 @@
           },
           body: JSON.stringify(payload)
         });
+
+        if (response.status === 400) {
+          const errBody = await response.json().catch(() => ({}));
+          showModalError('edit-modal-error', 'edit-modal-error-text', errBody.message || 'Data kelompok tidak valid.');
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);

@@ -490,4 +490,55 @@ class PenjadwalanServiceTest {
         assertEquals("Kosong (09.30 - 10.00)", wed09PartialMulti.badgeText());
         assertEquals("Terisi: Kelompok 1 & Kelompok 2 \u00b7 09.00 - 09.30", wed09PartialMulti.deskripsi());
     }
+
+    @Test
+    void testCustomDurationKelompok_UsesStoredDurationForListConflictAndSave() {
+        LocalDate monday = LocalDate.of(2026, 10, 5);
+        Kelompok kelompok45 = new Kelompok(9, kelasJarkom, (short) 4, (short) 4, "Topik 45 Menit", (short) 45);
+
+        when(kelasRepository.findByIdWithDetails(102)).thenReturn(Optional.of(kelasJarkom));
+        when(kelompokRepository.findByKelas_IdKelasOrderByNoKelompokAsc(102)).thenReturn(List.of(kelompok45));
+        when(kelompokRepository.findById(9)).thenReturn(Optional.of(kelompok45));
+        when(anggotaKelompokRepository.findByKelasIdWithMahasiswaAndKelompok(102)).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByKelasIdWithDetails(102)).thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByKelas_IdKelas(102)).thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByDosenIdsWithDetails(anyCollection())).thenReturn(Collections.emptyList());
+        when(pengawasUjianRepository.findByTanggalBetweenAndDosenIdsWithDetails(eq(monday), eq(monday.plusDays(4)), anyCollection()))
+            .thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalBetweenWithDetails(monday, monday.plusDays(4)))
+            .thenReturn(Collections.emptyList());
+        when(ujianRepository.findByTanggalBetweenAndMatkulBukaIds(eq(monday), eq(monday.plusDays(4)), anyCollection()))
+            .thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByHariAndDosenIdsWithDetails(eq((short) 1), anyCollection())).thenReturn(Collections.emptyList());
+        when(pengawasUjianRepository.findByTanggalAndDosenIdsWithDetails(eq(monday), anyCollection())).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalWithDetails(monday)).thenReturn(Collections.emptyList());
+        when(kuliahRepository.findByHariAndRuanganWithDetails((short) 1, "Ruang 9122")).thenReturn(Collections.emptyList());
+        when(ujianRepository.findByTanggalAndRuanganWithDetails(monday, "Ruang 9122")).thenReturn(Collections.emptyList());
+        when(presentasiRepository.findByTanggalAndRuanganWithDetails(monday, "Ruang 9122")).thenReturn(Collections.emptyList());
+        when(anggotaKelompokRepository.findByKelompok_IdKelompok(9)).thenReturn(Collections.emptyList());
+        when(presentasiRepository.save(any(Presentasi.class))).thenAnswer(inv -> {
+            Presentasi p = inv.getArgument(0);
+            p.setIdPresentasi(150);
+            return p;
+        });
+
+        List<KelompokPenjadwalanDTO> groups = penjadwalanService.getKelompokByKelas(102);
+        assertEquals(1, groups.size());
+        assertEquals(45, groups.get(0).durasiMenit());
+
+        MatriksMingguanResponseDTO matrix = penjadwalanService.getMatriksMingguan(102, 9, "REGULER", monday, "1975031501");
+        assertEquals(45, matrix.durasiMenit());
+
+        CekBentrokResponseDTO check = penjadwalanService.cekBentrok(new CekBentrokRequestDTO(
+            102, 9, "Ruang 9122", monday.toString(), "09:00", null, "1975031501"
+        ));
+        assertEquals(45, check.durasiMenit());
+        assertEquals("09:45", check.jamSelesai());
+
+        PresentasiTerjadwalDTO saved = penjadwalanService.simpanPresentasi(new SimpanPresentasiRequestDTO(
+            102, 9, "Ruang 9122", "Ruang 9122", monday.toString(), "09:00", null, null, null, false, "1975031501"
+        ));
+        assertEquals(45, saved.durasiMenit());
+        assertEquals("09:45", saved.jamSelesai());
+    }
 }

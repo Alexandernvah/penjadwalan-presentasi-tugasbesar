@@ -87,6 +87,9 @@
   const btnConfirmBatal = document.getElementById('btn-confirm-batal');
 
   // State Management
+  const STORAGE_KEY_KELAS = 'dosen_penjadwalan_kelas_id';
+  const STORAGE_KEY_KELOMPOK = 'dosen_penjadwalan_kelompok_id';
+
   let currentClasses = [];
   let currentKelompokList = [];
   let activeMode = 'REGULER';
@@ -96,6 +99,90 @@
   let presentasiToCancel = null;
   let activeMatrixAbortController = null;
   let latestMatrixRequestId = 0;
+
+  function getSavedSelection() {
+    let urlKelasId = null;
+    let urlKelompokId = null;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      urlKelasId = params.get('kelasId');
+      urlKelompokId = params.get('kelompokId');
+    } catch (err) {
+      // Ignore URLSearchParams errors
+    }
+
+    let storedKelasId = null;
+    let storedKelompokId = null;
+    try {
+      storedKelasId = sessionStorage.getItem(STORAGE_KEY_KELAS);
+      storedKelompokId = sessionStorage.getItem(STORAGE_KEY_KELOMPOK);
+    } catch (err) {
+      // Ignore sessionStorage restrictions
+    }
+
+    const kelasId = urlKelasId || storedKelasId || null;
+    const canReuseStoredKelompok = !urlKelasId || (storedKelasId && String(urlKelasId) === String(storedKelasId));
+    const kelompokId = urlKelompokId || (canReuseStoredKelompok ? storedKelompokId : null);
+
+    return { kelasId: kelasId, kelompokId: kelompokId };
+  }
+
+  function persistSelection(kelasId, kelompokId) {
+    const normalizedKelas = kelasId !== null && kelasId !== undefined && String(kelasId).trim() !== ''
+      ? String(kelasId).trim()
+      : '';
+    const normalizedKelompok = kelompokId !== null && kelompokId !== undefined && String(kelompokId).trim() !== ''
+      ? String(kelompokId).trim()
+      : '';
+
+    try {
+      if (normalizedKelas) {
+        sessionStorage.setItem(STORAGE_KEY_KELAS, normalizedKelas);
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_KELAS);
+      }
+      if (normalizedKelompok) {
+        sessionStorage.setItem(STORAGE_KEY_KELOMPOK, normalizedKelompok);
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_KELOMPOK);
+      }
+    } catch (err) {
+      // Ignore sessionStorage restrictions
+    }
+
+    try {
+      const url = new URL(window.location.href);
+      if (normalizedKelas) {
+        url.searchParams.set('kelasId', normalizedKelas);
+      } else {
+        url.searchParams.delete('kelasId');
+      }
+      if (normalizedKelompok) {
+        url.searchParams.set('kelompokId', normalizedKelompok);
+      } else {
+        url.searchParams.delete('kelompokId');
+      }
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (err) {
+      // Ignore history API errors
+    }
+  }
+
+  function restoreSelectValue(selectEl, preferredValue) {
+    if (!selectEl || selectEl.options.length === 0) return null;
+    if (preferredValue !== null && preferredValue !== undefined && String(preferredValue).trim() !== '') {
+      const target = String(preferredValue).trim();
+      const matched = Array.from(selectEl.options).some(function (opt) {
+        return String(opt.value) === target;
+      });
+      if (matched) {
+        selectEl.value = target;
+        return selectEl.value;
+      }
+    }
+    selectEl.selectedIndex = 0;
+    return selectEl.value;
+  }
 
   function showFeedback(message, isError) {
     if (!feedbackBanner || !feedbackText) return;
@@ -197,12 +284,16 @@
   // =========================================================================
 
   async function initializePage() {
-    await loadKelasList();
+    const saved = getSavedSelection();
+    await loadKelasList(saved.kelasId);
     const selectedClass = getSelectedClassObj();
-    await loadKelompokList(selectedClass.idKelas);
+    const effectiveKelasId = selectKelas && selectKelas.value ? selectKelas.value : selectedClass.idKelas;
+    await loadKelompokList(effectiveKelasId, saved.kelompokId);
   }
 
-  async function loadKelasList() {
+  async function loadKelasList(preferredKelasId) {
+    const fallbackSelected = selectKelas && selectKelas.value ? selectKelas.value : null;
+    const targetKelasId = preferredKelasId !== undefined ? preferredKelasId : fallbackSelected;
     try {
       const authNidn = localStorage.getItem('auth_id');
       const query = authNidn ? `?dosenId=${encodeURIComponent(authNidn)}` : '';
@@ -235,6 +326,7 @@
         opt.textContent = formatCourseDisplay(c);
         selectKelas.appendChild(opt);
       });
+      restoreSelectValue(selectKelas, targetKelasId);
     }
   }
 
@@ -261,10 +353,12 @@
         selectKelompok.appendChild(opt);
       });
 
-      if (preserveKelompokId && currentKelompokList.some(function (g) { return g.idKelompok === preserveKelompokId; })) {
-        selectKelompok.value = String(preserveKelompokId);
-      }
+      restoreSelectValue(selectKelompok, preserveKelompokId);
     }
+
+    const effectiveKelasId = selectKelas && selectKelas.value ? selectKelas.value : idKelas;
+    const effectiveKelompokId = selectKelompok && selectKelompok.value ? selectKelompok.value : null;
+    persistSelection(effectiveKelasId, effectiveKelompokId);
 
     renderGroupInfoCard();
   }
@@ -286,7 +380,7 @@
       if (listAnggotaKelompok) {
         listAnggotaKelompok.innerHTML = '<div class="dosen-members-empty">Belum ada kelompok terdaftar pada kelas ini.</div>';
       }
-      if (badgeDurasiKelompok) badgeDurasiKelompok.textContent = '30 Menit';
+      if (badgeDurasiKelompok) badgeDurasiKelompok.textContent = '-';
       if (bannerJadwalAktif) bannerJadwalAktif.classList.add('hidden');
       return;
     }
@@ -311,9 +405,9 @@
       }
     }
 
-    const durasi = group.durasiMenit || 30;
+    const durasi = group.durasiMenit;
     if (badgeDurasiKelompok) {
-      badgeDurasiKelompok.textContent = `${durasi} Menit`;
+      badgeDurasiKelompok.textContent = (durasi != null && durasi > 0) ? `${durasi} Menit` : '-';
     }
 
     if (listAnggotaKelompok) {
@@ -356,14 +450,17 @@
   if (selectKelas) {
     selectKelas.addEventListener('change', function () {
       hideNotificationBanner();
-      const idKelas = parseInt(this.value, 10);
-      loadKelompokList(idKelas);
+      const idKelas = this.value;
+      persistSelection(idKelas, null);
+      loadKelompokList(idKelas, null);
     });
   }
 
   if (selectKelompok) {
     selectKelompok.addEventListener('change', function () {
       hideNotificationBanner();
+      const idKelas = selectKelas && selectKelas.value ? selectKelas.value : null;
+      persistSelection(idKelas, this.value);
       renderGroupInfoCard();
     });
   }
@@ -843,6 +940,8 @@
     const group = getSelectedGroupObj();
     if (!group) return;
 
+    const preservedKelasId = selectKelas && selectKelas.value ? selectKelas.value : (kelas ? kelas.idKelas : 102);
+    const preservedKelompokId = selectKelompok && selectKelompok.value ? selectKelompok.value : group.idKelompok;
     const durasi = group.durasiMenit || 30;
     const ruangan = kelas && kelas.ruanganDefault ? kelas.ruanganDefault : 'Ruang 9122';
 
@@ -903,7 +1002,7 @@
         false
       );
 
-      await loadKelompokList(kelas ? kelas.idKelas : 102, group.idKelompok);
+      await loadKelompokList(preservedKelasId, preservedKelompokId);
       await loadWeeklyMatrixData();
     } catch (err) {
       console.error('Gagal menyimpan jadwal presentasi:', err);
@@ -937,6 +1036,11 @@
       const target = presentasiToCancel;
       closeModalBatal();
 
+      const kelas = getSelectedClassObj();
+      const group = getSelectedGroupObj();
+      const preservedKelasId = selectKelas && selectKelas.value ? selectKelas.value : (kelas ? kelas.idKelas : 102);
+      const preservedKelompokId = selectKelompok && selectKelompok.value ? selectKelompok.value : (group ? group.idKelompok : null);
+
       try {
         const response = await fetch(`/api/dosen/penjadwalan/presentasi/${encodeURIComponent(target.idPresentasi)}`, {
           method: 'DELETE'
@@ -944,10 +1048,8 @@
         if (!response.ok && response.status !== 204) {
           throw new Error(`HTTP ${response.status}`);
         }
-        const kelas = getSelectedClassObj();
-        const group = getSelectedGroupObj();
         showFeedback(`Jadwal presentasi Kelompok ${target.noKelompok} berhasil dibatalkan.`, false);
-        await loadKelompokList(kelas ? kelas.idKelas : 102, group ? group.idKelompok : null);
+        await loadKelompokList(preservedKelasId, preservedKelompokId);
         await loadWeeklyMatrixData();
       } catch (err) {
         console.error('Gagal membatalkan jadwal:', err);
