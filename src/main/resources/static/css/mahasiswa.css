@@ -50,6 +50,83 @@
   outline-offset: 2px;
 }
 
+/* Topbar & profile menu alignment */
+.dosen-topbar {
+  padding: 0 2.5rem;
+}
+
+.dosen-profile-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: min(320px, 100%);
+}
+
+.dosen-profile-btn {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 12px;
+  gap: 0.625rem;
+  border-color: #cbd5e1;
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.dosen-profile-btn > span,
+.dosen-profile-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dosen-dropdown-menu {
+  left: 0;
+  right: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  box-sizing: border-box;
+  top: calc(100% + 0.5rem);
+  padding: 0.45rem;
+}
+
+.dosen-dropdown-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.6rem 0.65rem 0.7rem 0.65rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dosen-dropdown-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dosen-dropdown-email {
+  color: #1e293b;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dosen-dropdown-item {
+  min-height: 40px;
+  padding: 0.55rem 0.65rem;
+}
+
 /* Page frame */
 .mhs-page-header {
   display: flex;
@@ -582,7 +659,17 @@
   color: #334155;
 }
 
+@media (max-width: 900px) {
+  .dosen-topbar {
+    padding: 0 1.5rem;
+  }
+}
+
 @media (max-width: 640px) {
+  .dosen-topbar {
+    padding: 0 1rem;
+  }
+
   .dosen-content {
     padding: 1.25rem 1rem;
   }
@@ -614,6 +701,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .dosen-profile-btn,
+  .dosen-dropdown-arrow,
+  .dosen-dropdown-item,
   .mhs-btn-cta,
   .mhs-btn-outline,
   .mhs-btn-neutral,
