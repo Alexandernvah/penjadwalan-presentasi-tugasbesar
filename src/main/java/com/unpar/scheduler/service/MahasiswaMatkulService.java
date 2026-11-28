@@ -1,135 +1,158 @@
 package com.unpar.scheduler.service;
 
-import com.unpar.scheduler.dto.matkul.KelasPilihanDTO;
-import com.unpar.scheduler.dto.matkul.MatkulItemDTO;
-import com.unpar.scheduler.dto.matkul.MatkulTersediaResponseDTO;
+import com.unpar.scheduler.dto.mahasiswa.KelasTersediaDTO;
+import com.unpar.scheduler.dto.mahasiswa.MataKuliahTersediaDTO;
+import com.unpar.scheduler.dto.mahasiswa.MatkulMahasiswaResponseDTO;
 import com.unpar.scheduler.model.entity.Kelas;
-import com.unpar.scheduler.model.entity.Kuliah;
+import com.unpar.scheduler.model.entity.Mahasiswa;
 import com.unpar.scheduler.model.entity.MataKuliah;
 import com.unpar.scheduler.model.entity.PesertaKelas;
 import com.unpar.scheduler.repository.KelasRepository;
-import com.unpar.scheduler.repository.KuliahRepository;
+import com.unpar.scheduler.repository.MahasiswaRepository;
 import com.unpar.scheduler.repository.PesertaKelasRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+// Menyusun daftar mata kuliah semester aktif untuk mahasiswa dan menyimpan pilihan kelasnya satu kali (terkunci).
 @Service
-@Transactional(readOnly = true)
-
-// Menyusun daftar mata kuliah dan kelas semester aktif untuk mahasiswa, termasuk 
-// dengan dosen pengajar dan status terkunci (Jika sudah memilih atau belum)
 public class MahasiswaMatkulService {
 
     private final KelasRepository kelasRepository;
-    private final KuliahRepository kuliahRepository;
     private final PesertaKelasRepository pesertaKelasRepository;
+    private final MahasiswaRepository mahasiswaRepository;
+    private final NamaDosenPengajarResolver namaDosenPengajarResolver;
+    private final SemesterAkademikResolver semesterAkademikResolver;
 
     public MahasiswaMatkulService(
         KelasRepository kelasRepository,
-        KuliahRepository kuliahRepository,
-        PesertaKelasRepository pesertaKelasRepository
+        PesertaKelasRepository pesertaKelasRepository,
+        MahasiswaRepository mahasiswaRepository,
+        NamaDosenPengajarResolver namaDosenPengajarResolver,
+        SemesterAkademikResolver semesterAkademikResolver
     ) {
         this.kelasRepository = kelasRepository;
-        this.kuliahRepository = kuliahRepository;
         this.pesertaKelasRepository = pesertaKelasRepository;
+        this.mahasiswaRepository = mahasiswaRepository;
+        this.namaDosenPengajarResolver = namaDosenPengajarResolver;
+        this.semesterAkademikResolver = semesterAkademikResolver;
     }
 
-    // Method menyusun daftar matkul + kelas untuk satu mahasiswa
-    public MatkulTersediaResponseDTO getMatkulTersedia(String npm) {
-        Optional<String> semesterOpt = kelasRepository.findLatestSemesterOverall();
-        if (semesterOpt.isEmpty() || semesterOpt.get().isBlank()) {
-            return new MatkulTersediaResponseDTO(null, "-", false, List.of());
+    @Transactional(readOnly = true)
+    public MatkulMahasiswaResponseDTO getMatkulTersedia(Mahasiswa mahasiswa) {
+        Optional<String> semester = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(mahasiswa.getNpm());
+        if (semester.isEmpty()) {
+            return new MatkulMahasiswaResponseDTO(
+                mahasiswa.getNama(),
+                mahasiswa.getNpm().trim(),
+                SemesterAkademikResolver.formatSemesterLabel(null),
+                false,
+                List.of()
+            );
         }
-        String semester = semesterOpt.get().trim();
+        return susunResponse(mahasiswa, semester.get());
+    }
+
+    @Transactional
+    public MatkulMahasiswaResponseDTO simpanMatkul(Mahasiswa mahasiswa, List<Integer> idKelasDipilih) {
+        String semester = semesterAkademikResolver.resolveActiveSemesterForMahasiswa(mahasiswa.getNpm())
+            .orElseThrow(() -> new MahasiswaException(HttpStatus.NOT_FOUND, "Belum ada semester aktif."));
+
+        // Kunci baris mahasiswa dulu: submit ganda menunggu di sini, lalu ditolak oleh pengecekan kunci di bawah.
+        mahasiswaRepository.findByNpmForUpdate(mahasiswa.getNpm())
+            .orElseThrow(() -> new MahasiswaException(HttpStatus.NOT_FOUND, "Data mahasiswa tidak ditemukan."));
+
+        if (!pesertaKelasRepository.findByNpmAndSemesterWithDetails(mahasiswa.getNpm(), semester).isEmpty()) {
+            throw new MahasiswaException(HttpStatus.CONFLICT,
+                "Mata kuliah telah dikunci. Hubungi Admin Program Studi jika terdapat kesalahan pengisian data.");
+        }
+
+        List<Kelas> kelasDipilih = validasiPilihan(idKelasDipilih, semester);
+        pesertaKelasRepository.saveAll(
+            kelasDipilih.stream().map(kelas -> new PesertaKelas(null, mahasiswa, kelas)).toList()
+        );
+        return susunResponse(mahasiswa, semester);
+    }
+
+    private List<Kelas> validasiPilihan(List<Integer> idKelasDipilih, String semester) {
+        if (idKelasDipilih == null || idKelasDipilih.isEmpty() || idKelasDipilih.stream().anyMatch(Objects::isNull)) {
+            throw badRequest("Pilih minimal satu mata kuliah beserta kelasnya.");
+        }
+        Set<Integer> idUnik = new LinkedHashSet<>(idKelasDipilih);
+        if (idUnik.size() != idKelasDipilih.size()) {
+            throw badRequest("Kelas yang sama dipilih lebih dari satu kali.");
+        }
+
+        List<Kelas> kelasDipilih = kelasRepository.findByIdsWithDetails(idUnik);
+        if (kelasDipilih.size() != idUnik.size()) {
+            throw badRequest("Ada kelas yang dipilih tidak ditemukan.");
+        }
+
+        Set<Integer> matkulBukaTerpakai = new HashSet<>();
+        for (Kelas kelas : kelasDipilih) {
+            if (!semester.equals(kelas.getMataKuliahBuka().getSemesterAkademik().trim())) {
+                throw badRequest("Kelas yang dipilih bukan bagian dari semester aktif.");
+            }
+            if (!matkulBukaTerpakai.add(kelas.getMataKuliahBuka().getIdMatkulBuka())) {
+                throw badRequest("Satu mata kuliah hanya boleh dipilih satu kelas.");
+            }
+        }
+        return kelasDipilih;
+    }
+
+    private MatkulMahasiswaResponseDTO susunResponse(Mahasiswa mahasiswa, String semester) {
         List<Kelas> semuaKelas = kelasRepository.findBySemester(semester);
-        Set<Integer> kelasDipilih = cariKelasDipilih(npm, semester);
-        Map<Integer, Set<String>> dosenPerKelas = cariDosenPerKelas(semuaKelas);
-        Map<String, List<Kelas>> kelasPerMatkul = new TreeMap<>();  // Menggunakan treemap agar matkul tersusun berdasarkan kode
-        
+        Set<Integer> kelasTerpilih = pesertaKelasRepository
+            .findByNpmAndSemesterWithDetails(mahasiswa.getNpm(), semester).stream()
+            .map(peserta -> peserta.getKelas().getIdKelas())
+            .collect(Collectors.toSet());
+        Map<Integer, String> dosenPerKelas = namaDosenPengajarResolver.resolve(semuaKelas);
+
+        // TreeMap: mata kuliah tampil terurut berdasarkan kode
+        Map<String, List<Kelas>> kelasPerMatkul = new TreeMap<>();
         for (Kelas kelas : semuaKelas) {
-            String idMatkul = kelas.getMataKuliahBuka().getMatakuliah().getIdMatkul();
-            kelasPerMatkul.computeIfAbsent(idMatkul, key -> new ArrayList<>()).add(kelas);
+            kelasPerMatkul
+                .computeIfAbsent(kelas.getMataKuliahBuka().getMatakuliah().getIdMatkul(), kode -> new ArrayList<>())
+                .add(kelas);
         }
 
-        List<MatkulItemDTO> daftarMatkul = new ArrayList<>();
-        for (List<Kelas> kelasList : kelasPerMatkul.values()) {
-            MataKuliah matkul = kelasList.get(0).getMataKuliahBuka().getMatakuliah();
-            List<KelasPilihanDTO> pilihanKelas = new ArrayList<>();
-            for (Kelas kelas : kelasList) {
-                Set<String> namaDosen = dosenPerKelas.get(kelas.getIdKelas());
-                String dosenPengajar = (namaDosen == null || namaDosen.isEmpty()) ? "-" : String.join(", ", namaDosen);
-
-                // Tandai kelas dipilih jika ada di daftar pilihan dari mahasiswa
-                pilihanKelas.add(new KelasPilihanDTO(
+        List<MataKuliahTersediaDTO> daftarMataKuliah = kelasPerMatkul.values().stream().map(daftarKelas -> {
+            Kelas contoh = daftarKelas.get(0);
+            MataKuliah matkul = contoh.getMataKuliahBuka().getMatakuliah();
+            List<KelasTersediaDTO> opsiKelas = daftarKelas.stream()
+                .map(kelas -> new KelasTersediaDTO(
                     kelas.getIdKelas(),
                     kelas.getKodeKelas(),
-                    dosenPengajar,
-                    kelasDipilih.contains(kelas.getIdKelas())
-                ));
-            }
-            daftarMatkul.add(new MatkulItemDTO(matkul.getIdMatkul(), matkul.getNama(), matkul.getSks(), pilihanKelas));
-        }
+                    dosenPerKelas.getOrDefault(kelas.getIdKelas(), NamaDosenPengajarResolver.TANPA_DOSEN),
+                    kelasTerpilih.contains(kelas.getIdKelas())
+                ))
+                .toList();
+            return new MataKuliahTersediaDTO(
+                contoh.getMataKuliahBuka().getIdMatkulBuka(), matkul.getIdMatkul(), matkul.getNama(), opsiKelas
+            );
+        }).toList();
 
-        boolean terkunci = !kelasDipilih.isEmpty();
-        return new MatkulTersediaResponseDTO(semester, formatSemesterLabel(semester), terkunci, daftarMatkul);
+        return new MatkulMahasiswaResponseDTO(
+            mahasiswa.getNama(),
+            mahasiswa.getNpm().trim(),
+            SemesterAkademikResolver.formatSemesterLabel(semester),
+            !kelasTerpilih.isEmpty(),
+            daftarMataKuliah
+        );
     }
 
-    // Mengembalikan id kelas yang sudah dipilih mahasiswa pada semester ini
-    private Set<Integer> cariKelasDipilih(String npm, String semester) {
-        Set<Integer> hasil = new HashSet<>();
-
-        for (PesertaKelas peserta : pesertaKelasRepository.findByMahasiswaNpmInWithDetails(List.of(npm))) {
-            Kelas kelas = peserta.getKelas();
-            if (semester.equals(kelas.getMataKuliahBuka().getSemesterAkademik())) {
-                hasil.add(kelas.getIdKelas());
-            }
-        }
-        return hasil;
-    }
-
-    // Mengembalikan map: idkelas -> nama dosen yang mengajar kelas itu
-    private Map<Integer, Set<String>> cariDosenPerKelas(List<Kelas> semuaKelas) {
-        Map<Integer, Set<String>> hasil = new HashMap<>();
-        if (semuaKelas.isEmpty()) {
-            return hasil;
-        }
-        // Kumpulkan semua id kelas, lalu ambil jadwal kuliahnya sekaligus (satu query)
-        List<Integer> kelasIds = semuaKelas.stream().map(Kelas::getIdKelas).toList();
-        for (Kuliah kuliah : kuliahRepository.findByKelasIdsWithDetails(kelasIds)) {
-            // Set dipakai agar nama dosen yang sama tidak muncul double (teori + praktikum)
-            hasil.computeIfAbsent(kuliah.getKelas().getIdKelas(), key -> new LinkedHashSet<>())
-                .add(kuliah.getDosenPengajar().getNama());
-        }
-        return hasil;
-    }
-
-    // Mengubah format kode semester. Contoh: "25261" -> "Semester Ganjil 2025/2026"
-    private String formatSemesterLabel(String kode) {
-        if (kode.length() == 5 && kode.chars().allMatch(Character::isDigit)) {
-            int tahunAwal = 2000 + Integer.parseInt(kode.substring(0, 2));
-            int tahunAkhir = 2000 + Integer.parseInt(kode.substring(2, 4));
-            
-            String jenis = switch (kode.charAt(4)) {
-                case '1' -> "Ganjil";
-                case '2' -> "Genap";
-                case '3' -> "Pendek";
-                default -> null;
-            };
-            if (jenis != null) {
-                return "Semester " + jenis + " " + tahunAwal + "/" + tahunAkhir;
-            }
-        }
-        // Format tidak dikenali
-        return kode;
+    private static MahasiswaException badRequest(String pesan) {
+        return new MahasiswaException(HttpStatus.BAD_REQUEST, pesan);
     }
 }

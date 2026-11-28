@@ -126,24 +126,9 @@ public class DosenDashboardService {
 
     public static String formatSemesterLabel(String kodeSemester) {
         if (kodeSemester == null || kodeSemester.isBlank()) {
-            return formatSemesterLabel(DEFAULT_FALLBACK_SEMESTER);
+            return SemesterAkademikResolver.formatSemesterLabel(DEFAULT_FALLBACK_SEMESTER);
         }
-        String trimmed = kodeSemester.trim();
-        if (trimmed.length() == 5 && trimmed.chars().allMatch(Character::isDigit)) {
-            int startYear = 2000 + Integer.parseInt(trimmed.substring(0, 2));
-            int endYear = 2000 + Integer.parseInt(trimmed.substring(2, 4));
-            char termDigit = trimmed.charAt(4);
-            String termName = switch (termDigit) {
-                case '1' -> "Semester Ganjil";
-                case '2' -> "Semester Genap";
-                case '3' -> "Semester Pendek";
-                default -> null;
-            };
-            if (termName != null) {
-                return termName + " " + startYear + "/" + endYear;
-            }
-        }
-        return trimmed;
+        return SemesterAkademikResolver.formatSemesterLabel(kodeSemester);
     }
 
     private DosenDashboardSummaryDTO buildFallbackSummary(String nidn, String name, String email, String semesterCode) {

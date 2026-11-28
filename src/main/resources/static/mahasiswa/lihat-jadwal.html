@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jadwal Presentasi Mahasiswa - Sistem Penjadwalan Presentasi Tugas Besar UNPAR">
+  <title>Lihat Jadwal - Tubes Scheduler</title>
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/dosen.css">
+  <link rel="stylesheet" href="../css/mahasiswa.css">
+</head>
+<body data-required-role="MAHASISWA" data-active-nav="lihat-jadwal">
+  <main class="dosen-content" id="main-content">
+    <div class="mhs-page-header">
+      <h1 class="mhs-page-title">Lihat Jadwal</h1>
+      <span class="mhs-semester-badge" aria-live="polite">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span id="mhs-semester-label">Memuat semester...</span>
+      </span>
+    </div>
+
+    <div id="page-banner" class="mhs-banner"></div>
+    <div id="jadwal-content" aria-live="polite"></div>
+  </main>
+
+  <div id="drawer-detail-jadwal" class="mhs-drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="drawer-jadwal-title" aria-hidden="true">
+    <aside class="mhs-drawer-panel">
+      <header class="mhs-drawer-header">
+        <div class="mhs-modal-heading">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <h2 id="drawer-jadwal-title" class="mhs-modal-title">Detail Presentasi</h2>
+        </div>
+        <button type="button" id="btn-tutup-drawer" class="mhs-modal-close" aria-label="Tutup detail presentasi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="mhs-drawer-body">
+        <dl id="drawer-detail-fields" class="mhs-drawer-fields"></dl>
+
+        <section class="mhs-drawer-section" aria-labelledby="drawer-anggota-heading">
+          <div class="mhs-drawer-section-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <h3 id="drawer-anggota-heading" class="mhs-drawer-section-title">Anggota Kelompok</h3>
+          </div>
+          <ul id="drawer-anggota-list" class="mhs-drawer-member-list"></ul>
+        </section>
+
+        <div id="drawer-catatan-box" class="mhs-drawer-note hidden">
+          <span class="mhs-drawer-note-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </span>
+          <div class="mhs-drawer-note-content">
+            <strong class="mhs-drawer-note-label">Catatan Dosen:</strong>
+            <p id="drawer-catatan-text" class="mhs-drawer-note-text"></p>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth-guard.js"></script>
+  <script src="../js/mahasiswa-common.js"></script>
+  <script src="../js/mahasiswa-lihat-jadwal.js"></script>
+</body>
+</html>

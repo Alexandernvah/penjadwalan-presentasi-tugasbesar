@@ -8,12 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AnggotaKelompokRepository extends JpaRepository<AnggotaKelompok, Integer> {
     List<AnggotaKelompok> findByKelompok_IdKelompok(Integer idKelompok);
     List<AnggotaKelompok> findByKelas_IdKelas(Integer idKelas);
     void deleteByKelompok_IdKelompok(Integer idKelompok);
+    boolean existsByMahasiswa_NpmAndKelas_IdKelas(String npm, Integer idKelas);
+    Optional<AnggotaKelompok> findByMahasiswa_NpmAndKelompok_IdKelompok(String npm, Integer idKelompok);
+    long countByKelompok_IdKelompok(Integer idKelompok);
 
     @Query("""
         SELECT ak FROM AnggotaKelompok ak
